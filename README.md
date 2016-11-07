@@ -20,3 +20,5 @@ In order to solve this problem, it's proposed to develop a web application deplo
 By providing such an application, the user would only need to make sure it has a SAFE account and the SAFE browser installed in its mobile phone, tablet or laptop.
 
 All the encryption/decryption tasks are automatically handled by SAFE, and the web application displays the information so it can be copied/pasted, as well as edited, in a very friendly way.
+
+![Mockup of mobile app](img/mockup.png)
