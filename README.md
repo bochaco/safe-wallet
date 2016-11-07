@@ -2,8 +2,8 @@
 
 ## Introduction
 As a traveller you need to carry a few personal items that you cannot loose if you want to be able to access your money, e.g. credit cards and homebanking passwords, or perhaps you crypto-wallets keys.
-This can be sometimes challenging since you may not want to leave them at the hotel/hostel, but if you otherwise carry them with you can also be risky or just uncomfortable.
-In addition to this, if you are booking things as you travel (e.g. as a backpacker), you need to use your passwords and credit card numbers on a daily basis, and you are requested to type your passwords and specially your credit card numbers over and over again, unless you decide to risk it and store them in your mobile phone or trust any cloud storage to keep them there, which in any case is a good idea.
+This can be sometimes challenging since you may not want to leave them at the hotel/hostel, but if you otherwise carry them with you it can also be risky or just uncomfortable.
+In addition to this, if you are booking things as you travel (e.g. as a backpacker), you need to use your passwords and credit card numbers on a daily basis, and you are requested to type your passwords, and specially, your credit card numbers over and over again, unless you decide to risk it and store them in your mobile phone or trust any cloud storage to keep them there, which in any case is not a good idea.
 
 ## Background
 As mentioned above, many people decide to store their credit card numbers and/or passwords in their mobile, tablet, laptop, or email accounts, so they can easily access them when needed, like when booking things online laying down very comfortably on the bed whilst your wallet and personal items are inside a locker and not with you in that moment.
