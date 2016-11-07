@@ -1,3 +1,5 @@
+This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
+
 # SAFE Pocket: Easily accessing your personal items privately, safely and globally
 
 ## Introduction
@@ -22,3 +24,4 @@ By providing such an application, the user would only need to make sure it has a
 All the encryption/decryption tasks are automatically handled by SAFE, and the web application displays the information so it can be copied/pasted, as well as edited, in a very friendly way.
 
 ![Mockup of mobile app](img/mockup.png)
+
