@@ -8,7 +8,7 @@ This can be sometimes challenging since you may not want to leave them at the ho
 In addition to this, if you are booking things as you travel (e.g. as a backpacker), you need to use your passwords and credit card numbers on a daily basis, and you are requested to type your passwords, and specially, your credit card numbers over and over again, unless you decide to risk it and store them in your mobile phone or trust any cloud storage to keep them there, which in any case is not a good idea.
 
 ## Background
-As mentioned above, many people decide to store their credit card numbers and/or passwords in their mobile, tablet, laptop, or email accounts, so they can easily access them when needed. E.g. laying down very comfortably in bed trying to book things online, when your wallet and personal items are inside a locker and not with you in that moment.
+As mentioned above, many people decide to store their credit card numbers and/or passwords in their mobile, tablet, laptop, or email accounts, so they can easily access them when needed. E.g. lying down very comfortably in bed trying to book things online, when your wallet and personal items are inside a locker and not with you in that moment.
 
 The approach that comes up to anyone's mind when thinking of how to solve this issue, it is to store this information in a text file, encrypt it, and upload the encrypted file onto any of the cloud services available today, like a cloud storage or even an online email account.
 
