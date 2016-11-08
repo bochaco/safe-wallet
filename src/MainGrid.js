@@ -11,7 +11,7 @@ export default class MainGrid extends React.Component {
 
     return (
       <Container>
-        <Card.Group>
+        <Card.Group itemsPerRow={3}>
           {cards}
         </Card.Group>
       </Container>

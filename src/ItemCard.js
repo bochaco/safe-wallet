@@ -32,7 +32,7 @@ export class ItemCard extends React.Component {
     }
 
     return (
-      <Card itemsPerRow={3} color={color}>
+      <Card color={color}>
         <Card.Content href='#link'>
           <Card.Meta>
             {img}
