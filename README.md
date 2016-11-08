@@ -15,7 +15,7 @@ The approach that comes up to anyone's mind when thinking of how to solve this i
 This probably sounds reasonably and fairly secure, although it's definitely not a good choice if you want this information to be easy to maintain and to retrieve. In order to retrieve the information you need to first download the encrypted file, which implies logging into the cloud service where you stored it, you then need to decrypt it locally, then open it with a text editor to finally be able to read or copy/paste the information you were looking for. But this is not all, you then need to make sure you delete the file from the local storage, which is tricky since the OS may not fully delete the data but just update the file tables to remove the file entry but not its actual content.
 
 ## Solution
-In order to solve this problem, it's proposed to develop a web application deployed on the SAFE network which provides an extremely simple and easy to use UX to manage this type of information, which takes care of storing and retrieving the data securely on the user's SAFE account.
+In order to solve this problem, it's proposed to develop a web application deployed on the SAFE network which provides an extremely simple UX to manage this type of information, which takes care of storing and retrieving the data securely on the user's SAFE account.
 
 By providing such an application, the user would only need to make sure it has a SAFE account and the SAFE browser installed in its mobile phone, tablet or laptop.
 
