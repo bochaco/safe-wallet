@@ -1,7 +1,7 @@
-# SAFE Pocket: Easily accessing your personal items privately, safely and globally
+# SAFE Wallet: Easily accessing your personal items privately, safely and globally
 
 ## Introduction
-As a traveller you need to carry a few personal items that you cannot loose if you want to be able to access your money, e.g. credit cards and homebanking passwords, or perhaps you crypto-wallets keys.
+As a traveller you need to carry a few personal items you cannot loose if you want to be able to access your money, e.g. credit cards and home-banking passwords, or perhaps you crypto-wallets keys.
 
 This can be sometimes challenging since you may not want to leave them at the hotel/hostel, but if you otherwise carry them with you it can also be risky or just uncomfortable.
 
