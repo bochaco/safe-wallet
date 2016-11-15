@@ -1,19 +1,20 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Button, Card, Image, Container } from 'semantic-ui-react';
 import icon_cc from './img/credit_card.jpg';
 import icon_pwd from './img/password.jpg';
 import icon_qr from './img/qr_code.png';
 import icon_2fa from './img/2fa.png';
+import icon_safecoin from './img/safecoin.png';
 import icon_unknown from './img/unknown.png';
 
-export class ItemCard extends React.Component {
+export default class ItemCard extends React.Component {
   render() {
     var img, meta, color;
     switch (this.props.item.type) {
       case 0:
         img = <Image floated='left' size='tiny' src={icon_cc} />
         meta = "Credit Card";
-        color = "blue";
+        color = "brown";
         break;
       case 1:
         img = <Image floated='left' size='tiny' src={icon_pwd} />
@@ -30,6 +31,11 @@ export class ItemCard extends React.Component {
         meta = "2FA Codes";
         color = "violet";
         break;
+      case 4:
+        img = <Image floated='left' size='tiny' src={icon_safecoin} />
+        meta = "Safecoin Wallet";
+        color = "blue";
+        break;
       default:
         img = <Image floated='left' size='tiny' src={icon_unknown} />
         meta = "";
@@ -37,8 +43,8 @@ export class ItemCard extends React.Component {
     }
 
     return (
-      <Card color={color}>
-        <Card.Content href='#link'>
+      <Card color={color} >
+        <Card.Content href='#' onClick={this.props.handleOpenModal.bind(null, this)} >
           <Card.Meta>
             {img}
             {meta}
@@ -55,15 +61,6 @@ export class ItemCard extends React.Component {
           </Container>
         </Card.Content>
       </Card>
-    );
-  }
-}
-
-export class ItemCardPopUp extends Component {
-  render() {
-    return (
-      <div>
-      </div>
     );
   }
 }
