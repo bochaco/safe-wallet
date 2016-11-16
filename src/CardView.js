@@ -1,7 +1,7 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
-import { Grid, Segment, Label, Image, Header, List, Icon, Container } from 'semantic-ui-react'
+import { Grid, Segment, Image, Header, Icon } from 'semantic-ui-react'
 
 import img_credit_card_view from './img/credit_card3.jpg';
 import img_pubkey from './img/qr_pubkey.png';
@@ -145,22 +145,17 @@ class CreditCardView extends React.Component {
             <Image src={img_credit_card_view} />
           </Grid.Column>
           <Grid.Column>
+            <br/>
             <Header>
               <Icon name='protect' color="brown" />
               <Header.Content>
-                987
-                <Header.Subheader>
-                  Security Code
-                </Header.Subheader>
+                Security Code: 987
               </Header.Content>
             </Header>
             <Header>
               <Icon name='payment' color="brown" />
               <Header.Content>
-                1234
-                <Header.Subheader>
-                  PIN
-                </Header.Subheader>
+                PIN: 1234
               </Header.Content>
             </Header>
           </Grid.Column>

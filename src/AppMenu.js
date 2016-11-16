@@ -35,10 +35,6 @@ const Logged = (props) => (
 
 Logged.muiName = 'IconMenu';
 
-function handleTouchTap() {
-  alert('onTouchTap triggered on the title component');
-}
-
 const styles = {
   menubar: {
     marginBottom: '20px',
