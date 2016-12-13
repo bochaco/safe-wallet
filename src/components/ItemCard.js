@@ -1,11 +1,11 @@
 import React from 'react';
 import { Button, Card, Image, Container } from 'semantic-ui-react';
-import icon_cc from './img/credit_card.jpg';
-import icon_pwd from './img/password.jpg';
-import icon_qr from './img/qr_code.png';
-import icon_2fa from './img/2fa.png';
-import icon_safecoin from './img/safecoin.png';
-import icon_unknown from './img/unknown.png';
+import icon_cc from '../img/credit_card.jpg';
+import icon_pwd from '../img/password.jpg';
+import icon_qr from '../img/qr_code.png';
+import icon_2fa from '../img/2fa.png';
+import icon_safecoin from '../img/safecoin.png';
+import icon_unknown from '../img/unknown.png';
 
 export default class ItemCard extends React.Component {
   render() {

@@ -3,9 +3,9 @@ import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
 import { Grid, Segment, Image, Header, Icon } from 'semantic-ui-react'
 
-import img_credit_card_view from './img/credit_card3.jpg';
-import img_pubkey from './img/qr_pubkey.png';
-import img_privkey from './img/qr_privkey.png';
+import img_credit_card_view from '../img/credit_card3.jpg';
+import img_pubkey from '../img/qr_pubkey.png';
+import img_privkey from '../img/qr_privkey.png';
 
 
 export default class CardView extends React.Component {

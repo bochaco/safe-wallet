@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import MainGrid from './MainGrid.js';
-import './App.css';
+import '../css/App.css';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 // Needed for onTouchTap
