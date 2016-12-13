@@ -2,7 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import './index.css';
-import '../semantic/dist/semantic.min.css';
+
+// TODO: clean this up to properly include semantic ui css into the public folder
+import '../node_modules/semantic-ui-css/semantic.min.css';
 
 ReactDOM.render(
   <App />,

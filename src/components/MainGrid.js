@@ -34,14 +34,6 @@ export default class MainGrid extends React.Component {
       permissions: []
     };
 
-    var token = "";
-    window.safeAuth.authorise(app).then((res) => {
-      console.log(res.__parsedResponseBody__);
-      token = res.__parsedResponseBody__.token;
-    }, (err) => {
-      console.error(err);
-    });
-    return token;
   }
 
   loadData() {
