@@ -19,27 +19,29 @@ export default class CardView extends React.Component {
     ];
 
     var content = "";
-    switch (this.props.selected_item.type) {
-      case 0:
-        content = <CreditCardView />;
-        break;
-      case 1:
-        content = <PasswordView />;
-        break;
-      case 2:
-        content = <PrivPubKeysView />;
-        break;
-      case 3:
-        content = <TwoFAView />;
-        break;
-      default:
-        break;
+    if (this.props.selected_item != null) {
+      switch (this.props.selected_item.type) {
+        case 0:
+          content = <CreditCardView data={this.props.selected_item.data} />;
+          break;
+        case 1:
+          content = <PasswordView data={this.props.selected_item.data} />;
+          break;
+        case 2:
+          content = <PrivPubKeysView data={this.props.selected_item.data} />;
+          break;
+        case 3:
+          content = <TwoFAView data={this.props.selected_item.data} />;
+          break;
+        default:
+          break;
+      }
     }
 
     return (
       <div>
         <Dialog
-          title={this.props.selected_item.label}
+          title={(this.props.selected_item == null) ? "" : this.props.selected_item.label}
           actions={actions}
           modal={false}
           contentStyle={{textAlign: 'center'}}
@@ -55,6 +57,15 @@ export default class CardView extends React.Component {
 
 class PasswordView extends React.Component {
   render() {
+    let QAs = this.props.data.questions.map((QA, i) => (
+      <Grid.Column key={i}>
+        <div>
+          <Header sub>{QA.q}</Header>
+          <span>{QA.a}</span>
+        </div>
+      </Grid.Column>
+    ));
+
     return (
       <Grid columns='equal' divided='vertically'>
       <Grid.Row>
@@ -62,7 +73,7 @@ class PasswordView extends React.Component {
           <Header>
             <Icon name='user' color="teal" />
             <Header.Content>
-              myusername
+              {this.props.data.username}
               <Header.Subheader>
                 Username
               </Header.Subheader>
@@ -73,7 +84,7 @@ class PasswordView extends React.Component {
           <Header>
             <Icon name='privacy' color="teal" />
             <Header.Content>
-              password1234
+              {this.props.data.password}
               <Header.Subheader>
                 Password
               </Header.Subheader>
@@ -81,19 +92,8 @@ class PasswordView extends React.Component {
           </Header>
         </Grid.Column>
       </Grid.Row>
-      <Grid.Row>
-        <Grid.Column>
-          <div>
-            <Header sub>What is your favorite city?</Header>
-            <span>London</span>
-          </div>
-        </Grid.Column>
-        <Grid.Column>
-          <div>
-            <Header sub>What is the name of your first school?</Header>
-            <span>Public School</span>
-          </div>
-        </Grid.Column>
+      <Grid.Row columns={3}>
+        {QAs}
       </Grid.Row>
       </Grid>
     );
@@ -121,9 +121,9 @@ class PrivPubKeysView extends React.Component {
           </Grid.Column>
           <Grid.Column width={9}>
             <Header as='h5' color='green'>
-              1KbCJfktc1JaKAwRtb42G8iNyhhh9zXRi4
+              {this.props.data.pk}
               <Header.Subheader>
-                L3t2ompeWyP28EvPdjfpGAqnnk3N8zRWUmAVzgZKKubSVDcCAqav
+                {this.props.data.sk}
               </Header.Subheader>
             </Header>
           </Grid.Column>
@@ -149,13 +149,13 @@ class CreditCardView extends React.Component {
             <Header>
               <Icon name='protect' color="brown" />
               <Header.Content>
-                Security Code: 987
+                Security Code: {this.props.data.ccv}
               </Header.Content>
             </Header>
             <Header>
               <Icon name='payment' color="brown" />
               <Header.Content>
-                PIN: 1234
+                PIN: {this.props.data.pin}
               </Header.Content>
             </Header>
           </Grid.Column>
@@ -167,41 +167,16 @@ class CreditCardView extends React.Component {
 
 class TwoFAView extends React.Component {
   render() {
+    let twoFAcodes = this.props.data.map((code, i) => (
+      <Grid.Column key={i}>
+        <Segment textAlign="center" compact secondary>{code}</Segment>
+      </Grid.Column>
+    ));
+
     return (
       <Grid columns='equal'>
-        <Grid.Row>
-          <Grid.Column >
-            <Segment textAlign="center" compact secondary>123456</Segment>
-          </Grid.Column>
-          <Grid.Column>
-            <Segment textAlign="center" compact secondary>987654</Segment>
-          </Grid.Column>
-          <Grid.Column >
-            <Segment textAlign="center" compact secondary>123456</Segment>
-          </Grid.Column>
-          <Grid.Column >
-            <Segment textAlign="center" compact secondary>987654</Segment>
-          </Grid.Column>
-          <Grid.Column >
-            <Segment textAlign="center" compact secondary>123456</Segment>
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row>
-          <Grid.Column >
-            <Segment textAlign="center" compact secondary>987654</Segment>
-          </Grid.Column>
-          <Grid.Column>
-            <Segment textAlign="center" compact secondary>123456</Segment>
-          </Grid.Column>
-          <Grid.Column >
-            <Segment textAlign="center" compact secondary>987654</Segment>
-          </Grid.Column>
-          <Grid.Column >
-            <Segment textAlign="center" compact secondary>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Segment>
-          </Grid.Column>
-          <Grid.Column >
-            <Segment textAlign="center" compact secondary>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Segment>
-          </Grid.Column>
+        <Grid.Row columns={6}>
+          {twoFAcodes}
         </Grid.Row>
       </Grid>
     );

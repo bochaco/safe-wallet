@@ -8,6 +8,26 @@ import icon_safecoin from '../img/safecoin.png';
 import icon_unknown from '../img/unknown.png';
 
 export default class ItemCard extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.handleViewAction = this.handleViewAction.bind(this);
+    this.handleEditAction = this.handleEditAction.bind(this);
+    this.handleDeleteAction = this.handleDeleteAction.bind(this);
+  }
+
+  handleViewAction() {
+    this.props.handleView(this.props.index);
+  }
+
+  handleEditAction() {
+    this.props.handleEdit(this.props.index);
+  }
+
+  handleDeleteAction() {
+    this.props.handleDelete(this.props.index);
+  }
+
   render() {
     var img, meta, color;
     switch (this.props.item.type) {
@@ -44,7 +64,7 @@ export default class ItemCard extends React.Component {
 
     return (
       <Card color={color} >
-        <Card.Content href='#' onClick={this.props.handleOpenModal.bind(null, this)} >
+        <Card.Content href='#' onClick={this.handleViewAction} >
           <Card.Meta>
             {img}
             {meta}
@@ -56,8 +76,10 @@ export default class ItemCard extends React.Component {
         </Card.Content>
         <Card.Content extra>
           <Container textAlign='right'>
-              <Button inverted circular icon='edit' color={color} />
-              <Button inverted circular icon='trash outline' color={color} />
+              <Button inverted circular icon='edit' color={color}
+                onClick={this.handleEditAction} />
+              <Button inverted circular icon='trash outline' color={color}
+                onClick={this.handleDeleteAction} />
           </Container>
         </Card.Content>
       </Card>

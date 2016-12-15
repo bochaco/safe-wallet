@@ -17,23 +17,50 @@ class Login extends React.Component {
   }
 }
 
-const Logged = (props) => (
-  <IconMenu
-    {...props}
-    iconButtonElement={
-      <IconButton><MoreVertIcon /></IconButton>
-    }
-    targetOrigin={{horizontal: 'right', vertical: 'top'}}
-    anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-  >
-    <MenuItem primaryText="Refresh" />
-    <MenuItem primaryText="Add New" />
-    <MenuItem primaryText="About" />
-    <MenuItem primaryText="Sign out" />
-  </IconMenu>
-);
+class Logged extends React.Component {
+  static muiName = 'IconMenu';
 
-Logged.muiName = 'IconMenu';
+  constructor(props) {
+    super(props);
+
+    this.handleMenuActions = this.handleMenuActions.bind(this);
+  }
+
+  handleMenuActions(event, child) {
+    switch (child.props.primaryText) {
+      case "Add New":
+        this.props.handleOpenEditModal(null);
+        break;
+      case "Refresh":
+        this.props.handleRefresh();
+        break;
+      case "About":
+        this.props.handleOpenAboutModal();
+        break;
+      default:
+
+    }
+  }
+
+  render() {
+    return (
+      <IconMenu
+        {...this.props}
+        iconButtonElement={
+          <IconButton><MoreVertIcon /></IconButton>
+        }
+        targetOrigin={{horizontal: 'right', vertical: 'top'}}
+        anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+        onItemTouchTap={this.handleMenuActions}
+      >
+        <MenuItem primaryText="Add New" />
+        <MenuItem primaryText="Refresh" />
+        <MenuItem primaryText="About" />
+        <MenuItem primaryText="Sign out" />
+      </IconMenu>
+    )
+  }
+}
 
 const styles = {
   menubar: {
@@ -46,7 +73,6 @@ const styles = {
 
 class AppMenu extends React.Component {
   state = {
-    logged: true,
   };
 
   handleChange = (event, logged) => {
@@ -60,7 +86,11 @@ class AppMenu extends React.Component {
         title="SAFE Wallet"
         /*onTitleTouchTap={handleTouchTap}*/
         iconElementLeft={<IconButton><NavigationClose /></IconButton>}
-        iconElementRight={this.state.logged ? <Logged /> : <Login />}
+        iconElementRight={this.props.isAuthorised ?
+          <Logged handleOpenAboutModal={this.props.handleOpenAboutModal}
+            handleOpenEditModal={this.props.handleOpenEditModal}
+            handleRefresh={this.props.handleRefresh} />
+          : ""/*<Login />*/}
       />
     );
   }
