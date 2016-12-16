@@ -41,12 +41,13 @@ export default class AboutView extends React.Component {
                   <List>
                   <List.Item>
                         <List.Content>
-                          <List.Header>Version 0.0.1</List.Header>
-                          <List.Description>by <a>@bochaco</a></List.Description>
+                          <List.Header>&nbsp;</List.Header>
+                          <List.Description>Version 0.0.1</List.Description>
+                          <List.Description>by <a href="https://safenetforum.org/users/bochaco/activity">@bochaco</a></List.Description>
                         </List.Content>
                   </List.Item>
                   <List.Item>
-                    Donations greatly appreciated 0x000000000
+                    Donations are welcome & appreciated!<br/><span fontFamily='Courier New'><b>1KSJhUdDGZz2mx6WBw6Lco8RaPxqzTzRL</b></span>
                   </List.Item>
                   </List>
                 </Item.Meta>

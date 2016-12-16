@@ -4,9 +4,9 @@ const file_content =
 [
   {id: 10, type: 0, index: 1, label: "My prepaid VISA card from Bank 'A'",
     data: {
-      ccv: 987,
-      pin: 1234,
-      number: [1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8],
+      ccv: "987",
+      pin: "1234",
+      number: "[1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8]",
       name: "CARDHOLDER NAME",
       expiry_month: 7,
       expiry_year: 2020,
@@ -30,13 +30,15 @@ const file_content =
   {id: 12, type: 2, index: 3, label: "Bitcoin savings",
     data: {
       pk: "1KbCJfktc1JaKAwRtb42G8iNyhhh9zXRi4",
-      sk: "L3t2ompeWyP28EvPdjfpGAqnnk3N8zRWUmAVzgZKKubSVDcCAqav"
+      sk: "L3t2ompeWyP28EvPdjfpGAqnnk3N8zRWUmAVzgZKKubSVDcCAqav",
+      notes: "balance as of 12/15/2016 = $50.50"
     }
   },
   {id: 17, type: 2, index: 4, label: "Ethereum keys",
     data: {
       pk: "1KbCJfktc1JaKAwRtb42G8iNyhhh9zXRi4",
-      sk: "L3t2ompeWyP28EvPdjfpGAqnnk3N8zRWUmAVzgZKKubSVDcCAqav"
+      sk: "L3t2ompeWyP28EvPdjfpGAqnnk3N8zRWUmAVzgZKKubSVDcCAqav",
+      notes: "current balance 10 eth, received all from donations"
     }
   },
   {id:  4, type: 4, index: 5, label: "Safecoin wallet for trip",

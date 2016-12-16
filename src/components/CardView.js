@@ -1,7 +1,7 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
-import { Grid, Segment, Image, Header, Icon } from 'semantic-ui-react'
+import { Grid, Segment, Image, Header, Icon, Container } from 'semantic-ui-react'
 
 import img_credit_card_view from '../img/credit_card3.jpg';
 import img_pubkey from '../img/qr_pubkey.png';
@@ -57,17 +57,17 @@ export default class CardView extends React.Component {
 
 class PasswordView extends React.Component {
   render() {
-    let QAs = this.props.data.questions.map((QA, i) => (
+    let QAs = this.props.data.questions.map((qa, i) => (
       <Grid.Column key={i}>
         <div>
-          <Header sub>{QA.q}</Header>
-          <span>{QA.a}</span>
+          <Header sub>{qa.q}</Header>
+          <span>{qa.a}</span>
         </div>
       </Grid.Column>
     ));
 
     return (
-      <Grid columns='equal' divided='vertically'>
+      <Grid columns='equal' divided={QAs.length > 0 ? 'vertically' : ''}>
       <Grid.Row>
         <Grid.Column>
           <Header>
@@ -105,10 +105,10 @@ class PrivPubKeysView extends React.Component {
     return (
       <Grid >
         <Grid.Row>
-          <Grid.Column width={4}>
+          <Grid.Column width={3}>
             <Header as='h4'>Public Key</Header>
           </Grid.Column>
-          <Grid.Column width={9}>
+          <Grid.Column width={10}>
           </Grid.Column>
           <Grid.Column width={3}>
             <Header as='h4'>Private Key</Header>
@@ -116,16 +116,20 @@ class PrivPubKeysView extends React.Component {
         </Grid.Row>
 
         <Grid.Row>
-          <Grid.Column width={4}>
+          <Grid.Column width={3}>
             <Image src={img_pubkey} />
           </Grid.Column>
-          <Grid.Column width={9}>
+          <Grid.Column width={10}>
             <Header as='h5' color='green'>
               {this.props.data.pk}
               <Header.Subheader>
                 {this.props.data.sk}
               </Header.Subheader>
             </Header>
+            <Container textAlign='left'>
+              <Header as='h4'>Balance & Transactions notes:</Header>
+              {this.props.data.notes}
+            </Container>
           </Grid.Column>
           <Grid.Column width={3}>
             <Image src={img_privkey} />

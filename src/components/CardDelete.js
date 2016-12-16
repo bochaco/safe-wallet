@@ -1,7 +1,7 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
-import { Card, Image } from 'semantic-ui-react';
+import { Grid, Image, Header } from 'semantic-ui-react';
 
 import icon_cc from '../img/credit_card.jpg';
 import icon_pwd from '../img/password.jpg';
@@ -10,6 +10,11 @@ import icon_2fa from '../img/2fa.png';
 import icon_safecoin from '../img/safecoin.png';
 import icon_unknown from '../img/unknown.png';
 
+const customContentStyle = {
+  width: '50%',
+  maxWidth: 'none',
+  textAlign: 'center',
+};
 
 export default class CardDelete extends React.Component {
   render() {
@@ -26,38 +31,32 @@ export default class CardDelete extends React.Component {
       />,
     ];
 
-    var img, meta, color;
+    var img, meta;
     if (this.props.selected_item != null) {
       switch (this.props.selected_item.type) {
         case 0:
           img = <Image floated='left' size='tiny' src={icon_cc} />
           meta = "Credit Card";
-          color = "brown";
           break;
         case 1:
           img = <Image floated='left' size='tiny' src={icon_pwd} />
           meta = "Password";
-          color = "red";
           break;
         case 2:
           img = <Image floated='left' size='tiny' src={icon_qr} />
           meta = "Priv/Pub Key";
-          color = "yellow";
           break;
         case 3:
           img = <Image floated='left' size='tiny' src={icon_2fa} />
           meta = "2FA Codes";
-          color = "violet";
           break;
         case 4:
           img = <Image floated='left' size='tiny' src={icon_safecoin} />
           meta = "Safecoin Wallet";
-          color = "blue";
           break;
         default:
           img = <Image floated='left' size='tiny' src={icon_unknown} />
           meta = "";
-          color = "grey";
       }
     }
 
@@ -67,22 +66,23 @@ export default class CardDelete extends React.Component {
           title="Are you sure you want to delete this item?"
           actions={actions}
           modal={true}
-          contentStyle={{textAlign: 'center'}}
+          contentStyle={customContentStyle}
           open={this.props.open}
           onRequestClose={this.props.handleClose}
         >
-          <Card fluid color={color}>
-            <Card.Content>
-              <Card.Meta>
+          <Grid centered columns={3}>
+            <Grid.Column width={13}>
+              <Header as='h3'>
                 {img}
-                {meta}
-              </Card.Meta>
-              <Card.Header>
-                <br/>
-                {(this.props.selected_item == null ? "" : this.props.selected_item.label)}
-              </Card.Header>
-            </Card.Content>
-          </Card>
+                <Header.Content>
+                  <Header.Subheader>
+                    {meta}
+                  </Header.Subheader>
+                  {(this.props.selected_item == null ? "" : this.props.selected_item.label)}
+                </Header.Content>
+              </Header>
+            </Grid.Column>
+          </Grid>
 
         </Dialog>
       </div>

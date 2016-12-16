@@ -1,14 +1,16 @@
 import React from 'react'
-import { Card, Container, Segment, Message, Icon } from 'semantic-ui-react';
+import { List, Grid, Card, Container, Message, Icon } from 'semantic-ui-react';
 import ItemCard from './ItemCard.js';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import Snackbar from 'material-ui/Snackbar';
 import CardView from './CardView.js';
-import EditDialog from './CardEdit.js';
+import CardEdit from './CardEdit.js';
+import CardAdd from './CardAdd.js';
 import CardDelete from './CardDelete.js';
 import AppMenu from './AppMenu.js';
 import AboutView from './AboutView.js';
-import {authoriseApp, loadData, saveData} from '../storage.js';
-import {file_content} from '../../misc/sample-data.js';
+import {authoriseApp, isTokenValid, loadData, saveData} from '../storage.js';
+//import {file_content} from '../../misc/sample-data.js';
 
 // TODO: move this to a config file
 const app = {
@@ -24,13 +26,17 @@ export default class MainGrid extends React.Component {
     super(props);
 
     this.state = {
-      isAuthorised: false,
+      isAuthorised: null,
       data: {},
       view_modal: false,
       edit_modal: false,
+      add_modal: false,
       delete_modal: false,
       about_modal: false,
+      snackbar: false,
+      snackbar_message: '',
       selected_item: null,
+      selected_type: null,
     }
 
     this.handleRefresh = this.handleRefresh.bind(this);
@@ -46,25 +52,77 @@ export default class MainGrid extends React.Component {
     this.handleCloseDeleteModal = this.handleCloseDeleteModal.bind(this);
     this.handleSubmitDeleteModal = this.handleSubmitDeleteModal.bind(this);
 
+    this.handleOpenAddModal = this.handleOpenAddModal.bind(this);
+    this.handleCloseAddModal = this.handleCloseAddModal.bind(this);
+    this.handleSubmitAddModal = this.handleSubmitAddModal.bind(this);
+
     this.handleOpenAboutModal = this.handleOpenAboutModal.bind(this);
     this.handleCloseAboutModal = this.handleCloseAboutModal.bind(this);
 
-    this.authoriseApp = authoriseApp.bind(this);
+    this.handleOpenSnack = this.handleOpenSnack.bind(this);
+    this.handleCloseSnack = this.handleCloseSnack.bind(this);
+
+    this.handlePower = this.handlePower.bind(this);
+    this.requestAuthorisation = this.requestAuthorisation.bind(this);
     this.storeData = this.storeData.bind(this);
   }
 
   componentWillMount() {
-/*    this.authoriseApp(app)
+    this.requestAuthorisation();
+//    this.setState({isAuthorised: true, data: file_content});
+  }
+
+  componentDidMount() {
+    this.timerID = setInterval(
+      () => this.tick(),
+      2000
+    );
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  tick() {
+    if (this.state.isAuthorised) {
+      isTokenValid()
+        .then(() => {}, (err) => {
+          this.setState({
+            isAuthorised: false,
+            data: {},
+            view_modal: false,
+            edit_modal: false,
+            add_modal: false,
+            delete_modal: false,
+            about_modal: false,
+            selected_item: null,
+            selected_type: null,
+          });
+          this.handleOpenSnack("Application authorization was revoked")
+        })
+    }
+  }
+
+  handlePower() {
+      if (this.state.isAuthorised === false) {
+        this.requestAuthorisation();
+      } else if (this.state.isAuthorised) {
+        // TODO!!!!: send to revoke access!!!!!!!!!!!!!!!
+        this.setState({isAuthorised: false});
+      }
+  }
+
+  requestAuthorisation() {
+    this.setState({isAuthorised: null});
+    authoriseApp(app)
       .then(loadData)
       .then((parsedData) => {
         this.setState({isAuthorised: true, data: parsedData});
 //        this.storeData(file_content);
       }, (err) => {
-        this.setState({isAuthorised: false});
-        throw Error("Authentication Failed:", err);
+        this.setState({isAuthorised: false, data: {}});
+        console.log("Authentication Failed:", err);
       })
-*/
-    this.setState({isAuthorised: true, data: file_content});
   }
 
   handleRefresh() {
@@ -72,9 +130,9 @@ export default class MainGrid extends React.Component {
       .then((parsedData) => {
         this.setState({data: parsedData});
       }, (err) => {
-        throw Error("Failed refreshing data:", err);
+        console.log("Failed refreshing data:", err);
       })
-//    this.storeData(file_content);
+    this.handleOpenSnack("List of items re-loaded from the SAFE network");
   }
 
   storeData(data) {
@@ -82,7 +140,7 @@ export default class MainGrid extends React.Component {
       .then((parsedData) => {
         this.setState({data: parsedData});
       }, (err) => {
-        console.log("Failed storing data:", err);
+        throw Error("Failed storing data:", err);
       })
   }
 
@@ -95,7 +153,9 @@ export default class MainGrid extends React.Component {
   };
 
   handleOpenEditModal(index) {
-    this.setState({edit_modal: true, selected_item: index});
+    if (index != null && this.state.data[index].type === 2) { // JUST FOR DEMO
+      this.setState({edit_modal: true, selected_item: index});
+    }
   };
 
   handleCloseEditModal() {
@@ -117,8 +177,24 @@ export default class MainGrid extends React.Component {
       }
       this.storeData(updatedData)
         .then(() => {console.log("New item stored", newItem)})
+//        this.setState({data: updatedData});
+        this.handleOpenSnack("Item saved in the SAFE network");
     }
     this.setState({edit_modal: false, selected_item: null});
+  };
+
+  handleOpenAddModal() {
+    this.setState({add_modal: true});
+  };
+
+  handleCloseAddModal() {
+    this.setState({add_modal: false});
+  };
+
+  handleSubmitAddModal(type) {
+    if (type === 2) { // JUST FOR DEMO
+      this.setState({selected_type: type, add_modal: false, edit_modal: true});
+    }
   };
 
   handleOpenDeleteModal(index) {
@@ -133,7 +209,11 @@ export default class MainGrid extends React.Component {
     let updatedData = this.state.data;
     updatedData.splice(this.state.selected_item, 1);
     this.storeData(updatedData)
-      .then(() => {console.log("Item deleted")})
+      .then(() => {this.handleOpenSnack("Item deleted from the SAFE network")},
+      (err) => {this.handleOpenSnack("Failed to delete item")})
+
+//    this.setState({data: updatedData});
+//    this.handleOpenSnack("Item deleted");
     this.setState({delete_modal: false, selected_item: null});
   };
 
@@ -143,6 +223,14 @@ export default class MainGrid extends React.Component {
 
   handleCloseAboutModal() {
     this.setState({about_modal: false});
+  };
+
+  handleOpenSnack(message) {
+    this.setState({snackbar: true, snackbar_message: message});
+  };
+
+  handleCloseSnack() {
+    this.setState({snackbar: false});
   };
 
   render() {
@@ -158,7 +246,17 @@ export default class MainGrid extends React.Component {
         }
         </Card.Group>;
     } else {
-      cards = <Message floating>You have no items stored in your wallet</Message>;
+      cards =
+      <Grid centered columns={1}>
+        <Grid.Column width={10} textAlign='center'>
+        <Message visible >
+          <Message.Content>
+            You have no items stored in your wallet.
+            Use the <Icon name='add circle'/>button to add an item.
+          </Message.Content>
+        </Message>
+      </Grid.Column>
+      </Grid>
     }
 
     return (
@@ -167,20 +265,52 @@ export default class MainGrid extends React.Component {
           {/* Top menu bar */}
           <AppMenu
             handleOpenAboutModal={this.handleOpenAboutModal}
-            handleOpenEditModal={this.handleOpenEditModal}
+            handleOpenAddModal={this.handleOpenAddModal}
             handleRefresh={this.handleRefresh}
             isAuthorised={this.state.isAuthorised}
+            handlePower={this.handlePower}
           />
 
           {/* Warning message when the app is not authorised yet */}
-          {!this.state.isAuthorised &&
-            <Message warning icon>
-              <Icon name='circle notched' loading />
-              <Message.Content>
-                <Message.Header>Application not authorised</Message.Header>
-                Please authorise the 'SAFE Wallet' application in your SAFE Authenticator in order to access your content on the SAFE network.
-              </Message.Content>
-            </Message>
+          {this.state.isAuthorised == null &&
+            <Grid centered columns={3}>
+              <Grid.Column width={6}>
+                <Message info compact>
+                  <Message.Content>
+                    <Message.Header>Awaiting for access authorisation</Message.Header>
+                    Please authorise the application from
+                    the SAFE Authenticator in order to access your content:
+                  </Message.Content>
+                  <List as='ul'>
+                    <List.Item as='li'>App Name: SAFE Wallet</List.Item>
+                    <List.Item as='li'>Vendor:   bochaco</List.Item>
+                    <List.Item as='li'>Version:  0.0.1</List.Item>
+                    <List.Item as='li'>Permissions:
+                      <List.Item as='ul'>
+                        <List.Item>- SAFE Drive Access</List.Item>
+                        <List.Item>- Low Level API</List.Item>
+                      </List.Item>
+                    </List.Item>
+                  </List>
+                </Message>
+              </Grid.Column>
+            </Grid>
+          }
+
+          {/* Warning message when the app authorisation has been revoked */}
+          {this.state.isAuthorised === false &&
+            <Grid centered columns={3}>
+              <Grid.Column width={10}>
+                <Message negative compact>
+                  <Message.Content>
+                    <Message.Header>Application not authorised</Message.Header>
+                    Access authorisation was revoked, the app was disconnected, or it lost
+                    the connection to the network.
+                    <br/><br />Please press the <Icon name='power'/> button to connect again.
+                  </Message.Content>
+                </Message>
+              </Grid.Column>
+            </Grid>
           }
 
           {/* List of items */}
@@ -193,10 +323,18 @@ export default class MainGrid extends React.Component {
             handleClose={this.handleCloseViewModal}
           />
 
+          {/* Dialog box for choosing the type of item to add */}
+          <CardAdd
+            open={this.state.add_modal}
+            handleClose={this.handleCloseAddModal}
+            handleSubmit={this.handleSubmitAddModal}
+          />
+
           {/* Dialog box for editing the selected item, or adding a new one */}
-          <EditDialog
+          <CardEdit
             open={this.state.edit_modal}
-            selected_item={(this.state.selected_item == null) ? null : this.state.data[this.state.selected_item]}
+            selected_item={this.state.data[this.state.selected_item]}
+            selected_type={this.state.selected_type}
             handleClose={this.handleCloseEditModal}
             handleSubmit={this.handleSubmitEditModal}
           />
@@ -209,10 +347,18 @@ export default class MainGrid extends React.Component {
             handleSubmit={this.handleSubmitDeleteModal}
           />
 
-        {/* About the app dialog box */}
+          {/* About the app dialog box */}
           <AboutView
             open={this.state.about_modal}
             handleClose={this.handleCloseAboutModal}
+          />
+
+          {/* Confirmation alert */}
+          <Snackbar
+            open={this.state.snackbar}
+            message={this.state.snackbar_message}
+            autoHideDuration={4000}
+            onRequestClose={this.handleCloseSnack}
           />
 
         </Container>

@@ -1,63 +1,21 @@
 import React from 'react';
 import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
-import FlatButton from 'material-ui/FlatButton';
+import CircularProgress from 'material-ui/CircularProgress';
+import AddCircleOutline from 'material-ui/svg-icons/content/add-circle-outline';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import IconMenu from 'material-ui/IconMenu';
-import MenuItem from 'material-ui/MenuItem';
-
-class Login extends React.Component {
-  static muiName = 'FlatButton';
-
-  render() {
-    return (
-      <FlatButton {...this.props} label="Login" />
-    );
-  }
-}
+import PowerSettingsNew from 'material-ui/svg-icons/action/power-settings-new';
+import InfoOutline from 'material-ui/svg-icons/action/info-outline';
+import Autorenew from 'material-ui/svg-icons/action/autorenew';
 
 class Logged extends React.Component {
-  static muiName = 'IconMenu';
-
-  constructor(props) {
-    super(props);
-
-    this.handleMenuActions = this.handleMenuActions.bind(this);
-  }
-
-  handleMenuActions(event, child) {
-    switch (child.props.primaryText) {
-      case "Add New":
-        this.props.handleOpenEditModal(null);
-        break;
-      case "Refresh":
-        this.props.handleRefresh();
-        break;
-      case "About":
-        this.props.handleOpenAboutModal();
-        break;
-      default:
-
-    }
-  }
-
   render() {
     return (
-      <IconMenu
-        {...this.props}
-        iconButtonElement={
-          <IconButton><MoreVertIcon /></IconButton>
-        }
-        targetOrigin={{horizontal: 'right', vertical: 'top'}}
-        anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-        onItemTouchTap={this.handleMenuActions}
-      >
-        <MenuItem primaryText="Add New" />
-        <MenuItem primaryText="Refresh" />
-        <MenuItem primaryText="About" />
-        <MenuItem primaryText="Sign out" />
-      </IconMenu>
+      <div>
+        <IconButton onClick={this.props.handleOpenAddModal}><AddCircleOutline color='white' /></IconButton>
+        <IconButton onClick={this.props.handleRefresh}><Autorenew color='white' /></IconButton>
+        <IconButton onClick={this.props.handleOpenAboutModal}><InfoOutline color='white' /></IconButton>
+      </div>
     )
   }
 }
@@ -72,8 +30,7 @@ const styles = {
 };
 
 class AppMenu extends React.Component {
-  state = {
-  };
+  state = {};
 
   handleChange = (event, logged) => {
     this.setState({logged: logged});
@@ -85,12 +42,17 @@ class AppMenu extends React.Component {
         style={styles.menubar}
         title="SAFE Wallet"
         /*onTitleTouchTap={handleTouchTap}*/
-        iconElementLeft={<IconButton><NavigationClose /></IconButton>}
+        iconElementLeft={this.props.isAuthorised == null ?
+          <IconButton><CircularProgress color='white' size={25} thickness={2} /></IconButton> :
+          <IconButton onClick={this.props.handlePower}>
+              {this.props.isAuthorised ? <NavigationClose />
+                  : <PowerSettingsNew />}
+            </IconButton>}
         iconElementRight={this.props.isAuthorised ?
           <Logged handleOpenAboutModal={this.props.handleOpenAboutModal}
-            handleOpenEditModal={this.props.handleOpenEditModal}
+            handleOpenAddModal={this.props.handleOpenAddModal}
             handleRefresh={this.props.handleRefresh} />
-          : ""/*<Login />*/}
+          : <div></div>}
       />
     );
   }
