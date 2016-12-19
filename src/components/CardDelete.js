@@ -1,14 +1,10 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
+import NavigationClose from 'material-ui/svg-icons/navigation/close';
+import ActionDelete from 'material-ui/svg-icons/action/delete';
 import { Grid, Image, Header } from 'semantic-ui-react';
-
-import icon_cc from '../img/credit_card.jpg';
-import icon_pwd from '../img/password.jpg';
-import icon_qr from '../img/qr_code.png';
-import icon_2fa from '../img/2fa.png';
-import icon_safecoin from '../img/safecoin.png';
-import icon_unknown from '../img/unknown.png';
+import { ItemTypes } from '../common';
 
 const customContentStyle = {
   width: '50%',
@@ -21,43 +17,23 @@ export default class CardDelete extends React.Component {
     const actions = [
       <RaisedButton
         label="Cancel"
-        primary={true}
+        primary={false}
+        icon={<NavigationClose />}
         onTouchTap={this.props.handleClose}
       />,
       <RaisedButton
         label="Delete"
-        primary={false}
+        primary={true}
+        icon={<ActionDelete />}
         onTouchTap={this.props.handleSubmit}
       />,
     ];
 
-    var img, meta;
+    let img, meta, label;
     if (this.props.selected_item != null) {
-      switch (this.props.selected_item.type) {
-        case 0:
-          img = <Image floated='left' size='tiny' src={icon_cc} />
-          meta = "Credit Card";
-          break;
-        case 1:
-          img = <Image floated='left' size='tiny' src={icon_pwd} />
-          meta = "Password";
-          break;
-        case 2:
-          img = <Image floated='left' size='tiny' src={icon_qr} />
-          meta = "Priv/Pub Key";
-          break;
-        case 3:
-          img = <Image floated='left' size='tiny' src={icon_2fa} />
-          meta = "2FA Codes";
-          break;
-        case 4:
-          img = <Image floated='left' size='tiny' src={icon_safecoin} />
-          meta = "Safecoin Wallet";
-          break;
-        default:
-          img = <Image floated='left' size='tiny' src={icon_unknown} />
-          meta = "";
-      }
+      img = <Image floated='left' size='tiny' src={ItemTypes[this.props.selected_item.type].icon} />
+      meta = ItemTypes[this.props.selected_item.type].title;
+      label = this.props.selected_item.label;
     }
 
     return (
@@ -78,7 +54,7 @@ export default class CardDelete extends React.Component {
                   <Header.Subheader>
                     {meta}
                   </Header.Subheader>
-                  {(this.props.selected_item == null ? "" : this.props.selected_item.label)}
+                  {label}
                 </Header.Content>
               </Header>
             </Grid.Column>

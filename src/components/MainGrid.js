@@ -9,8 +9,17 @@ import CardAdd from './CardAdd.js';
 import CardDelete from './CardDelete.js';
 import AppMenu from './AppMenu.js';
 import AboutView from './AboutView.js';
-import {authoriseApp, isTokenValid, loadData, saveData} from '../storage.js';
-//import {file_content} from '../../misc/sample-data.js';
+
+function loadStorage() {
+  if (process.env.REACT_APP_SAFENET_OFF === "1") {
+    console.log('SAFE_NET_OFF env var detected. Working with data in memory only');
+    return require('../storage-in-memory.js');
+  } else {
+    return require('../storage.js');
+  }
+}
+
+var {authoriseApp, isTokenValid, loadData, saveData} = loadStorage();
 
 // TODO: move this to a config file
 const app = {
@@ -26,7 +35,7 @@ export default class MainGrid extends React.Component {
     super(props);
 
     this.state = {
-      isAuthorised: null,
+      isAuthorised: false,
       data: {},
       view_modal: false,
       edit_modal: false,
@@ -69,7 +78,6 @@ export default class MainGrid extends React.Component {
 
   componentWillMount() {
     this.requestAuthorisation();
-//    this.setState({isAuthorised: true, data: file_content});
   }
 
   componentDidMount() {
@@ -132,7 +140,7 @@ export default class MainGrid extends React.Component {
       }, (err) => {
         console.log("Failed refreshing data:", err);
       })
-    this.handleOpenSnack("List of items re-loaded from the SAFE network");
+    this.handleOpenSnack("List of items reloaded from the SAFE network");
   }
 
   storeData(data) {
@@ -153,7 +161,7 @@ export default class MainGrid extends React.Component {
   };
 
   handleOpenEditModal(index) {
-    if (index != null && this.state.data[index].type === 2) { // JUST FOR DEMO
+    if (index != null) {
       this.setState({edit_modal: true, selected_item: index});
     }
   };
@@ -168,7 +176,6 @@ export default class MainGrid extends React.Component {
       if (this.state.selected_item == null) {
         // then add a new item
         newItem.id = 100; // TODO: this needs to be reviewed
-        newItem.type = 2; // TODO: the type shall be provided
         newItem.index = 1000; // TODO: the index needs to be calculated, or assign null and make null the last
         updatedData.push(newItem);
       } else {
@@ -176,9 +183,7 @@ export default class MainGrid extends React.Component {
         updatedData[this.state.selected_item].data = newItem.data;
       }
       this.storeData(updatedData)
-        .then(() => {console.log("New item stored", newItem)})
-//        this.setState({data: updatedData});
-        this.handleOpenSnack("Item saved in the SAFE network");
+        .then(() => {this.handleOpenSnack("Item saved in the SAFE network")})
     }
     this.setState({edit_modal: false, selected_item: null});
   };
@@ -192,9 +197,7 @@ export default class MainGrid extends React.Component {
   };
 
   handleSubmitAddModal(type) {
-    if (type === 2) { // JUST FOR DEMO
-      this.setState({selected_type: type, add_modal: false, edit_modal: true});
-    }
+    this.setState({selected_type: type, add_modal: false, edit_modal: true});
   };
 
   handleOpenDeleteModal(index) {
@@ -212,8 +215,6 @@ export default class MainGrid extends React.Component {
       .then(() => {this.handleOpenSnack("Item deleted from the SAFE network")},
       (err) => {this.handleOpenSnack("Failed to delete item")})
 
-//    this.setState({data: updatedData});
-//    this.handleOpenSnack("Item deleted");
     this.setState({delete_modal: false, selected_item: null});
   };
 

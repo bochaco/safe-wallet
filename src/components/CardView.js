@@ -1,12 +1,19 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
-import { Grid, Segment, Image, Header, Icon, Container } from 'semantic-ui-react'
+import NavigationClose from 'material-ui/svg-icons/navigation/close';
+import { Grid, Image, Header, Icon, Container, Segment } from 'semantic-ui-react'
 
 import img_credit_card_view from '../img/credit_card3.jpg';
 import img_pubkey from '../img/qr_pubkey.png';
 import img_privkey from '../img/qr_privkey.png';
 
+import icon_cc from '../img/credit_card.jpg';
+import icon_pwd from '../img/password.jpg';
+import icon_qr from '../img/qr_code.png';
+import icon_2fa from '../img/2fa.png';
+import icon_safecoin from '../img/safecoin.png';
+import icon_unknown from '../img/unknown.png';
 
 export default class CardView extends React.Component {
   render() {
@@ -14,26 +21,36 @@ export default class CardView extends React.Component {
       <RaisedButton
         label="Close"
         primary={true}
+        icon={<NavigationClose />}
         onTouchTap={this.props.handleClose}
       />,
     ];
 
-    var content = "";
+    var content = "", icon="";
     if (this.props.selected_item != null) {
       switch (this.props.selected_item.type) {
         case 0:
           content = <CreditCardView data={this.props.selected_item.data} />;
+          icon = <Image size='mini' src={icon_cc} />;
           break;
         case 1:
           content = <PasswordView data={this.props.selected_item.data} />;
+            icon = <Image size='mini' src={icon_pwd} />;
           break;
         case 2:
           content = <PrivPubKeysView data={this.props.selected_item.data} />;
+          icon = <Image size='mini' src={icon_qr} />;
           break;
         case 3:
           content = <TwoFAView data={this.props.selected_item.data} />;
+          icon = <Image size='mini' src={icon_2fa} />;
+          break;
+        case 4:
+          //content = <Safecoin data={this.props.selected_item.data} />;
+          icon = <Image size='mini' src={icon_safecoin} />;
           break;
         default:
+          icon = <Image size='mini' src={icon_unknown} />;
           break;
       }
     }
@@ -41,7 +58,13 @@ export default class CardView extends React.Component {
     return (
       <div>
         <Dialog
-          title={(this.props.selected_item == null) ? "" : this.props.selected_item.label}
+          title={
+            <Header as='h2'>
+              {icon}
+              {(this.props.selected_item == null)
+                ? "" : " " + this.props.selected_item.label}
+            </Header>
+          }
           actions={actions}
           modal={false}
           contentStyle={{textAlign: 'center'}}
@@ -67,7 +90,7 @@ class PasswordView extends React.Component {
     ));
 
     return (
-      <Grid columns='equal' divided={QAs.length > 0 ? 'vertically' : ''}>
+      <Grid columns='equal' divided={QAs.length > 0 ? 'vertically' : false}>
       <Grid.Row>
         <Grid.Column>
           <Header>
@@ -153,7 +176,7 @@ class CreditCardView extends React.Component {
             <Header>
               <Icon name='protect' color="brown" />
               <Header.Content>
-                Security Code: {this.props.data.ccv}
+                Security Code: {this.props.data.cvv}
               </Header.Content>
             </Header>
             <Header>
@@ -171,17 +194,36 @@ class CreditCardView extends React.Component {
 
 class TwoFAView extends React.Component {
   render() {
-    let twoFAcodes = this.props.data.map((code, i) => (
-      <Grid.Column key={i}>
-        <Segment textAlign="center" compact secondary>{code}</Segment>
-      </Grid.Column>
-    ));
+    let twoFAcodes = [];
+    if (this.props.data) {
+      const numberOfCols = 4;
+      let row_codes = [];
+      let max = (numberOfCols * Math.ceil(this.props.data.length / numberOfCols));
+      for (let i=0; i < max; i++) {
+        row_codes.push(
+          <Grid.Column key={2*i+1}>
+            {this.props.data[i] ?
+            <Segment color="violet" size="big" textAlign="center" secondary>
+              {this.props.data[i]}
+            </Segment>
+            : ''}
+          </Grid.Column>
+        );
+
+        if (i > 0 && ((i % numberOfCols === numberOfCols - 1) || i === max-1)) {
+          twoFAcodes.push(
+            <Grid.Row key={2*i}>
+              {row_codes}
+            </Grid.Row>
+          );
+          row_codes = [];
+        }
+      }
+    }
 
     return (
       <Grid columns='equal'>
-        <Grid.Row columns={6}>
-          {twoFAcodes}
-        </Grid.Row>
+        {twoFAcodes}
       </Grid>
     );
   }

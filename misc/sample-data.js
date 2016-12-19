@@ -1,14 +1,14 @@
-/* type: 0=Credit Card, 1=Password, 2=Priv/Pub Key, 3=2FA Codes */
+/* Sample data only for testing or dev tasks */
 
 const file_content =
 [
   {id: 10, type: 0, index: 1, label: "My prepaid VISA card from Bank 'A'",
     data: {
-      ccv: "987",
+      cvv: "987",
       pin: "1234",
-      number: "[1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8]",
+      number: "1234567812345678",
       name: "CARDHOLDER NAME",
-      expiry_month: 7,
+      expiry_month: 3,
       expiry_year: 2020,
       issuer: "BSBC",
       network: "VISA",
@@ -46,7 +46,7 @@ const file_content =
   },
   {id: 14, type: 3, index: 6, label: "Bank 'A' 2FA emergency codes",
     data: [
-      123456, 987654, 123456, 987654, 123456, 987654, 123456, 987654, 123456, 987654
+      123456, 287654, 323456, 487654, 523456, 687654, 723456, 887654, 923456, 107654
     ]
   },
   {id: 23, type: 1, index: 7, label: "myusername@gmail.com",

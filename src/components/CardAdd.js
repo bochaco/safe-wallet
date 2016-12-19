@@ -1,28 +1,14 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
+import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import { List, Image } from 'semantic-ui-react'
-
-import icon_cc from '../img/credit_card.jpg';
-import icon_pwd from '../img/password.jpg';
-import icon_qr from '../img/qr_code.png';
-import icon_2fa from '../img/2fa.png';
-import icon_safecoin from '../img/safecoin.png';
+import { ItemTypes } from '../common';
 
 const customContentStyle = {
   width: '30%',
   maxWidth: 'none',
   textAlign: 'center',
-};
-
-const ItemTypesEnum = {
-  CreditCard: 0,
-  Password: 1,
-  PrivPubKey: 2,
-  TwoFACodes: 3,
-  SafecoinWallet: 4,
-  Notes: 5,
-  Contatcs: 6
 };
 
 export default class CardAdd extends React.Component {
@@ -31,16 +17,9 @@ export default class CardAdd extends React.Component {
       <RaisedButton
         label="Cancel"
         primary={true}
+        icon={<NavigationClose />}
         onTouchTap={this.props.handleClose}
       />,
-    ];
-
-    const options = [
-      {type: ItemTypesEnum.CreditCard, icon: icon_cc, text: "Credit Card"},
-      {type: ItemTypesEnum.Password, icon: icon_pwd, text: "Password"},
-      {type: ItemTypesEnum.PrivPubKey, icon: icon_qr, text: "Priv/Pub Key"},
-      {type: ItemTypesEnum.TwoFACodes, icon: icon_2fa, text: "2FA Codes"},
-      {type: ItemTypesEnum.SafecoinWallet, icon: icon_safecoin, text: "Safecoin Wallet"},
     ];
 
     return (
@@ -55,12 +34,12 @@ export default class CardAdd extends React.Component {
           autoScrollBodyContent={true}
         >
           <List selection size='large' animated verticalAlign='middle'>
-            {options.map((option, index) => (
+            {Object.keys(ItemTypes).map((index) => (
                 <List.Item key={index}
-                  onClick={() => {this.props.handleSubmit(option.type)}}>
-                  <Image size='mini' src={option.icon} />
+                  onClick={() => {this.props.handleSubmit(ItemTypes[index].type)}}>
+                  <Image size='mini' src={ItemTypes[index].icon} />
                   <List.Content>
-                    <List.Header>{option.text}</List.Header>
+                    <List.Header>{ItemTypes[index].title}</List.Header>
                   </List.Content>
                 </List.Item>
             ))}

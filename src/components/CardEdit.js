@@ -2,10 +2,11 @@ import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
-import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem';
-import DatePicker from 'material-ui/DatePicker';
-import { Grid, Segment,  Button, List } from 'semantic-ui-react'
+import NavigationClose from 'material-ui/svg-icons/navigation/close';
+import NavigationCheck from 'material-ui/svg-icons/navigation/check';
+import ContentAdd from 'material-ui/svg-icons/content/add';
+import { Grid, Button, List, Header, Image } from 'semantic-ui-react'
+import { Constants, ItemTypes } from '../common';
 
 const styles = {
   qaList: {
@@ -13,36 +14,81 @@ const styles = {
     overflowY: 'auto',
   },
   customWidth: {
-      width: 150,
+    width: 100,
+  },
+  tinyWidth: {
+    width: 90,
+  },
+  twoFACodeField: {
+    width: 70,
+  },
+  dialogBox: {
+    textAlign: 'center',
   },
 };
 
+class DialogBox extends React.Component {
+  render() {
+    const actions = [
+      <RaisedButton
+        label="Cancel"
+        primary={false}
+        icon={<NavigationClose />}
+        onTouchTap={this.props.handleClose}
+      />,
+      <RaisedButton
+        label={this.props.selected_item ? "Save" : "Add"}
+        primary={true}
+        icon={this.props.selected_item ? <NavigationCheck /> : <ContentAdd />}
+        onTouchTap={this.props.handleSubmit}
+      />
+    ];
+
+    return (
+      <Dialog
+        title={
+          <Header as='h2'>
+            <Image size='mini' src={this.props.icon} />
+            {this.props.title}
+          </Header>
+        }
+        actions={actions}
+        modal={true}
+        contentStyle={styles.dialogBox}
+        open={this.props.open}
+      >
+        {this.props.children}
+      </Dialog>
+    )
+  }
+}
+
 export default class CardEdit extends React.Component {
   render() {
-    var content = "";
+    let content = null;
     switch (this.props.selected_item ? this.props.selected_item.type : this.props.selected_type) {
-      case 0:
+      case Constants.TYPE_CREDIT_CARD:
         content = <CreditCardEdit
                     open={this.props.open}
                     selected_item={this.props.selected_item}
                     handleClose={this.props.handleClose}
                     handleSubmit={this.props.handleSubmit} />
         break;
-      case 1:
+      case Constants.TYPE_PASSWORD:
         content = <PasswordEdit
                     open={this.props.open}
                     selected_item={this.props.selected_item}
                     handleClose={this.props.handleClose}
                     handleSubmit={this.props.handleSubmit} />
         break;
-      case 2:
+      case Constants.TYPE_PRIV_PUB_KEY:
         content = <PrivPubKeysEdit
                     open={this.props.open}
                     selected_item={this.props.selected_item}
                     handleClose={this.props.handleClose}
                     handleSubmit={this.props.handleSubmit} />
         break;
-      case 3:
+      case Constants.TYPE_2FA_CODES:
         content = <TwoFAEdit
                     open={this.props.open}
                     selected_item={this.props.selected_item}
@@ -54,9 +100,7 @@ export default class CardEdit extends React.Component {
     }
 
     return (
-      <div>
-        {content}
-      </div>
+      <div>{content}</div>
     );
   }
 }
@@ -70,6 +114,7 @@ class PrivPubKeysEdit extends React.Component {
 
   handleSubmit() {
     let updatedItem = {
+      type: Constants.TYPE_PRIV_PUB_KEY,
       label: this.refs.labelInput.input.value,
       data: {
         pk: this.refs.pkInput.input.value,
@@ -81,27 +126,11 @@ class PrivPubKeysEdit extends React.Component {
   };
 
   render() {
-    const actions = [
-      <RaisedButton
-        label="Cancel"
-        primary={true}
-        onTouchTap={this.props.handleClose}
-      />,
-      <RaisedButton
-        label={this.props.selected_item ? "Save" : "Add"}
-        primary={false}
-        onTouchTap={this.handleSubmit}
-      />,
-    ];
-
     return (
-      <Dialog
-        title="Priv/Pub Key"
-        actions={actions}
-        modal={true}
-        contentStyle={{textAlign: 'center'}}
-        open={this.props.open}
-      >
+      <DialogBox {...this.props}
+          handleSubmit={this.handleSubmit}
+          icon={ItemTypes[Constants.TYPE_PRIV_PUB_KEY].icon}
+          title={ItemTypes[Constants.TYPE_PRIV_PUB_KEY].title}>
         <Grid>
           <Grid.Row>
             <Grid.Column width={7}>
@@ -151,7 +180,7 @@ class PrivPubKeysEdit extends React.Component {
             </Grid.Column>
           </Grid.Row>
         </Grid>
-      </Dialog>
+      </DialogBox>
     );
   }
 }
@@ -160,94 +189,125 @@ class PasswordEdit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      qas: null
+      qas: []
     }
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleQChange = this.handleQChange.bind(this);
+    this.handleAChange = this.handleAChange.bind(this);
     this.handleAddQA = this.handleAddQA.bind(this);
     this.handleRemoveQA = this.handleRemoveQA.bind(this);
   }
 
+  componentWillMount() {
+    if (this.props.selected_item) {
+      this.setState({qas: this.props.selected_item.data.questions.slice()})
+    }
+  }
+
+  componentWillUpdate(newProps) {
+    if (this.refs.newQInput) {
+      this.refs.newQInput.input.value = "";
+      this.refs.newAInput.input.value = "";
+    }
+  }
+
   handleSubmit() {
     let updatedItem = {
+      type: Constants.TYPE_PASSWORD,
       label: this.refs.labelInput.input.value,
       data: {
         username: this.refs.usernameInput.input.value,
         password: this.refs.passwordInput.input.value,
-        questions: [],/*this.refs.questionsInput.input.value,*/
+        questions: this.state.qas,
       }
     }
     this.props.handleSubmit(updatedItem);
   };
 
-  handleAddQA(event) {
-      //console.log("ADD", Array.prototype.indexOf.call(event.target.parentNode.childNodes,event.target));
+  handleQChange(index, e) {
+    let updatedQAs = this.state.qas.slice();
+    updatedQAs[index].q = e.target.value;
+    this.setState({qas: updatedQAs});
   }
 
-  handleRemoveQA(qas, index) {
-    //console.log("AA", index, qas);
-/*    let updatedQAs = qas.slice(0);
+  handleAChange(index, e) {
+    let updatedQAs = this.state.qas.slice();
+    updatedQAs[index].a = e.target.value;
+    this.setState({qas: updatedQAs});
+  }
+
+  handleAddQA() {
+    let updatedQAs = this.state.qas.slice();
+    updatedQAs.push({
+      q: this.refs.newQInput.input.value,
+      a: this.refs.newAInput.input.value,
+    });
+    this.setState({qas: updatedQAs});
+  }
+
+  handleRemoveQA(index) {
+    let updatedQAs = this.state.qas.slice();
     updatedQAs.splice(index, 1);
-    //console.log("AA", qas);
-    let updatedItem = {
-      label: this.refs.labelInput.input.value,
-      data: {
-        username: this.refs.usernameInput.input.value,
-        password: this.refs.passwordInput.input.value,
-        questions: updatedQAs,
-      }
-    }
-    //console.log("AA", updatedItem);
-    this.props.handleChange(updatedItem);*/
+    this.setState({qas: updatedQAs});
   }
 
   render() {
-    const actions = [
-      <RaisedButton
-        label="Cancel"
-        primary={true}
-        onTouchTap={this.props.handleClose}
-      />,
-      <RaisedButton
-        label={this.props.selected_item ? "Save" : "Add"}
-        primary={false}
-        onTouchTap={this.handleSubmit}
-      />,
-    ];
-
-    /* Let's create an item for each QA */
-    const QAs = !this.props.selected_item ? "" :
-      this.props.selected_item.data.questions.map((qa, index) => (
+    const QAs =
+      <List style={styles.qaList}>
+      {this.state.qas.map((qa, index) => (
         <List.Item key={index}>
           <List horizontal>
             <List.Item>
               <Button inverted circular size='mini' color='red' icon='remove'
-                onClick={ () => {this.handleRemoveQA(this.props.selected_item.data.questions, index)} } />
+                onClick={ () => {this.handleRemoveQA(index)} } />
             </List.Item>
             <List.Item>
               <TextField
                 floatingLabelText={"Question #" + (index+1)}
                 defaultValue={qa.q}
-                ref={'q' + index + 'Input'}
+                onChange={(e) => {this.handleQChange(index, e)}}
               />
             </List.Item>
             <List.Item>
               <TextField
                 floatingLabelText="Answer"
                 defaultValue={qa.a}
-                ref={'a' + index + 'Input'}
+                onChange={(e) => {this.handleAChange(index, e)}}
               />
             </List.Item>
           </List>
         </List.Item>
-      ));
+      ))}
+      <List.Item>
+        <List horizontal>
+          <List.Item>
+            <Button inverted circular size='mini' color='green' icon='add'
+              onClick={this.handleAddQA}
+            />
+          </List.Item>
+          <List.Item>
+            <TextField
+              defaultValue=""
+              floatingLabelText="Question"
+              ref='newQInput'
+            />
+          </List.Item>
+          <List.Item>
+            <TextField
+              defaultValue=""
+              floatingLabelText="Answer"
+              ref='newAInput'
+            />
+          </List.Item>
+        </List>
+      </List.Item>
+    </List>;
 
     return (
-      <Dialog
-        title="Password"
-        actions={actions}
-        modal={true}
-        contentStyle={{textAlign: 'center'}}
-        open={this.props.open}
+      <DialogBox {...this.props}
+          handleSubmit={this.handleSubmit}
+          icon={ItemTypes[Constants.TYPE_PASSWORD].icon}
+          title={ItemTypes[Constants.TYPE_PASSWORD].title}
       >
         <Grid>
           <Grid.Row>
@@ -284,35 +344,11 @@ class PasswordEdit extends React.Component {
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={16}>
-              <List style={styles.qaList}>
-                {QAs}
-                {/* Then we place the one to add a new item */}
-                <List.Item>
-                  <List horizontal>
-                    <List.Item>
-                      <Button inverted circular size='mini' color='green' icon='add'
-                        onClick={this.handleAddQA} />
-                    </List.Item>
-                    <List.Item>
-                      <TextField
-                        floatingLabelText="Question"
-                        ref='newQInput'
-                      />
-                    </List.Item>
-                    <List.Item>
-                      <TextField
-                        floatingLabelText="Answer"
-                        ref='newAInput'
-                      />
-                    </List.Item>
-                  </List>
-                </List.Item>
-
-              </List>
+              {QAs}
             </Grid.Column>
           </Grid.Row>
         </Grid>
-      </Dialog>
+      </DialogBox>
     );
   }
 }
@@ -326,14 +362,15 @@ class CreditCardEdit extends React.Component {
 
   handleSubmit() {
     let updatedItem = {
+      type: Constants.TYPE_CREDIT_CARD,
       label: this.refs.labelInput.input.value,
       data: {
-        ccv: this.refs.ccvInput.input.value,
+        cvv: this.refs.cvvInput.input.value,
         pin: this.refs.pinInput.input.value,
         number: this.refs.numberInput.input.value,
         name: this.refs.nameInput.input.value,
-        expiry_month: this.refs.expiry_monthInput.input.value,
-        expiry_year: this.refs.expiry_yearInput.input.value,
+        expiry_month: this.refs.monthInput.input.value,
+        expiry_year: this.refs.yearInput.input.value,
         issuer: this.refs.issuerInput.input.value,
         network: this.refs.networkInput.input.value,
       }
@@ -342,172 +379,183 @@ class CreditCardEdit extends React.Component {
   };
 
   render() {
-/*    const monthItems = [
-      <MenuItem key={1} value={1} primaryText="01" />,
-      <MenuItem key={2} value={4} primaryText="04" />,
-      <MenuItem key={3} value={6} primaryText="06" />,
-      <MenuItem key={4} value={7} primaryText="07" />,
-      <MenuItem key={5} value={8} primaryText="08" />,
-    ];*/
-    const yearItems = [
-      <MenuItem key={1} value={2010} primaryText="2010" />,
-      <MenuItem key={2} value={2020} primaryText="2020" />,
-      <MenuItem key={3} value={2030} primaryText="2030" />,
-      <MenuItem key={4} value={2040} primaryText="2040" />,
-      <MenuItem key={5} value={2050} primaryText="2050" />,
-    ];
-
-    const actions = [
-      <RaisedButton
-        label="Cancel"
-        primary={true}
-        onTouchTap={this.props.handleClose}
-      />,
-      <RaisedButton
-        label={this.props.selected_item ? "Save" : "Add"}
-        primary={false}
-        onTouchTap={this.handleSubmit}
-      />,
-    ];
-/*    const options = [
-      { text: 'All', value: 'all' },
-      { text: 'Articles', value: 'articles' },
-      { text: 'Products', value: 'products' },
-    ];*/
-
     return (
-      <Dialog
-        title="Credit Card"
-        actions={actions}
-        modal={true}
-        contentStyle={{textAlign: 'center'}}
-        open={this.props.open}
+      <DialogBox {...this.props}
+          handleSubmit={this.handleSubmit}
+          icon={ItemTypes[Constants.TYPE_CREDIT_CARD].icon}
+          title={ItemTypes[Constants.TYPE_CREDIT_CARD].title}
       >
-      <Grid>
-        <Grid.Row columns={2}>
-          <Grid.Column width={7}>
-            <TextField
-              fullWidth={true}
-              floatingLabelText="Label"
-              defaultValue={this.props.selected_item ? this.props.selected_item.label : ""}
-              ref='labelInput'
-            />
-          </Grid.Column>
-          <Grid.Column width={3}>
-            <TextField
-              fullWidth={true}
-              floatingLabelText="Network/Type"
-              defaultValue={this.props.selected_item ? this.props.selected_item.data.network : ""}
-              ref='networkInput'
-            />
-          </Grid.Column>
-        </Grid.Row>
+        <Grid>
+          <Grid.Row columns={5}>
+            <Grid.Column width={7}>
+              <TextField
+                fullWidth={true}
+                floatingLabelText="Label"
+                defaultValue={this.props.selected_item ? this.props.selected_item.label : ""}
+                ref='labelInput'
+              />
+            </Grid.Column>
+            <Grid.Column width={1}>
+            </Grid.Column>
+            <Grid.Column width={2}>
+              <TextField
+                style={styles.customWidth}
+                floatingLabelText="Network/Type"
+                defaultValue={this.props.selected_item ? this.props.selected_item.data.network : ""}
+                ref='networkInput'
+              />
+            </Grid.Column>
+            <Grid.Column width={1}>
+            </Grid.Column>
+            <Grid.Column width={5}>
+              <TextField
+                fullWidth={true}
+                floatingLabelText="Issuer"
+                defaultValue={this.props.selected_item ? this.props.selected_item.data.issuer : ""}
+                ref='issuerInput'
+              />
+            </Grid.Column>
+          </Grid.Row>
 
-        <Grid.Row columns={3}>
-          <Grid.Column width={7}>
-            <TextField
-              fullWidth={true}
-              floatingLabelText="Number"
-              defaultValue={this.props.selected_item ? this.props.selected_item.data.number : ""}
-              ref='numberInput'
-            />
-          </Grid.Column>
-          <Grid.Column textAlign='left' width={3}>
+          <Grid.Row columns={3}>
+            <Grid.Column width={6}>
+              <TextField
+                fullWidth={true}
+                floatingLabelText="Number"
+                defaultValue={this.props.selected_item ? this.props.selected_item.data.number : ""}
+                ref='numberInput'
+              />
+            </Grid.Column>
+            <Grid.Column width={1}>
+            </Grid.Column>
+            <Grid.Column width={6}>
+              <List horizontal>
+                <List.Item>
+                  <List.Content>
+                    <TextField
+                      style={styles.tinyWidth}
+                      floatingLabelText="Expiry month"
+                      defaultValue={this.props.selected_item ? this.props.selected_item.data.expiry_month : ""}
+                      ref='monthInput'
+                    />
+                  </List.Content>
+                </List.Item>
+                <List.Item>
+                  <List.Content>
+                    <List.Header>/</List.Header>
+                  </List.Content>
+                </List.Item>
+                <List.Item>
+                  <List.Content>
+                    <TextField
+                      style={styles.customWidth}
+                      floatingLabelText="Expiry year"
+                      defaultValue={this.props.selected_item ? this.props.selected_item.data.expiry_year : ""}
+                      ref='yearInput'
+                    />
+                  </List.Content>
+                </List.Item>
+              </List>
+            </Grid.Column>
+          </Grid.Row>
 
-            <DatePicker
-              hintText="Custom date format"
-              firstDayOfWeek={0}
-            />
-          </Grid.Column>
-          <Grid.Column textAlign='left' width={3}>
-            <SelectField
-
-              value={this.props.selected_item ? this.props.selected_item.data.expiry_year : ""}
-              floatingLabelText="Expiry Month"
-              ref='expiry_yearInput'
-            >
-              {yearItems}
-            </SelectField>
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row columns={3}>
-          <Grid.Column width={6}>
-            <TextField
-              floatingLabelText="Cardholder's Name"
-              defaultValue={this.props.selected_item ? this.props.selected_item.data.name : ""}
-              ref='nameInput'
-            />
-          </Grid.Column>
-          <Grid.Column width={3}>
-            <TextField
-              floatingLabelText="CCV"
-              defaultValue={this.props.selected_item ? this.props.selected_item.data.ccv : ""}
-              ref='ccvInput'
-            />
-          </Grid.Column>
-          <Grid.Column width={3}>
-            <TextField
-              floatingLabelText="PIN"
-              defaultValue={this.props.selected_item ? this.props.selected_item.data.pin : ""}
-              ref='PINInput'
-            />
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
-
-      </Dialog>
+          <Grid.Row columns={4}>
+            <Grid.Column width={6}>
+              <TextField
+                floatingLabelText="Cardholder's Name"
+                defaultValue={this.props.selected_item ? this.props.selected_item.data.name : ""}
+                ref='nameInput'
+              />
+            </Grid.Column>
+            <Grid.Column width={2}>
+            </Grid.Column>
+            <Grid.Column width={3}>
+              <TextField
+                style={styles.tinyWidth}
+                floatingLabelText="CVV"
+                defaultValue={this.props.selected_item ? this.props.selected_item.data.cvv : ""}
+                ref='cvvInput'
+              />
+            </Grid.Column>
+            <Grid.Column width={3}>
+              <TextField
+                style={styles.tinyWidth}
+                floatingLabelText="PIN"
+                defaultValue={this.props.selected_item ? this.props.selected_item.data.pin : ""}
+                ref='pinInput'
+              />
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
+      </DialogBox>
     );
   }
 }
 
 class TwoFAEdit extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleSubmit() {
+    let codes = [];
+    for (let i=0; i<Constants.MAX_NUMBER_2FA_CODES; i++) {
+      codes.push(this.refs['codeInput' + i].input.value);
+    }
+    let updatedItem = {
+      type: Constants.TYPE_2FA_CODES,
+      label: this.refs.labelInput.input.value,
+      data: codes,
+    }
+    this.props.handleSubmit(updatedItem);
+  };
+
   render() {
-    const actions = [
-      <RaisedButton
-        label="Cancel"
-        primary={true}
-        onTouchTap={this.props.handleClose}
-      />,
-      <RaisedButton
-        label={this.props.selected_item ? "Save" : "Add"}
-        primary={false}
-        onTouchTap={this.handleSubmit}
-      />,
-    ];
+    let twoFAcodes = [], row_codes = [];
+    const numberOfCols = 6;
+    for (let i=0; i < Constants.MAX_NUMBER_2FA_CODES; i++) {
+      row_codes.push(
+        <Grid.Column key={2*i+1}>
+          <TextField style={styles.twoFACodeField}
+            floatingLabelText={"Code #" + (i+1)}
+            defaultValue={this.props.selected_item ? this.props.selected_item.data[i] : ""}
+            ref={'codeInput' + i}
+          />
+        </Grid.Column>
+      );
+
+      if (i > 0 && ((i % numberOfCols === numberOfCols - 1) || i === Constants.MAX_NUMBER_2FA_CODES-1)) {
+        twoFAcodes.push(
+          <Grid.Row key={2*i}>
+            {row_codes}
+          </Grid.Row>
+        );
+        row_codes = [];
+      }
+    }
 
     return (
-      <Dialog
-        title="Credit Card"
-        actions={actions}
-        modal={true}
-        contentStyle={{textAlign: 'center'}}
-        open={this.props.open}
+      <DialogBox {...this.props}
+          handleSubmit={this.handleSubmit}
+          icon={ItemTypes[Constants.TYPE_2FA_CODES].icon}
+          title={ItemTypes[Constants.TYPE_2FA_CODES].title}
       >
-      <Grid columns='equal'>
-        <Grid.Row>
-          <Grid.Column >
-            <Segment textAlign="center" compact secondary>123456</Segment>
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row>
-          <Grid.Column >
-            <Segment textAlign="center" compact secondary>987654</Segment>
-          </Grid.Column>
-          <Grid.Column>
-            <Segment textAlign="center" compact secondary>123456</Segment>
-          </Grid.Column>
-          <Grid.Column >
-            <Segment textAlign="center" compact secondary>987654</Segment>
-          </Grid.Column>
-          <Grid.Column >
-            <Segment textAlign="center" compact secondary>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Segment>
-          </Grid.Column>
-          <Grid.Column >
-            <Segment textAlign="center" compact secondary>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Segment>
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
-    </Dialog>
+        <Grid columns='equal'>
+          <Grid.Row>
+            <Grid.Column width={7}>
+              <TextField
+                fullWidth={true}
+                floatingLabelText="Label"
+                defaultValue={this.props.selected_item ? this.props.selected_item.label : ""}
+                ref='labelInput'
+              />
+            </Grid.Column>
+          </Grid.Row>
+          {twoFAcodes}
+        </Grid>
+      </DialogBox>
     );
   }
 }
