@@ -9,7 +9,8 @@ import CardAdd from './CardAdd.js';
 import CardDelete from './CardDelete.js';
 import AppMenu from './AppMenu.js';
 import AboutView from './AboutView.js';
-import { appInfo } from '../config.js'
+import { appInfo } from '../config.js';
+//import { sample_wallet_data } from '../storage/sample-data.js';
 
 function loadStorage() {
   if (process.env.REACT_APP_SAFENET_OFF === "1") {
@@ -112,7 +113,7 @@ export default class MainGrid extends React.Component {
       .then(loadData)
       .then((parsedData) => {
         this.setState({isAuthorised: true, data: parsedData});
-//        this.storeData(sample_wallet_data); // this is too store the wallet_sample_data
+        //this.storeData(sample_wallet_data); // ONLY FOR TEST!!! this is too store the wallet_sample_data
       }, (err) => {
         this.setState({isAuthorised: false, data: {}});
         console.log("Authentication Failed:", err);

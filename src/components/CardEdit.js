@@ -10,7 +10,7 @@ import { Constants, ItemTypes } from '../common.js';
 
 const styles = {
   qaList: {
-    height: 200,
+    height: 140,
     overflowY: 'auto',
   },
   customWidth: {
@@ -95,12 +95,41 @@ export default class CardEdit extends React.Component {
                     handleClose={this.props.handleClose}
                     handleSubmit={this.props.handleSubmit} />
         break;
+      case Constants.TYPE_SAFECOIN:
+        content = <SafecoinEdit
+                    open={this.props.open}
+                    selected_item={this.props.selected_item}
+                    handleClose={this.props.handleClose}
+                    handleSubmit={this.props.handleSubmit} />
+        break;
       default:
         break;
     }
 
     return (
       <div>{content}</div>
+    );
+  }
+}
+
+class SafecoinEdit extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleSubmit() {
+
+  };
+
+  render() {
+    return (
+      <DialogBox {...this.props}
+          handleSubmit={this.props.handleClose}
+          icon={ItemTypes[Constants.TYPE_SAFECOIN].icon}
+          title={ItemTypes[Constants.TYPE_SAFECOIN].title}>
+      </DialogBox>
     );
   }
 }
@@ -254,54 +283,54 @@ class PasswordEdit extends React.Component {
   render() {
     var QAs =
       <List style={styles.qaList}>
-      {this.state.qas.map((qa, index) => (
-        <List.Item key={qa.q+qa.a}>
+        {this.state.qas.map((qa, index) => (
+          <List.Item key={qa.q+qa.a}>
+            <List horizontal>
+              <List.Item>
+                <TextField
+                  floatingLabelText={"Question #" + (index+1)}
+                  defaultValue={qa.q}
+                  onChange={(e) => {this.handleQChange(index, e)}}
+                />
+              </List.Item>
+              <List.Item>
+                <TextField
+                  floatingLabelText="Answer"
+                  defaultValue={qa.a}
+                  onChange={(e) => {this.handleAChange(index, e)}}
+                />
+              </List.Item>
+              <List.Item>
+                <Button inverted circular size='mini' color='red' icon='remove'
+                  onClick={ () => {this.handleRemoveQA(index)} } />
+              </List.Item>
+            </List>
+          </List.Item>
+        ))}
+        <List.Item>
           <List horizontal>
             <List.Item>
               <TextField
-                floatingLabelText={"Question #" + (index+1)}
-                defaultValue={qa.q}
-                onChange={(e) => {this.handleQChange(index, e)}}
+                defaultValue=""
+                floatingLabelText="Question"
+                ref='newQInput'
               />
             </List.Item>
             <List.Item>
               <TextField
+                defaultValue=""
                 floatingLabelText="Answer"
-                defaultValue={qa.a}
-                onChange={(e) => {this.handleAChange(index, e)}}
+                ref='newAInput'
               />
             </List.Item>
             <List.Item>
-              <Button inverted circular size='mini' color='red' icon='remove'
-                onClick={ () => {this.handleRemoveQA(index)} } />
+              <Button inverted circular size='mini' color='green' icon='add'
+                onClick={this.handleAddQA}
+              />
             </List.Item>
           </List>
         </List.Item>
-      ))}
-      <List.Item>
-        <List horizontal>
-          <List.Item>
-            <TextField
-              defaultValue=""
-              floatingLabelText="Question"
-              ref='newQInput'
-            />
-          </List.Item>
-          <List.Item>
-            <TextField
-              defaultValue=""
-              floatingLabelText="Answer"
-              ref='newAInput'
-            />
-          </List.Item>
-          <List.Item>
-            <Button inverted circular size='mini' color='green' icon='add'
-              onClick={this.handleAddQA}
-            />
-          </List.Item>
-        </List>
-      </List.Item>
-    </List>;
+      </List>;
 
     return (
       <DialogBox {...this.props}
