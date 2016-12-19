@@ -37,7 +37,7 @@ export default class AboutView extends React.Component {
 
               <Item.Content>
                 <Item.Header>SAFE Wallet</Item.Header>
-                <Item.Description>A wallet to manage credit card numbers, passwords, safecoin wallet(s), and many other type of personal information.</Item.Description>
+                <Item.Description>A wallet to manage credit card numbers, passwords, safecoin/altcoins wallet(s), and many other type of personal information.</Item.Description>
                 <Item.Meta>
                   <List>
                   <List.Item>
@@ -48,7 +48,7 @@ export default class AboutView extends React.Component {
                         </List.Content>
                   </List.Item>
                   <List.Item>
-                    Donations are welcome & appreciated!<br/><span fontFamily='Courier New'><b>1KSJhUdDGZz2mx6WBw6Lco8RaPxqzTzRLL</b></span>
+                    Donations are welcome and appreciated!<br/><span fontFamily='Courier New'><b>1KSJhUdDGZz2mx6WBw6Lco8RaPxqzTzRLL</b></span>
                   </List.Item>
                   </List>
                 </Item.Meta>

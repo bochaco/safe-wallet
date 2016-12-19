@@ -154,6 +154,10 @@ class PrivPubKeysEdit extends React.Component {
     this.props.handleSubmit(updatedItem);
   };
 
+  componentDidMount() {
+    this.refs.labelInput.input.focus();
+  }
+
   render() {
     return (
       <DialogBox {...this.props}
@@ -198,8 +202,6 @@ class PrivPubKeysEdit extends React.Component {
               <TextField
                 fullWidth={true}
                 multiLine={false/*TODO: true*/}
-                rows={2}
-                rowsMax={2}
                 floatingLabelText="Balance & Transactions notes"
                 defaultValue={this.props.selected_item ? this.props.selected_item.data.notes : ""}
                 ref='notesInput'
@@ -231,6 +233,10 @@ class PasswordEdit extends React.Component {
     if (this.props.selected_item) {
       this.setState({qas: this.props.selected_item.data.questions.slice()})
     }
+  }
+
+  componentDidMount() {
+    this.refs.labelInput.input.focus();
   }
 
   componentWillUpdate(newProps) {
@@ -389,6 +395,10 @@ class CreditCardEdit extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  componentDidMount() {
+    this.refs.labelInput.input.focus();
+  }
+
   handleSubmit() {
     let updatedItem = {
       type: Constants.TYPE_CREDIT_CARD,
@@ -526,6 +536,10 @@ class TwoFAEdit extends React.Component {
     super(props);
 
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentDidMount() {
+    this.refs.labelInput.input.focus();
   }
 
   handleSubmit() {
