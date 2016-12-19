@@ -252,15 +252,11 @@ class PasswordEdit extends React.Component {
   }
 
   render() {
-    const QAs =
+    var QAs =
       <List style={styles.qaList}>
       {this.state.qas.map((qa, index) => (
-        <List.Item key={index}>
+        <List.Item key={qa.q+qa.a}>
           <List horizontal>
-            <List.Item>
-              <Button inverted circular size='mini' color='red' icon='remove'
-                onClick={ () => {this.handleRemoveQA(index)} } />
-            </List.Item>
             <List.Item>
               <TextField
                 floatingLabelText={"Question #" + (index+1)}
@@ -275,16 +271,15 @@ class PasswordEdit extends React.Component {
                 onChange={(e) => {this.handleAChange(index, e)}}
               />
             </List.Item>
+            <List.Item>
+              <Button inverted circular size='mini' color='red' icon='remove'
+                onClick={ () => {this.handleRemoveQA(index)} } />
+            </List.Item>
           </List>
         </List.Item>
       ))}
       <List.Item>
         <List horizontal>
-          <List.Item>
-            <Button inverted circular size='mini' color='green' icon='add'
-              onClick={this.handleAddQA}
-            />
-          </List.Item>
           <List.Item>
             <TextField
               defaultValue=""
@@ -297,6 +292,11 @@ class PasswordEdit extends React.Component {
               defaultValue=""
               floatingLabelText="Answer"
               ref='newAInput'
+            />
+          </List.Item>
+          <List.Item>
+            <Button inverted circular size='mini' color='green' icon='add'
+              onClick={this.handleAddQA}
             />
           </List.Item>
         </List>

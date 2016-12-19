@@ -36,6 +36,8 @@ const initialState = {
   selected_type: null,
 };
 
+const CHECK_CONNECTION_FREQ = 2000;
+
 export default class MainGrid extends React.Component {
   constructor(props) {
     super(props);
@@ -77,7 +79,7 @@ export default class MainGrid extends React.Component {
   componentDidMount() {
     this.timerID = setInterval(
       () => this.tick(),
-      2000
+      CHECK_CONNECTION_FREQ
     );
   }
 
@@ -110,7 +112,7 @@ export default class MainGrid extends React.Component {
       .then(loadData)
       .then((parsedData) => {
         this.setState({isAuthorised: true, data: parsedData});
-//        this.storeData(file_content);
+//        this.storeData(sample_wallet_data); // this is too store the wallet_sample_data
       }, (err) => {
         this.setState({isAuthorised: false, data: {}});
         console.log("Authentication Failed:", err);
