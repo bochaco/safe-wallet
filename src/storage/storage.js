@@ -1,7 +1,7 @@
 /*
   Helper functions to store data in the SAFEnet
 */
-import {file_content} from '../misc/sample-data.js';
+import {sample_wallet_data} from './sample-data.js';
 
 if (process.env.NODE_ENV !== 'production') {
   require('safe-js/dist/polyfill')
@@ -114,7 +114,7 @@ const _fetchSDataHandle = (id) => {
     }, (err) => {
       // it doesn't exist yet, so let's create the SD
       console.log("SD doesn't exist yet:", err);
-      return _createSData(id, file_content)
+      return _createSData(id, sample_wallet_data)
         .then( (handleId) => {
           console.log("SD just created:", handleId);
           return handleId;

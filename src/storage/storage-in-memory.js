@@ -1,8 +1,8 @@
 /*
   Helper functions to store data in memory needed for demos and dev tasks
 */
-import {file_content} from '../misc/sample-data.js';
-var data = file_content;
+import {sample_wallet_data} from './sample-data.js';
+var data = sample_wallet_data;
 
 export const authoriseApp = (app) => {
   console.log("Authenticating app...");

@@ -6,7 +6,7 @@ import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import NavigationCheck from 'material-ui/svg-icons/navigation/check';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import { Grid, Button, List, Header, Image } from 'semantic-ui-react'
-import { Constants, ItemTypes } from '../common';
+import { Constants, ItemTypes } from '../common.js';
 
 const styles = {
   qaList: {

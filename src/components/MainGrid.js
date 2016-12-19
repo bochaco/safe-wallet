@@ -9,44 +9,38 @@ import CardAdd from './CardAdd.js';
 import CardDelete from './CardDelete.js';
 import AppMenu from './AppMenu.js';
 import AboutView from './AboutView.js';
+import { appInfo } from '../config.js'
 
 function loadStorage() {
   if (process.env.REACT_APP_SAFENET_OFF === "1") {
     console.log('SAFE_NET_OFF env var detected. Working with data in memory only');
-    return require('../storage-in-memory.js');
+    return require('../storage/storage-in-memory.js');
   } else {
-    return require('../storage.js');
+    return require('../storage/storage.js');
   }
 }
 
 var {authoriseApp, isTokenValid, loadData, saveData} = loadStorage();
 
-// TODO: move this to a config file
-const app = {
-  name: 'SAFE Wallet',
-  id: 'safe-wallet.bochaco',
-  version: '0.0.1',
-  vendor: 'bochaco',
-  permissions: ["SAFE_DRIVE_ACCESS", "LOW_LEVEL_API"]
+const initialState = {
+  isAuthorised: false,
+  data: {},
+  view_modal: false,
+  edit_modal: false,
+  add_modal: false,
+  delete_modal: false,
+  about_modal: false,
+  snackbar: false,
+  snackbar_message: '',
+  selected_item: null,
+  selected_type: null,
 };
 
 export default class MainGrid extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      isAuthorised: false,
-      data: {},
-      view_modal: false,
-      edit_modal: false,
-      add_modal: false,
-      delete_modal: false,
-      about_modal: false,
-      snackbar: false,
-      snackbar_message: '',
-      selected_item: null,
-      selected_type: null,
-    }
+    this.state = initialState;
 
     this.handleRefresh = this.handleRefresh.bind(this);
 
@@ -95,17 +89,7 @@ export default class MainGrid extends React.Component {
     if (this.state.isAuthorised) {
       isTokenValid()
         .then(() => {}, (err) => {
-          this.setState({
-            isAuthorised: false,
-            data: {},
-            view_modal: false,
-            edit_modal: false,
-            add_modal: false,
-            delete_modal: false,
-            about_modal: false,
-            selected_item: null,
-            selected_type: null,
-          });
+          this.setState(initialState);
           this.handleOpenSnack("Application authorization was revoked")
         })
     }
@@ -122,7 +106,7 @@ export default class MainGrid extends React.Component {
 
   requestAuthorisation() {
     this.setState({isAuthorised: null});
-    authoriseApp(app)
+    authoriseApp(appInfo)
       .then(loadData)
       .then((parsedData) => {
         this.setState({isAuthorised: true, data: parsedData});
@@ -283,13 +267,14 @@ export default class MainGrid extends React.Component {
                     the SAFE Authenticator in order to access your content:
                   </Message.Content>
                   <List as='ul'>
-                    <List.Item as='li'>App Name: SAFE Wallet</List.Item>
-                    <List.Item as='li'>Vendor:   bochaco</List.Item>
-                    <List.Item as='li'>Version:  0.0.1</List.Item>
+                    <List.Item as='li'>App Name: {appInfo.name}</List.Item>
+                    <List.Item as='li'>Vendor:   {appInfo.vendor}</List.Item>
+                    <List.Item as='li'>Version:  {appInfo.version}</List.Item>
                     <List.Item as='li'>Permissions:
                       <List.Item as='ul'>
-                        <List.Item>- SAFE Drive Access</List.Item>
-                        <List.Item>- Low Level API</List.Item>
+                        {appInfo.permissions.map((p, i) => (
+                          <List.Item key={i}>- {p}</List.Item>
+                        ))}
                       </List.Item>
                     </List.Item>
                   </List>

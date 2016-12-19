@@ -4,6 +4,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { Image, List, Item } from 'semantic-ui-react'
 
 import applogo from '../img/app_logo.png';
+import { appInfo } from '../config.js';
 
 const customContentStyle = {
   width: '45%',
@@ -42,7 +43,7 @@ export default class AboutView extends React.Component {
                   <List.Item>
                         <List.Content>
                           <List.Header>&nbsp;</List.Header>
-                          <List.Description>Version 0.0.1</List.Description>
+                          <List.Description>Version {appInfo.version}</List.Description>
                           <List.Description>by <a href="https://safenetforum.org/users/bochaco/activity">@bochaco</a></List.Description>
                         </List.Content>
                   </List.Item>

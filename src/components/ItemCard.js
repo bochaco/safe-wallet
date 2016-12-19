@@ -63,8 +63,8 @@ export default class ItemCard extends React.Component {
     }
 
     return (
-      <Card color={color} >
-        <Card.Content href='#' onClick={this.handleViewAction} >
+      <Card color={color}>
+        <Card.Content style={{cursor: 'pointer'}} onClick={this.handleViewAction}>
           <Card.Meta>
             {img}
             {meta}

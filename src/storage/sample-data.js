@@ -1,6 +1,6 @@
 /* Sample data only for testing or dev tasks */
 
-const file_content =
+export const sample_wallet_data =
 [
   {id: 10, type: 0, index: 1, label: "My prepaid VISA card from Bank 'A'",
     data: {
@@ -60,5 +60,3 @@ const file_content =
     }
   },
 ];
-
-exports.file_content = file_content;
