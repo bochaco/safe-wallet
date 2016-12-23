@@ -6,7 +6,7 @@ var data = sample_wallet_data;
 
 export const authoriseApp = (app) => {
   console.log("Authenticating app...");
-  return new Promise(resolve => setTimeout(resolve, 3000));
+  return new Promise(resolve => setTimeout(resolve, 30));
 }
 
 export const isTokenValid = () => {

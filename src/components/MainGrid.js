@@ -163,10 +163,9 @@ export default class MainGrid extends React.Component {
       if (this.state.selected_item == null) {
         // then add a new item
         newItem.id = 100; // TODO: this needs to be reviewed
-        newItem.index = 1000; // TODO: the index needs to be calculated, or assign null and make null the last
         updatedData.push(newItem);
       } else {
-        updatedData[this.state.selected_item].label = newItem.label;
+        updatedData[this.state.selected_item].metadata.label = newItem.metadata.label;
         updatedData[this.state.selected_item].data = newItem.data;
       }
       this.storeData(updatedData)
