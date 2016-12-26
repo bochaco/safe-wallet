@@ -1,7 +1,7 @@
 /*
   Helper functions to store data in the SAFEnet
 */
-import {sample_wallet_data} from './sample-data.js';
+import { getXorName } from '../common.js';
 
 if (process.env.NODE_ENV !== 'production') {
   require('safe-js/dist/polyfill')
@@ -114,7 +114,7 @@ const _fetchSDataHandle = (id) => {
     }, (err) => {
       // it doesn't exist yet, so let's create the SD
       console.log("SD doesn't exist yet:", err);
-      return _createSData(id, sample_wallet_data)
+      return _createSData(id, [])
         .then( (handleId) => {
           console.log("SD just created:", handleId);
           return handleId;
@@ -122,7 +122,7 @@ const _fetchSDataHandle = (id) => {
     })
 }
 
-export const loadData = () => {
+export const loadAppData = () => {
   return _fetchSDataHandle(DATA_ID)
     .then((handleId) => {
       // let's try to read the data now!
@@ -141,7 +141,7 @@ export const loadData = () => {
     })
 }
 
-export const saveData = (data) => {
+export const saveAppData = (data) => {
   const payload = new Buffer(JSON.stringify(data)).toString('base64');
 
   console.log("Saving data in the network...");
@@ -161,4 +161,9 @@ export const saveData = (data) => {
     }, (err) => {
       console.log("Failed loading data:", err);
     })
+}
+
+export const loadWalletData = (pk) => {
+  console.log("Reading the coin wallet info...");
+  return Promise.resolve(["1", "2", "3"]);
 }

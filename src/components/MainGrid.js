@@ -21,11 +21,11 @@ function loadStorage() {
   }
 }
 
-var {authoriseApp, isTokenValid, loadData, saveData} = loadStorage();
+var {authoriseApp, isTokenValid, loadAppData, saveAppData, loadWalletData, transferCoin} = loadStorage();
 
 const initialState = {
   isAuthorised: false,
-  data: {},
+  data: [],
   view_modal: false,
   edit_modal: false,
   add_modal: false,
@@ -110,7 +110,7 @@ export default class MainGrid extends React.Component {
   requestAuthorisation() {
     this.setState({isAuthorised: null});
     authoriseApp(appInfo)
-      .then(loadData)
+      .then(loadAppData)
       .then((parsedData) => {
         this.setState({isAuthorised: true, data: parsedData});
         //this.storeData(sample_wallet_data); // ONLY FOR TEST!!! this is too store the wallet_sample_data
@@ -121,7 +121,7 @@ export default class MainGrid extends React.Component {
   }
 
   handleRefresh() {
-    loadData()
+    loadAppData()
       .then((parsedData) => {
         this.setState({data: parsedData});
       }, (err) => {
@@ -131,7 +131,7 @@ export default class MainGrid extends React.Component {
   }
 
   storeData(data) {
-    return saveData(data)
+    return saveAppData(data)
       .then((parsedData) => {
         this.setState({data: parsedData});
       }, (err) => {
@@ -165,7 +165,7 @@ export default class MainGrid extends React.Component {
         newItem.id = 100; // TODO: this needs to be reviewed
         updatedData.push(newItem);
       } else {
-        updatedData[this.state.selected_item].metadata.label = newItem.metadata.label;
+        updatedData[this.state.selected_item].metadata = newItem.metadata;
         updatedData[this.state.selected_item].data = newItem.data;
       }
       this.storeData(updatedData)
@@ -308,6 +308,8 @@ export default class MainGrid extends React.Component {
           <CardView
             open={this.state.view_modal}
             selected_item={this.state.data[this.state.selected_item]}
+            getWallet={loadWalletData}
+            transferCoin={transferCoin}
             handleClose={this.handleCloseViewModal}
           />
 

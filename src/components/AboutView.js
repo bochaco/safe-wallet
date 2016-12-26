@@ -6,8 +6,7 @@ import applogo from '../img/app_logo.png';
 import { appInfo } from '../config.js';
 
 const customContentStyle = {
-  width: '45%',
-  maxWidth: 'none',
+  textAlign: "left"
 };
 
 export default class AboutView extends React.Component {
@@ -15,6 +14,7 @@ export default class AboutView extends React.Component {
     return (
       <ViewDialogBox {...this.props}
         title="About"
+        size="small"
         style={customContentStyle}
       >
         <Item.Group>
@@ -34,7 +34,7 @@ export default class AboutView extends React.Component {
                       </List.Content>
                 </List.Item>
                 <List.Item>
-                  Donations are welcome and appreciated!<br/><span fontFamily='Courier New'><b>1KSJhUdDGZz2mx6WBw6Lco8RaPxqzTzRLL</b></span>
+                  Donations are welcome and appreciated!: <span fontFamily='Courier New'><b>1KSJhUdDGZz2mx6WBw6Lco8RaPxqzTzRLL</b></span>
                 </List.Item>
                 </List>
               </Item.Meta>

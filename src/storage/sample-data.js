@@ -1,8 +1,119 @@
 /* Sample data only for testing or dev tasks */
-import { Constants } from '../common.js';
+import { Constants, getXorName } from '../common.js';
+
+const SampleKeyPairs = {
+  Me: {
+    pk: "1KbCJfktc1JaKAwRtb42G8iNyhhh9zXRi4",
+    sk: "L3t2ompeWyP28EvPdjfpGAqnnk3N8zRWUmAVzgZKKubSVDcCAqav",
+  },
+  Alice: {
+    pk: "15iJ91Px9ng5E7r5xPv8x3QpPMUu8q1JAR",
+    sk: "L19ZnKjrZNLHCXWTGzvpfJrA8yXTFJHf4mwVzGukobBJR2giCjsx",
+  },
+  Bob: {
+    pk: "1Kt7eE4y7D2ciidW6ANiGVnKQaYmWgeZnc",
+    sk: "KxAMW2EVA3qVDHdJWw5vH71Ene1Ji9xYN6ncwfsXdje8wzJ6CqMK",
+  },
+  Chris: {
+    pk: "1Eup55KofQRtBk1xS48LZs4RPYW2x8bgg5",
+    sk: "L25RDnqL2yYc1iUZqz5vUJhQ7aDFQQZbGwSunzkt7FtybcWvFL5V",
+  }
+}
+
+const ME_PK_XOR_NAME = getXorName(SampleKeyPairs.Me.pk);
+const ALTCOIN_1_XOR_NAME = getXorName("altcoin1");
+const ALTCOIN_2_XOR_NAME = getXorName("altcoin2");
+const ALTCOIN_3_XOR_NAME = getXorName("altcoin3");
+
+export const sample_SD_wallets = {};
+// wallet of Me.pk
+sample_SD_wallets[ME_PK_XOR_NAME] = [
+  ALTCOIN_1_XOR_NAME,
+  ALTCOIN_2_XOR_NAME,
+  ALTCOIN_3_XOR_NAME,
+];
+
+export const sample_SD_coins = {};
+// altcoin1 SD
+sample_SD_coins[ALTCOIN_1_XOR_NAME] = {
+    type_tag: 15001,
+    owner: SampleKeyPairs.Me.pk,
+    prev_owner: SampleKeyPairs.Alice.pk,
+}
+
+// altcoin2 SD
+sample_SD_coins[ALTCOIN_2_XOR_NAME] = {
+    type_tag: 15001,
+    owner: SampleKeyPairs.Me.pk,
+    prev_owner: SampleKeyPairs.Alice.pk,
+}
+
+// altcoin3 SD
+sample_SD_coins[ALTCOIN_3_XOR_NAME] = {
+    type_tag: 15001,
+    owner: SampleKeyPairs.Me.pk,
+    prev_owner: SampleKeyPairs.Bob.pk,
+}
 
 export const sample_wallet_data =
 [
+  {id: 28, type: Constants.TYPE_ALTCOIN,
+    metadata: {
+      label: "My mined AltCoins",
+      color: "blue",
+      pin: "1234",
+      history: false,
+    },
+    data: {
+      pk: SampleKeyPairs.Me.pk,
+      sk: SampleKeyPairs.Me.sk,
+      history: [ // this could be part of the coin wallet
+        {
+          amount: 0.95055028,
+          direction: "in",
+          date: "2 days ago",
+          from: SampleKeyPairs.Alice.pk,
+        },
+        {
+          amount: 0.68274068,
+          direction: "in",
+          date: "8 days ago",
+          from: SampleKeyPairs.Alice.pk,
+        },
+        {
+          amount: 0.97274604,
+          direction: "out",
+          date: "14 days ago",
+          from: SampleKeyPairs.Chris.pk,
+        },
+        {
+          amount: 0.18462538,
+          direction: "in",
+          date: "25 days ago",
+          from: SampleKeyPairs.Bob.pk,
+        },
+        {
+          amount: 0.35725250,
+          direction: "out",
+          date: "60 days ago",
+          from: SampleKeyPairs.Alice.pk,
+        }
+      ]
+    }
+  },
+  {id: 30, type: Constants.TYPE_ALTCOIN,
+    metadata: {
+      label: "Bob's mined AltCoins",
+      color: "blue",
+      pin: "1234",
+      history: true,
+    },
+    data: {
+      pk: SampleKeyPairs.Bob.pk,
+      sk: SampleKeyPairs.Bob.sk,
+      history: [] // this could be part of the coin wallet
+    }
+  },
   {id: 10, type: Constants.TYPE_CREDIT_CARD,
     metadata: {
       label: "My prepaid VISA card from Bank 'A'",
@@ -42,8 +153,8 @@ export const sample_wallet_data =
       color: "yellow",
     },
     data: {
-      pk: "1KbCJfktc1JaKAwRtb42G8iNyhhh9zXRi4",
-      sk: "L3t2ompeWyP28EvPdjfpGAqnnk3N8zRWUmAVzgZKKubSVDcCAqav",
+      pk: SampleKeyPairs.Me.pk,
+      sk: SampleKeyPairs.Me.sk,
       notes: "balance as of 12/15/2016 = $50.50"
     }
   },
@@ -53,8 +164,8 @@ export const sample_wallet_data =
       color: "yellow",
     },
     data: {
-      pk: "1KbCJfktc1JaKAwRtb42G8iNyhhh9zXRi4",
-      sk: "L3t2ompeWyP28EvPdjfpGAqnnk3N8zRWUmAVzgZKKubSVDcCAqav",
+      pk: SampleKeyPairs.Me.pk,
+      sk: SampleKeyPairs.Me.sk,
       notes: "current balance 10 eth, received all from donations"
     }
   },
@@ -104,58 +215,11 @@ export const sample_wallet_data =
           ["email", {}, "text", "forrestgump@example.com"],
           ["x-wallet-addr", {
               "type": [ "SAFE-ALTCOIN1" ]
-            }, "text", "1KbCJfktc1JaKAwRtb42G8iNyhhh9zXRi4"
+            }, "text", SampleKeyPairs.Me.pk
           ],
           ["rev", {}, "timestamp", "2008-04-24T19:52:43Z"]
         ]
       ]
     ]
-  },
-  {id: 28, type: Constants.TYPE_ALTCOIN,
-    metadata: {
-      label: "My mined AltCoins",
-      color: "blue",
-    },
-    data: {
-      pk: "1KbCJfktc1JaKAwRtb42G8iNyhhh9zXRi4",
-      sk: "L3t2ompeWyP28EvPdjfpGAqnnk3N8zRWUmAVzgZKKubSVDcCAqav",
-      coins: [
-        "OWNmNGI3Mjk5M2E1ZGI4NGI4OTIwZDk0ZThmZWFhMzk0NWUzNzJjMTdjM2E0ZWIxNDlmYmQzZmE2NzJmYzcxZA==", // "altcoin1"
-        "NTIzNDFhOTUwMjVlNDgyNzAyNWE2N2NjMTU2ODdlMjQ2MmEyNTM1MGRiZWZmNDhkYjczNzFkMWUyZDEyN2I5OA==", // "altcoin2"
-        "ODU5ZTc3MWE4Yjk5OGEyYTBkNDAwMGZlYjNjMzQ1ZmRmOGQwOTI4NjdjNDIyNmFiNDUwZmFlMTdiYzAyYWEzZg==", // "altcoin3"
-      ],
-      history: [
-        {
-          amount: 0.95055028,
-          direction: "in",
-          date: "2 days ago",
-          from: "1KbCJfktc1JaKAwRtb42G8iNyhhh9zXRi4",
-        },
-        {
-          amount: 0.68274068,
-          direction: "in",
-          date: "8 days ago",
-          from: "1KbCJfktc1JaKAwRtb42G8iNyhhh9zXRi4",
-        },
-        {
-          amount: 0.97274604,
-          direction: "out",
-          date: "14 days ago",
-          from: "1KbCJfktc1JaKAwRtb42G8iNyhhh9zXRi4",
-        },
-        {
-          amount: 0.18462538,
-          direction: "in",
-          date: "25 days ago",
-          from: "1KbCJfktc1JaKAwRtb42G8iNyhhh9zXRi4",
-        },
-        {
-          amount: 0.35725250,
-          direction: "out",
-          date: "60 days ago",
-          from: "1KbCJfktc1JaKAwRtb42G8iNyhhh9zXRi4",
-        }
-      ]
-    }
   },
 ];

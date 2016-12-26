@@ -1,5 +1,5 @@
 import React from 'react';
-import { ItemTypes } from '../common.js';
+import { ItemTypes, Constants } from '../common.js';
 
 import ViewDialogBox from './DialogBox.js';
 
@@ -10,7 +10,10 @@ export default class CardView extends React.Component {
     }
 
     return (
-      <ViewDialogBox {...this.props} handleSubmit={this.handleSubmit} >
+      <ViewDialogBox
+        {...this.props}
+        closeOnEscape={this.props.selected_item.type !== Constants.TYPE_ALTCOIN}
+      >
         {ItemTypes[this.props.selected_item.type].viewDialogFactory(this.props)}
       </ViewDialogBox>
     );

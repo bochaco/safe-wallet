@@ -1,4 +1,6 @@
 import React from 'react';
+import { sha256 } from 'js-sha256';
+import { Base64 } from 'js-base64';
 import CreditCardView, { CreditCardEdit } from './components/CreditCard.js';
 import JCardView, { JCardEdit } from './components/JCard.js';
 import PasswordView, { PasswordEdit } from './components/Password.js';
@@ -28,6 +30,8 @@ export const Constants = {
 
   MAX_NUMBER_2FA_CODES: 12,
 }
+
+export const getXorName = (id) => { return Base64.encode(sha256(id)); }
 
 export const ItemTypes = {};
 

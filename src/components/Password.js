@@ -5,25 +5,26 @@ import { Constants } from '../common.js';
 import { EditDialogBox } from './DialogBox.js';
 
 const styles = {
-  qaList: {
-    height: 140,
-    overflowY: 'auto',
-  },
-};
+  passwordView: {marginTop: 15},
+}
 
 export default class PasswordView extends React.Component {
   render() {
     let QAs = this.props.selected_item.data.questions.map((qa, i) => (
-      <Grid.Column key={i}>
+      <Grid.Column key={i} style={styles.passwordView}>
         <div>
-          <Header sub>{qa.q}</Header>
-          <span>{qa.a}</span>
+          <Header sub>
+            {qa.q}
+            <Header.Subheader>
+              {qa.a}
+            </Header.Subheader>
+          </Header>
         </div>
       </Grid.Column>
     ));
 
     return (
-      <Grid columns='equal' divided={QAs.length > 0 ? 'vertically' : false}>
+      <Grid columns='equal'>
       <Grid.Row>
         <Grid.Column>
           <Header>
@@ -131,10 +132,10 @@ export class PasswordEdit extends React.Component {
   }
 
   render() {
-    var QAs =
-      <List style={styles.qaList}>
-        {this.state.qas.map((qa, index) => (
-          <List.Item key={qa.q+qa.a}>
+    var QAs = [this.state.qas.map((qa, index) => (
+        <Grid.Row key={qa.q+qa.a}>
+          <Grid.Column width={1} />
+          <Grid.Column width={15}>
             <List horizontal>
               <List.Item>
                 <TextField
@@ -155,9 +156,12 @@ export class PasswordEdit extends React.Component {
                   onClick={ () => {this.handleRemoveQA(index)} } />
               </List.Item>
             </List>
-          </List.Item>
-        ))}
-        <List.Item>
+          </Grid.Column>
+        </Grid.Row>
+      )),
+      <Grid.Row key="new">
+        <Grid.Column width={1} />
+        <Grid.Column width={15}>
           <List horizontal>
             <List.Item>
               <TextField
@@ -179,8 +183,9 @@ export class PasswordEdit extends React.Component {
               />
             </List.Item>
           </List>
-        </List.Item>
-      </List>;
+        </Grid.Column>
+      </Grid.Row>
+    ];
 
     return (
       <EditDialogBox {...this.props}
@@ -220,11 +225,7 @@ export class PasswordEdit extends React.Component {
             <Grid.Column width={2}>
             </Grid.Column>
           </Grid.Row>
-          <Grid.Row>
-            <Grid.Column width={16}>
-              {QAs}
-            </Grid.Column>
-          </Grid.Row>
+          {QAs}
         </Grid>
       </EditDialogBox>
     );

@@ -6,6 +6,8 @@
     "react-scripts": "0.7.0"
   },
   "dependencies": {
+    "js-base64": "^2.1.9",
+    "js-sha256": "^0.3.2",
     "material-ui": "^0.16.1",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
