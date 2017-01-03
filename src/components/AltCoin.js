@@ -195,7 +195,9 @@ export default class AltCoinView extends React.Component {
 
   showConfirmTransfer() {
     let amount = parseFloat(this.refs.amountInput.input.value, 10);
-    if (amount <= 0) {
+    if (amount > Math.floor(amount)) {
+      this.setState({amountError:"Invalid value"});
+    } else if (amount <= 0) {
       this.setState({amountError:"Invalid value"});
     } else if (amount > this.state.wallet.length) {
       this.setState({amountError:"Insufficient funds"});

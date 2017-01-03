@@ -75,38 +75,38 @@ export const sample_wallet_data =
       sk: SampleKeyPairs.Me.sk,
       history: [ // this could be part of the coin wallet
         {
-          amount: 0.35725250,
-          direction: "out",
-          date: "60 days ago",
-          from: SampleKeyPairs.Alice.pk,
-        },
-        {
-          amount: 0.18462538,
+          amount: 3,
           direction: "in",
-          date: "25 days ago",
-          from: SampleKeyPairs.Bob.pk,
-          msg: "loan",
-        },
-        {
-          amount: 0.97274604,
-          direction: "out",
-          date: "14 days ago",
-          from: SampleKeyPairs.Chris.pk,
-          msg: "",
-        },
-        {
-          amount: 0.68274068,
-          direction: "in",
-          date: "8 days ago",
+          date: "Sun, 01 Jan 2017 00:01:30 GMT",
           from: SampleKeyPairs.Alice.pk,
           msg: "SAFE Farming",
         },
         {
-          amount: 0.95055028,
+          amount: 2,
+          direction: "out",
+          date: "Sun, 01 Jan 2017 10:12:04 GMT",
+          to: SampleKeyPairs.Alice.pk,
+        },
+        {
+          amount: 1,
           direction: "in",
-          date: "2 days ago",
+          date: "Sun, 01 Jan 2017 19:25:19 GMT",
+          from: SampleKeyPairs.Bob.pk,
+          msg: "loan",
+        },
+        {
+          amount: 1,
+          direction: "out",
+          date: "Mon, 02 Jan 2017 14:48:01 GMT",
+          to: SampleKeyPairs.Bob.pk,
+          msg: "Thank you for the loan!",
+        },
+        {
+          amount: 2,
+          direction: "in",
+          date: "Tue, 03 Jan 2017 15:34:33 GMT",
           from: SampleKeyPairs.Alice.pk,
-          msg: "help with SAFEnet dlfkmdklf dlkfm sdlfmf lf ksm fsdfm lfkmsdklf sdklfm lfklsdfmlk sdkl",
+          msg: "In exchange of your feedback about SAFE Wallet!",
         },
       ]
     }
