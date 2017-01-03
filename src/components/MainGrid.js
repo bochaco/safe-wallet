@@ -21,7 +21,9 @@ function loadStorage() {
   }
 }
 
-var {authoriseApp, isTokenValid, loadAppData, saveAppData, loadWalletData, transferCoin} = loadStorage();
+var {authoriseApp, isTokenValid, loadAppData, saveAppData, loadWalletData,
+  transferCoin, createWallet, saveWalletData, /*deleteWallet,*/ checkOwnership,
+  createTxInbox, readTxInboxData, /*deleteTxInbox,*/ emptyTxInbox, appendTx2TxInbox} = loadStorage();
 
 const initialState = {
   isAuthorised: false,
@@ -71,6 +73,8 @@ export default class MainGrid extends React.Component {
     this.handlePower = this.handlePower.bind(this);
     this.requestAuthorisation = this.requestAuthorisation.bind(this);
     this.storeData = this.storeData.bind(this);
+
+    this.appendTx2History = this.appendTx2History.bind(this);
   }
 
   componentWillMount() {
@@ -196,6 +200,11 @@ export default class MainGrid extends React.Component {
 
   handleSubmitDeleteModal() {
     let updatedData = this.state.data;
+
+    //TODO; not sure if this should be done in production
+//    deleteTxInbox(this.state.data[this.state.selected_item].data.pk);
+//    deleteWallet(this.state.data[this.state.selected_item].data.pk);
+
     updatedData.splice(this.state.selected_item, 1);
     this.storeData(updatedData)
       .then(() => {this.handleOpenSnack("Item deleted from the SAFE network")},
@@ -219,6 +228,15 @@ export default class MainGrid extends React.Component {
   handleCloseSnack() {
     this.setState({snackbar: false});
   };
+
+  appendTx2History(tx) {
+      let updatedData = this.state.data;
+      if (!updatedData[this.state.selected_item].data.history) {
+        updatedData[this.state.selected_item].data.history = [];
+      }
+      updatedData[this.state.selected_item].data.history.push(tx);
+      this.storeData(updatedData);
+  }
 
   render() {
     let cards = null;
@@ -308,9 +326,15 @@ export default class MainGrid extends React.Component {
           <CardView
             open={this.state.view_modal}
             selected_item={this.state.data[this.state.selected_item]}
-            getWallet={loadWalletData}
-            transferCoin={transferCoin}
             handleClose={this.handleCloseViewModal}
+            loadWalletData={loadWalletData}
+            transferCoin={transferCoin}
+            readTxInboxData={readTxInboxData}
+            saveWalletData={saveWalletData}
+            checkOwnership={checkOwnership}
+            emptyTxInbox={emptyTxInbox}
+            appendTx2History={this.appendTx2History}
+            appendTx2TxInbox={appendTx2TxInbox}
           />
 
           {/* Dialog box for choosing the type of item to add */}
@@ -327,6 +351,9 @@ export default class MainGrid extends React.Component {
             selected_type={this.state.selected_type}
             handleClose={this.handleCloseEditModal}
             handleSubmit={this.handleSubmitEditModal}
+            loadWalletData={loadWalletData}
+            createWallet={createWallet}
+            createTxInbox={createTxInbox}
           />
 
           {/* Dialog box for deleting the selected item */}

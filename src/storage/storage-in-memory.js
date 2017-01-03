@@ -2,10 +2,14 @@
   Helper functions to store data in memory needed for demos and dev tasks
 */
 import { getXorName } from '../common.js';
-import {sample_SD_wallets, sample_wallet_data} from './sample-data.js';
+import {sample_SD_wallets, sample_SD_tx_inboxes, sample_SD_coins, sample_wallet_data} from './sample-data.js';
+
+const WALLET_INBOX_PREFIX = 'INBOX-';
 
 var app_data = sample_wallet_data;
 var sd_wallets = sample_SD_wallets;
+var sd_tx_inboxes = sample_SD_tx_inboxes;
+var sd_coins = sample_SD_coins;
 
 export const authoriseApp = (app) => {
   console.log("Authenticating app...");
@@ -32,24 +36,89 @@ export const loadWalletData = (pk) => {
   return Promise.resolve(sd_wallets[getXorName(pk)]);
 }
 
-export const transferCoin = (id, pk, sk, recipient) => {
-  console.log("Transfering coin's ownership...", id, recipient);
+export const createWallet = (pk) => {
+  let dataId = getXorName(pk);
+  console.log("Creating wallet in memory...", pk, dataId);
+  if (!sd_wallets[dataId]) {
+    sd_wallets[dataId] = [];
+  }
+  return Promise.resolve(sd_wallets[dataId]);
+}
 
-  let wallet = sd_wallets[getXorName(pk)];
-  // let's check if the id is found in the wallet
-  let index = wallet.indexOf(id);
-  if (index >= 0) {
-    // ok, let's make the transfer now
-    wallet.splice(index, 1);
+export const saveWalletData = (pk, data) => {
+  let dataId = getXorName(pk);
+  console.log("Saving coin wallet data in the network...");
+  sd_wallets[dataId] = data;
+  return Promise.resolve(data);
+}
 
-    if (sd_wallets[getXorName(recipient)]) {
-      sd_wallets[getXorName(recipient)].push(id);
-    } else {
-      sd_wallets[getXorName(recipient)] = [id];
-    }
-  } else {
-    console.log("Error, coin is not owned");
+export const createTxInbox = (pk) => {
+  let dataId = getXorName(WALLET_INBOX_PREFIX + pk);
+  console.log("Creating TX inbox in memory...", pk, dataId);
+  if (!sd_tx_inboxes[dataId]) {
+    sd_tx_inboxes[dataId] = [];
+  }
+  return Promise.resolve(sd_tx_inboxes[dataId]);
+}
+
+export const readTxInboxData = (pk) => {
+  let dataId = getXorName(WALLET_INBOX_PREFIX + pk);
+  console.log("Reading TX inbox in memory...", pk, dataId);
+  if (!sd_tx_inboxes[dataId]) {
+    sd_tx_inboxes[dataId] = [];
+  }
+  return Promise.resolve(sd_tx_inboxes[dataId]);
+}
+
+export const emptyTxInbox = (pk) => {
+  let dataId = getXorName(WALLET_INBOX_PREFIX + pk);
+  console.log("Emptying Tx inbox in the network...");
+  sd_tx_inboxes[dataId] = [];
+  return Promise.resolve(sd_tx_inboxes[dataId]);
+}
+
+export const checkOwnership = (coinId, pk) => {
+  console.log("Reading coin info...", pk, coinId);
+  let data = sd_coins[coinId];
+  console.log("Coin data:", data);
+  if (data.owner !== pk) {
+      throw Error ("Ownership doesn't match", pk, data);
   }
 
-  return wallet;
+  return Promise.resolve(data);
+}
+
+export const transferCoin = (coinId, pk, sk, recipient, msg) => {
+  console.log("Transfering coin's ownership in memory...", coinId, recipient);
+
+  let wallet = sd_wallets[getXorName(pk)];
+  // let's check if the coinId is found in the wallet
+  let index = wallet.indexOf(coinId);
+  if (index >= 0 && checkOwnership(coinId, pk)) {
+    // ok, let's make the transfer now
+    // change ownership
+    sd_coins[coinId].owner = recipient;
+    sd_coins[coinId].prev_owner = pk;
+
+    // remove from owner's wallet
+    wallet.splice(index, 1);
+
+    // secondly push it to recipient's inbox
+    let recipientInbox = getXorName(WALLET_INBOX_PREFIX + recipient);
+    let tx = {
+      coinId: coinId,
+      msg: msg,
+      date: (new Date()).toUTCString()
+    }
+    if (sd_tx_inboxes[recipientInbox]) {
+      sd_tx_inboxes[recipientInbox].push(tx);
+    } else {
+      sd_tx_inboxes[recipientInbox] = [tx];
+    }
+
+  } else {
+    console.error("Error, coin is not owned");
+  }
+
+  return Promise.resolve(wallet);
 }

@@ -3,9 +3,7 @@ import TextField from 'material-ui/TextField';
 import { Grid, Image, Header, Container } from 'semantic-ui-react'
 import { Constants } from '../common.js';
 import { EditDialogBox } from './DialogBox.js';
-
-import img_pubkey from '../img/qr_pubkey.png';
-import img_privkey from '../img/qr_privkey.png';
+import { getQRCode } from '../common.js';
 
 export default class PrivPubKeysView extends React.Component {
   render() {
@@ -24,7 +22,7 @@ export default class PrivPubKeysView extends React.Component {
 
         <Grid.Row>
           <Grid.Column width={3}>
-            <Image src={img_pubkey} />
+            <Image src={getQRCode(this.props.selected_item.data.pk)} />
           </Grid.Column>
           <Grid.Column width={10}>
             <Header as='h5' color='green'>
@@ -39,7 +37,7 @@ export default class PrivPubKeysView extends React.Component {
             </Container>
           </Grid.Column>
           <Grid.Column width={3}>
-            <Image src={img_privkey} />
+            <Image src={getQRCode(this.props.selected_item.data.sk)} />
           </Grid.Column>
         </Grid.Row>
       </Grid>

@@ -17,13 +17,19 @@ const SampleKeyPairs = {
   Chris: {
     pk: "1Eup55KofQRtBk1xS48LZs4RPYW2x8bgg5",
     sk: "L25RDnqL2yYc1iUZqz5vUJhQ7aDFQQZbGwSunzkt7FtybcWvFL5V",
-  }
-}
+  },
+  Mike: {
+    pk: "1MAEoWiLC5Aq38aRPHG8zR8fPYHYTSESKe",
+    sk: "L5QrF13Dts1FVQYkmfqagLoqKbf1nu5D2KhQv9vd751X7yiWzbSD",
+  },
+};
 
 const ME_PK_XOR_NAME = getXorName(SampleKeyPairs.Me.pk);
 const ALTCOIN_1_XOR_NAME = getXorName("altcoin1");
 const ALTCOIN_2_XOR_NAME = getXorName("altcoin2");
 const ALTCOIN_3_XOR_NAME = getXorName("altcoin3");
+
+export const sample_SD_tx_inboxes = {};
 
 export const sample_SD_wallets = {};
 // wallet of Me.pk
@@ -62,42 +68,46 @@ export const sample_wallet_data =
       label: "My mined AltCoins",
       color: "blue",
       pin: "1234",
-      history: false,
+      keepTxs: true,
     },
     data: {
       pk: SampleKeyPairs.Me.pk,
       sk: SampleKeyPairs.Me.sk,
       history: [ // this could be part of the coin wallet
         {
-          amount: 0.95055028,
-          direction: "in",
-          date: "2 days ago",
-          from: SampleKeyPairs.Alice.pk,
-        },
-        {
-          amount: 0.68274068,
-          direction: "in",
-          date: "8 days ago",
-          from: SampleKeyPairs.Alice.pk,
-        },
-        {
-          amount: 0.97274604,
+          amount: 0.35725250,
           direction: "out",
-          date: "14 days ago",
-          from: SampleKeyPairs.Chris.pk,
+          date: "60 days ago",
+          from: SampleKeyPairs.Alice.pk,
         },
         {
           amount: 0.18462538,
           direction: "in",
           date: "25 days ago",
           from: SampleKeyPairs.Bob.pk,
+          msg: "loan",
         },
         {
-          amount: 0.35725250,
+          amount: 0.97274604,
           direction: "out",
-          date: "60 days ago",
+          date: "14 days ago",
+          from: SampleKeyPairs.Chris.pk,
+          msg: "",
+        },
+        {
+          amount: 0.68274068,
+          direction: "in",
+          date: "8 days ago",
           from: SampleKeyPairs.Alice.pk,
-        }
+          msg: "SAFE Farming",
+        },
+        {
+          amount: 0.95055028,
+          direction: "in",
+          date: "2 days ago",
+          from: SampleKeyPairs.Alice.pk,
+          msg: "help with SAFEnet dlfkmdklf dlkfm sdlfmf lf ksm fsdfm lfkmsdklf sdklfm lfklsdfmlk sdkl",
+        },
       ]
     }
   },
@@ -106,7 +116,7 @@ export const sample_wallet_data =
       label: "Bob's mined AltCoins",
       color: "blue",
       pin: "1234",
-      history: true,
+      keepTxs: true,
     },
     data: {
       pk: SampleKeyPairs.Bob.pk,

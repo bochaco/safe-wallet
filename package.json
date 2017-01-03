@@ -1,20 +1,20 @@
 {
   "name": "safe-wallet",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "devDependencies": {
     "react-scripts": "0.7.0"
   },
   "dependencies": {
-    "js-base64": "^2.1.9",
-    "js-sha256": "^0.3.2",
     "material-ui": "^0.16.1",
+    "qrcode-js": "0.0.2",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "react-tap-event-plugin": "^2.0.1",
     "safe-js": "^0.3.3",
     "semantic-ui-css": "^2.2.4",
-    "semantic-ui-react": "^0.59.0"
+    "semantic-ui-react": "^0.59.0",
+    "urlsafe-base64": "^1.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

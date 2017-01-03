@@ -1,10 +1,8 @@
 import React from 'react';
 import TextField from 'material-ui/TextField';
 import { Grid, Image, Header, Icon, List } from 'semantic-ui-react'
-import { Constants } from '../common.js';
+import { Constants, getQRCode } from '../common.js';
 import { EditDialogBox } from './DialogBox.js';
-
-import img_pubkey from '../img/qr_pubkey.png';
 
 export default class JCardView extends React.Component {
   render() {
@@ -64,7 +62,7 @@ export default class JCardView extends React.Component {
             </List>
           </Grid.Column>
           <Grid.Column width={3}>
-            <Image src={img_pubkey} />
+            <Image src={getQRCode(this.props.selected_item.data[1][1][3][3])} />
           </Grid.Column>
           <Grid.Column width={1}>
           </Grid.Column>

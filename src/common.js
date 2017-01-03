@@ -1,6 +1,7 @@
 import React from 'react';
-import { sha256 } from 'js-sha256';
-import { Base64 } from 'js-base64';
+import crypto from 'crypto';
+import * as base64 from 'urlsafe-base64';
+var qrcode=require('qrcode-js');
 import CreditCardView, { CreditCardEdit } from './components/CreditCard.js';
 import JCardView, { JCardEdit } from './components/JCard.js';
 import PasswordView, { PasswordEdit } from './components/Password.js';
@@ -31,7 +32,9 @@ export const Constants = {
   MAX_NUMBER_2FA_CODES: 12,
 }
 
-export const getXorName = (id) => { return Base64.encode(sha256(id)); }
+export const getXorName = (id) => { return base64.encode(crypto.createHash('sha256').update(id).digest('base64')); }
+
+export const getQRCode = (url) => { return qrcode.toDataURL(url, 4); }
 
 export const ItemTypes = {};
 
@@ -77,12 +80,12 @@ ItemTypes[Constants.TYPE_SAFECOIN] = {
 
 ItemTypes[Constants.TYPE_ALTCOIN] = {
   type: Constants.TYPE_ALTCOIN,
-  title: "AltCoin Wallet",
+  title: "ThanksCoin Wallet",
   icon: icon_altcoin,
   editDialogFactory: (props) => <AltCoinEdit {...props} />,
   viewDialogFactory: (props) => <AltCoinView {...props} />,
 };
-
+/*
 ItemTypes[Constants.TYPE_JCARD] = {
   type: Constants.TYPE_JCARD,
   title: "Public Profile",
@@ -90,7 +93,7 @@ ItemTypes[Constants.TYPE_JCARD] = {
   editDialogFactory: (props) => <JCardEdit {...props} />,
   viewDialogFactory: (props) => <JCardView {...props} />,
 };
-
+*/
 /*
 ItemTypes[Constants.TYPE_NOTES] = {type: Constants.TYPE_NOTES, title: "Private Notes"};
 ItemTypes[Constants.TYPE_CONTACTS] = {type: Constants.TYPE_CONTACTS, title: "Contacts"};
