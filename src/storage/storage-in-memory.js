@@ -33,7 +33,11 @@ export const saveAppData = (data) => {
 
 export const loadWalletData = (pk) => {
   console.log("Reading the coin wallet into memory...");
-  return Promise.resolve(sd_wallets[getXorName(pk)]);
+  let dataId = getXorName(pk);
+  if (!sd_wallets[dataId]) {
+    sd_wallets[dataId] = [];
+  }
+  return Promise.resolve(sd_wallets[dataId]);
 }
 
 export const createWallet = (pk) => {
@@ -88,7 +92,16 @@ export const checkOwnership = (coinId, pk) => {
   return Promise.resolve(data);
 }
 
-export const transferCoin = (coinId, pk, sk, recipient, msg) => {
+export const appendTx2TxInbox = (recipient, tx) => {
+  let recipientInbox = getXorName(WALLET_INBOX_PREFIX + recipient);
+  if (sd_tx_inboxes[recipientInbox]) {
+    sd_tx_inboxes[recipientInbox].push(tx);
+  } else {
+    sd_tx_inboxes[recipientInbox] = [tx];
+  }
+}
+
+export const transferCoin = (coinId, pk, sk, recipient) => {
   console.log("Transfering coin's ownership in memory...", coinId, recipient);
 
   let wallet = sd_wallets[getXorName(pk)];
@@ -99,23 +112,6 @@ export const transferCoin = (coinId, pk, sk, recipient, msg) => {
     // change ownership
     sd_coins[coinId].owner = recipient;
     sd_coins[coinId].prev_owner = pk;
-
-    // remove from owner's wallet
-    wallet.splice(index, 1);
-
-    // secondly push it to recipient's inbox
-    let recipientInbox = getXorName(WALLET_INBOX_PREFIX + recipient);
-    let tx = {
-      coinId: coinId,
-      msg: msg,
-      date: (new Date()).toUTCString()
-    }
-    if (sd_tx_inboxes[recipientInbox]) {
-      sd_tx_inboxes[recipientInbox].push(tx);
-    } else {
-      sd_tx_inboxes[recipientInbox] = [tx];
-    }
-
   } else {
     console.error("Error, coin is not owned");
   }

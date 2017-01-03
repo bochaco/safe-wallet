@@ -113,7 +113,7 @@ export const sample_wallet_data =
   },
   {id: 30, type: Constants.TYPE_ALTCOIN,
     metadata: {
-      label: "Bob's mined AltCoins",
+      label: "AltCoins for daily usage",
       color: "blue",
       pin: "1234",
       keepTxs: true,
@@ -209,27 +209,30 @@ export const sample_wallet_data =
       ]
     }
   },
-  {id: 27, type: Constants.TYPE_JCARD,
-    metadata: {
-      label: "My profile for friends",
-      color: "blue",
-    },
-    data: [
-      "BubaGump",
-      /* The jcard attribute shoud not be here since it's a SD/MD */
+];
+
+/*
+{id: 27, type: Constants.TYPE_JCARD,
+  metadata: {
+    label: "My profile for friends",
+    color: "blue",
+  },
+  data: [
+    "BubaGump",
+    // The jcard attribute shoud not be here since it's a SD/MD
+    [
+      "vcard",
       [
-        "vcard",
-        [
-          ["version", {}, "text", "4.0"],
-          ["fn", {}, "text", "Forrest Gump"],
-          ["email", {}, "text", "forrestgump@example.com"],
-          ["x-wallet-addr", {
-              "type": [ "SAFE-ALTCOIN1" ]
-            }, "text", SampleKeyPairs.Me.pk
-          ],
-          ["rev", {}, "timestamp", "2008-04-24T19:52:43Z"]
-        ]
+        ["version", {}, "text", "4.0"],
+        ["fn", {}, "text", "Forrest Gump"],
+        ["email", {}, "text", "forrestgump@example.com"],
+        ["x-wallet-addr", {
+            "type": [ "SAFE-ALTCOIN1" ]
+          }, "text", SampleKeyPairs.Me.pk
+        ],
+        ["rev", {}, "timestamp", "2008-04-24T19:52:43Z"]
       ]
     ]
-  },
-];
+  ]
+},
+*/
