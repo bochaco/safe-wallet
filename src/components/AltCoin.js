@@ -116,68 +116,67 @@ export default class AltCoinView extends React.Component {
               })
           } else {
             // somebody trying to cheat?? I had that coin in my wallet already
-            console.warn("The coin already existed in my wallet, so ignoring it");
+            throw Error("The coin already existed in my wallet, so ignoring it");
           }
         }, (err) => {
           // somebody trying to cheat??
-          console.warn("The coin doesn't belong to me, so ignoring it");
+          throw Error("The coin doesn't belong to me, so ignoring it");
         })
   }
 
   tick() {
     let pk = this.props.selected_item.data.pk;
-    this.props.readTxInboxData(pk)
+    this.props.readTxInboxData(pk, null)
       .then(txInbox => {
         //console.log("Read wallet TX inbox", pk, txInbox);
         // is there any new tx?
-        if (txInbox && txInbox.length > 0) {
+        if (txInbox.dataLength > 0) {
           // Now let's iterate thru each TX
-          for (let i=0; i<txInbox.length; i++) {
-            let newCoins = txInbox[i].coinIds;
-            // let's iterate thru each coin found in the current TX
-            this.checkOwnershipOfCoins(newCoins, pk)
+          console.log("Some TX received", txInbox.dataLength)
+
+          for (let i=0; i<txInbox.dataLength; i++) {
+            let _txInfo;
+//            console.log("iterating agin", i) // we need to fix this, it iterates again before the tx was deleted
+            this.props.readTxInboxData(pk, 0)
+              .then(txInfo => _txInfo = txInfo)
+              .then(() => this.checkOwnershipOfCoins(_txInfo.coinIds, pk))
               .then(({coinsAccepted, prev_owner}) => {
                 let newWallet = this.state.wallet;
                 newWallet.push(...coinsAccepted);
                 console.log("Updated wallet", newWallet);
                 // save updated wallet in state and in SAFEnet
-                this.props.saveWalletData(pk, newWallet);
-                this.setState({wallet: newWallet});
-                if (this.props.selected_item.metadata.keepTxs) {
-                  // save the new TX in the history
-                  let tx = {
-                    amount: coinsAccepted.length,
-                    direction: "in",
-                    date: txInbox[i].date,
-                    from: prev_owner,
-                    msg: txInbox[i].msg,
-                  }
-                  console.log("Storing tx in history", tx);
-                  this.props.appendTx2History(tx);
-                }
+                this.props.saveWalletData(pk, newWallet)
+                  .then(() => {
+                    this.setState({wallet: newWallet});
+                    if (this.props.selected_item.metadata.keepTxs) {
+                      // save the new TX in the history
+                      let tx = {
+                        amount: coinsAccepted.length,
+                        direction: "in",
+                        date: _txInfo.date,
+                        from: prev_owner,
+                        msg: _txInfo.msg,
+                      }
+                      console.log("Storing tx in history", tx);
+                      this.props.appendTx2History(tx);
+                    }
+                  })
               })
           }
-
-          // remove the coins from the inbox
-          // TODO: we should remove only the coins that were read instead of emptying
-          // TODO: also, his should be done when the promises above are done
-          this.props.emptyTxInbox(pk)
-            .then(() => console.log("New coins deleted from inbox"))
-
         }
       });
   }
 
 
-  handleRecipientChange(e) {
+  handleRecipientChange() {
       this.setState({recipientError: ""});
   }
 
-  handleAmountChange(e) {
+  handleAmountChange() {
       this.setState({amountError: ""});
   }
 
-  handlePinChange(e) {
+  handlePinChange() {
       this.setState({pinError: ""});
   }
 
@@ -194,8 +193,10 @@ export default class AltCoinView extends React.Component {
   }
 
   showConfirmTransfer() {
-    let amount = parseFloat(this.refs.amountInput.input.value, 10);
-    if (amount > Math.floor(amount)) {
+    let amount = this.refs.amountInput.input.value ? parseFloat(this.refs.amountInput.input.value, 10) : 0;
+    if (this.refs.recipientInput.input.value.length < 1) {
+      this.setState({recipientError:"Invalid recipient"});
+    } else if (amount > Math.floor(amount)) {
       this.setState({amountError:"Invalid value"});
     } else if (amount <= 0) {
       this.setState({amountError:"Invalid value"});
@@ -240,13 +241,13 @@ export default class AltCoinView extends React.Component {
     let msg = this.refs.msgInput.input.value;
     let amount = parseFloat(this.refs.amountInput.input.value, 10);
     let percentStep = Math.floor(100 / (amount+2));
-    let tx, updatedWallet = this.state.wallet;
+    let coinIds, updatedWallet = this.state.wallet;
     console.log("Transfering coins: ", amount);
     this.makeTransfer(amount, percentStep)
-      .then((coinIds) => tx = {coinIds: coinIds, msg: msg, date: (new Date()).toUTCString()})
+      .then((_coinIds) => coinIds = _coinIds)
       .then(() => this.setState({percent: this.state.percent + percentStep}))
-      .then(() => this.props.appendTx2TxInbox(recipient, tx))
-      .then((tx) => updatedWallet.splice(0, amount))
+      .then(() => this.props.sendTxNotif(recipient, coinIds, msg))
+      .then(() => updatedWallet.splice(0, amount))
       .then(() => this.setState({percent: this.state.percent + percentStep}))
       .then(() => this.props.saveWalletData(this.props.selected_item.data.pk, updatedWallet))
       .then((wallet) => {
@@ -254,7 +255,7 @@ export default class AltCoinView extends React.Component {
         if (this.props.selected_item.metadata.keepTxs) {
           // save the new TX in the history
           let historyTx = {
-            amount: tx.coinIds.length,
+            amount: coinIds.length,
             direction: "out",
             date: (new Date()).toUTCString(),
             to: recipient,
@@ -454,17 +455,35 @@ export default class AltCoinView extends React.Component {
 export class AltCoinEdit extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      pinError: "",
+    }
 
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handlePinChange = this.handlePinChange.bind(this);
+  }
+
+  handlePinChange() {
+      this.setState({pinError: ""});
   }
 
   handleSubmit() {
+    let newPin =  this.props.selected_item.metadata.pin ? this.props.selected_item.metadata.pin : "";
+    if (this.refs.pinInput.input.value.length > 0 || this.refs.pinConfirmInput.input.value.length > 0) {
+      if (this.refs.pinInput.input.value !== this.refs.pinConfirmInput.input.value) {
+        this.setState({pinError:"PIN doesn't match"});
+        return;
+      } else {
+        newPin = this.refs.pinInput.input.value;
+      }
+    }
+
     let history = this.props.selected_item.data.history ? this.props.selected_item.data.history : []
     let updatedItem = {
       type: Constants.TYPE_ALTCOIN,
       metadata: {
         label: this.refs.labelInput.input.value,
-        pin: this.refs.pinInput.input.value,
+        pin: newPin,
         keepTxs: this.refs.historyInput.state.checked,
       },
       data: {
@@ -528,17 +547,20 @@ export class AltCoinEdit extends React.Component {
             <Grid.Column width={3}>
               <TextField
                 fullWidth={true}
-                floatingLabelText="Set new PIN"
+                floatingLabelText="Set PIN"
                 ref='pinInput'
                 type='password'
+                onChange={this.handlePinChange}
               />
             </Grid.Column>
             <Grid.Column width={3}>
               <TextField
                 fullWidth={true}
-                floatingLabelText="Confirm new PIN"
+                floatingLabelText="Confirm PIN"
                 ref='pinConfirmInput'
                 type='password'
+                onChange={this.handlePinChange}
+                errorText={this.state.pinError}
               />
             </Grid.Column>
             <Grid.Column width={1}>

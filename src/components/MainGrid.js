@@ -10,7 +10,6 @@ import CardDelete from './CardDelete.js';
 import AppMenu from './AppMenu.js';
 import AboutView from './AboutView.js';
 import { appInfo } from '../config.js';
-//import { sample_wallet_data } from '../storage/sample-data.js';
 
 function loadStorage() {
   if (process.env.REACT_APP_SAFENET_OFF === "1") {
@@ -23,7 +22,7 @@ function loadStorage() {
 
 var {authoriseApp, isTokenValid, loadAppData, saveAppData, loadWalletData,
   transferCoin, createWallet, saveWalletData, /*deleteWallet,*/ checkOwnership,
-  createTxInbox, readTxInboxData, /*deleteTxInbox,*/ emptyTxInbox, appendTx2TxInbox} = loadStorage();
+  createTxInbox, readTxInboxData, /*deleteTxInbox,*/ emptyTxInbox, sendTxNotif} = loadStorage();
 
 const initialState = {
   isAuthorised: false,
@@ -334,7 +333,7 @@ export default class MainGrid extends React.Component {
             checkOwnership={checkOwnership}
             emptyTxInbox={emptyTxInbox}
             appendTx2History={this.appendTx2History}
-            appendTx2TxInbox={appendTx2TxInbox}
+            sendTxNotif={sendTxNotif}
           />
 
           {/* Dialog box for choosing the type of item to add */}
