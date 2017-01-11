@@ -67,7 +67,7 @@ export const sample_wallet_data =
     metadata: {
       label: "My mined AltCoins",
       color: "blue",
-      pin: "1234",
+      pin: "",
       keepTxs: true,
     },
     data: {
@@ -79,7 +79,7 @@ export const sample_wallet_data =
           direction: "in",
           date: "Sun, 01 Jan 2017 00:01:30 GMT",
           from: SampleKeyPairs.Alice.pk,
-          msg: "SAFE Farming",
+          msg: "AltCoin miner",
         },
         {
           amount: 2,
@@ -92,7 +92,7 @@ export const sample_wallet_data =
           direction: "in",
           date: "Sun, 01 Jan 2017 19:25:19 GMT",
           from: SampleKeyPairs.Bob.pk,
-          msg: "loan",
+          msg: "AltCoin miner",
         },
         {
           amount: 1,
@@ -115,7 +115,7 @@ export const sample_wallet_data =
     metadata: {
       label: "AltCoins for daily usage",
       color: "blue",
-      pin: "1234",
+      pin: "",
       keepTxs: true,
     },
     data: {

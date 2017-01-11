@@ -65,20 +65,20 @@ export const createTxInbox = (pk) => {
   return Promise.resolve(sd_tx_inboxes[dataId]);
 }
 
-export const readTxInboxData = (pk) => {
+export const readTxInboxData = (pk, index) => {
   let dataId = getXorName(WALLET_INBOX_PREFIX + pk);
   console.log("Reading TX inbox in memory...", pk, dataId);
   if (!sd_tx_inboxes[dataId]) {
     sd_tx_inboxes[dataId] = [];
   }
-  return Promise.resolve(sd_tx_inboxes[dataId]);
-}
 
-export const emptyTxInbox = (pk) => {
-  let dataId = getXorName(WALLET_INBOX_PREFIX + pk);
-  console.log("Emptying Tx inbox in the network...");
-  sd_tx_inboxes[dataId] = [];
-  return Promise.resolve(sd_tx_inboxes[dataId]);
+  if (index === null) {
+    return Promise.resolve({dataLength: sd_tx_inboxes[dataId].length});
+  }
+
+  let r = sd_tx_inboxes[dataId][index];
+  sd_tx_inboxes[dataId].splice(index, 1);
+  return Promise.resolve(r);
 }
 
 export const checkOwnership = (coinId, pk) => {
@@ -92,8 +92,14 @@ export const checkOwnership = (coinId, pk) => {
   return Promise.resolve(data);
 }
 
-export const appendTx2TxInbox = (recipient, tx) => {
-  let recipientInbox = getXorName(WALLET_INBOX_PREFIX + recipient);
+export const sendTxNotif = (pk, coinIds, msg) => {
+  let recipientInbox = getXorName(WALLET_INBOX_PREFIX + pk);
+  let tx = {
+    coinIds: coinIds,
+    msg: msg,
+    date: (new Date()).toUTCString()
+  }
+
   if (sd_tx_inboxes[recipientInbox]) {
     sd_tx_inboxes[recipientInbox].push(tx);
   } else {
