@@ -5,6 +5,7 @@ import ContentSend from 'material-ui/svg-icons/content/send';
 import { Checkbox, Grid, Image, Header, Icon, List, Popup, Modal, Dimmer, Progress, Loader } from 'semantic-ui-react'
 import { Constants, getQRCode } from '../common.js';
 import { EditDialogBox, ConfirmTransferDialogBox } from './DialogBox.js';
+import { ColorAndLabel } from './Common.js';
 
 import img_altcoinicon from '../img/icon_altcoin.png';
 
@@ -482,7 +483,8 @@ export class AltCoinEdit extends React.Component {
     let updatedItem = {
       type: Constants.TYPE_ALTCOIN,
       metadata: {
-        label: this.refs.labelInput.input.value,
+        label: this.refs.colorAndLabelInput.refs.labelInput.input.value,
+        color: this.refs.colorAndLabelInput.refs.colorInput.getSelectedItem().value,
         pin: newPin,
         keepTxs: this.refs.historyInput.state.checked,
       },
@@ -492,6 +494,7 @@ export class AltCoinEdit extends React.Component {
         history: this.refs.historyInput.state.checked ? history : [],
       }
     }
+
     // Create the wallet and inbox based on the label
     this.props.createWallet(updatedItem.data.pk)
       .then(data => this.props.createTxInbox(updatedItem.data.pk))
@@ -499,8 +502,8 @@ export class AltCoinEdit extends React.Component {
   };
 
   componentDidMount() {
-    if (this.refs.labelInput) {
-      this.refs.labelInput.input.focus();
+    if (this.refs.ColorAndLabelInput) {
+      this.refs.ColorAndLabelInput.refs.labelInput.input.focus();
     }
   }
 
@@ -512,12 +515,10 @@ export class AltCoinEdit extends React.Component {
       >
         <Grid>
           <Grid.Row>
-            <Grid.Column width={7}>
-              <TextField
-                fullWidth={true}
-                floatingLabelText="Label / Wallet ID"
-                defaultValue={this.props.selected_item.metadata.label}
-                ref='labelInput'
+            <Grid.Column width={8}>
+              <ColorAndLabel
+                selected_item={this.props.selected_item}
+                ref='colorAndLabelInput'
               />
             </Grid.Column>
             <Grid.Column width={8}>
@@ -527,8 +528,6 @@ export class AltCoinEdit extends React.Component {
                 defaultValue={this.props.selected_item.data.pk}
                 ref='pkInput'
               />
-            </Grid.Column>
-            <Grid.Column width={1}>
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>

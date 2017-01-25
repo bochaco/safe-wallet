@@ -1,8 +1,25 @@
 import React from 'react';
 import { Button, Card, Image, Container } from 'semantic-ui-react';
-import { ItemTypes } from '../common.js';
+import { Constants, ItemTypes } from '../common.js';
+import { MessageNoItems } from './Messages.js';
 
-export default class ItemCard extends React.Component {
+export default class ItemCards extends React.Component {
+  render() {
+    if (Object.keys(this.props.data).length > 0) {
+      return (
+        <Card.Group itemsPerRow={3}>
+        {this.props.data.map((item, index) => (
+          <ItemCard key={index} index={index} item={item} {...this.props} />
+        ))}
+        </Card.Group>
+      )
+    }
+
+    return <MessageNoItems />
+  }
+}
+
+class ItemCard extends React.Component {
   constructor(props) {
     super(props);
 
@@ -24,26 +41,9 @@ export default class ItemCard extends React.Component {
   }
 
   render() {
-
-    let color;
-    switch (this.props.item.type) {
-      case 0:
-        color = "brown";
-        break;
-      case 1:
-        color = "red";
-        break;
-      case 2:
-        color = "yellow";
-        break;
-      case 3:
-        color = "violet";
-        break;
-      case 4:
-        color = "blue";
-        break;
-      default:
-        color = "orange";
+    let color = this.props.item.metadata.color;
+    if (color == null) {
+      color = Constants.DEFAULT_CARD_COLOR;
     }
 
     return (

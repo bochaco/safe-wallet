@@ -4,6 +4,7 @@ import { Grid, Image, Header, Container } from 'semantic-ui-react'
 import { Constants } from '../common.js';
 import { EditDialogBox } from './DialogBox.js';
 import { getQRCode } from '../common.js';
+import { ColorAndLabel } from './Common.js';
 
 export default class PrivPubKeysView extends React.Component {
   render() {
@@ -56,7 +57,8 @@ export class PrivPubKeysEdit extends React.Component {
     let updatedItem = {
       type: Constants.TYPE_PRIV_PUB_KEY,
       metadata: {
-        label: this.refs.labelInput.input.value,
+        label: this.refs.colorAndLabelInput.refs.labelInput.input.value,
+        color: this.refs.colorAndLabelInput.refs.colorInput.getSelectedItem().value,
       },
       data: {
         pk: this.refs.pkInput.input.value,
@@ -68,8 +70,8 @@ export class PrivPubKeysEdit extends React.Component {
   };
 
   componentDidMount() {
-    if (this.refs.labelInput) {
-      this.refs.labelInput.input.focus();
+    if (this.refs.colorAndLabelInput) {
+      this.refs.colorAndLabelInput.refs.labelInput.input.focus();
     }
   }
 
@@ -81,12 +83,10 @@ export class PrivPubKeysEdit extends React.Component {
       >
         <Grid>
           <Grid.Row>
-            <Grid.Column width={7}>
-              <TextField
-                fullWidth={true}
-                floatingLabelText="Label"
-                defaultValue={this.props.selected_item.metadata.label}
-                ref='labelInput'
+            <Grid.Column width={8}>
+              <ColorAndLabel
+                selected_item={this.props.selected_item}
+                ref='colorAndLabelInput'
               />
             </Grid.Column>
             <Grid.Column width={8}>
@@ -96,8 +96,6 @@ export class PrivPubKeysEdit extends React.Component {
                 defaultValue={this.props.selected_item.data.pk}
                 ref='pkInput'
               />
-            </Grid.Column>
-            <Grid.Column width={1}>
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>

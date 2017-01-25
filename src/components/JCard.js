@@ -3,6 +3,7 @@ import TextField from 'material-ui/TextField';
 import { Grid, Image, Header, Icon, List } from 'semantic-ui-react'
 import { Constants, getQRCode } from '../common.js';
 import { EditDialogBox } from './DialogBox.js';
+import { ColorAndLabel } from './Common.js';
 
 export default class JCardView extends React.Component {
   render() {
@@ -83,7 +84,8 @@ export class JCardEdit extends React.Component {
     let updatedItem = {
       type: Constants.TYPE_JCARD,
       metadata: {
-        label: this.refs.labelInput.input.value,
+        label: this.refs.colorAndLabelInput.refs.labelInput.input.value,
+        color: this.refs.colorAndLabelInput.refs.colorInput.getSelectedItem().value,
       },
       data: [
         this.refs.idInput.input.value,
@@ -106,8 +108,8 @@ export class JCardEdit extends React.Component {
   };
 
   componentDidMount() {
-    if (this.refs.labelInput) {
-      this.refs.labelInput.input.focus();
+    if (this.refs.colorAndLabelInput) {
+      this.refs.colorAndLabelInput.refs.labelInput.input.focus();
     }
   }
 
@@ -120,11 +122,9 @@ export class JCardEdit extends React.Component {
         <Grid>
           <Grid.Row>
             <Grid.Column width={7}>
-              <TextField
-                fullWidth={true}
-                floatingLabelText="Label"
-                defaultValue={this.props.selected_item.metadata.label}
-                ref='labelInput'
+              <ColorAndLabel
+                selected_item={this.props.selected_item}
+                ref='colorAndLabelInput'
               />
             </Grid.Column>
           </Grid.Row>

@@ -1,6 +1,6 @@
 import React from 'react'
-import { List, Grid, Card, Container, Message, Icon } from 'semantic-ui-react';
-import ItemCard from './ItemCard.js';
+import { Container } from 'semantic-ui-react';
+import ItemCards from './ItemCard.js';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Snackbar from 'material-ui/Snackbar';
 import CardView from './CardView.js';
@@ -9,6 +9,7 @@ import CardAdd from './CardAdd.js';
 import CardDelete from './CardDelete.js';
 import AppMenu from './AppMenu.js';
 import AboutView from './AboutView.js';
+import { MessageNotAuthorised, MessageAwatingAuth } from './Messages.js';
 import { appInfo } from '../config.js';
 
 function loadStorage() {
@@ -116,7 +117,6 @@ export default class MainGrid extends React.Component {
       .then(loadAppData)
       .then((parsedData) => {
         this.setState({isAuthorised: true, data: parsedData});
-        //this.storeData(sample_wallet_data); // ONLY FOR TEST!!! this is too store the wallet_sample_data
       }, (err) => {
         this.setState({isAuthorised: false, data: {}});
         console.log("Authentication Failed:", err);
@@ -163,11 +163,12 @@ export default class MainGrid extends React.Component {
   handleSubmitEditModal(newItem) {
     if (newItem != null) {
       let updatedData = this.state.data;
-      if (this.state.selected_item == null) {
-        // then add a new item
-        newItem.id = 100; // TODO: this needs to be reviewed
+      if (this.state.selected_item == null) { // then add a new item
+        newItem.id = 100; // TODO: this needs to be reviewed, perhaps is the key of the MD entry
+        newItem.lastUpdate = (new Date()).toUTCString();
         updatedData.push(newItem);
       } else {
+        updatedData[this.state.selected_item].lastUpdate = (new Date()).toUTCString();
         updatedData[this.state.selected_item].metadata = newItem.metadata;
         updatedData[this.state.selected_item].data = newItem.data;
       }
@@ -238,31 +239,6 @@ export default class MainGrid extends React.Component {
   }
 
   render() {
-    let cards = null;
-    if (Object.keys(this.state.data).length > 0) {
-      cards = <Card.Group itemsPerRow={3}>
-        {this.state.data.map((item, index) => (
-          <ItemCard key={index} index={index} item={item}
-              handleView={this.handleOpenViewModal}
-              handleEdit={this.handleOpenEditModal}
-              handleDelete={this.handleOpenDeleteModal} />
-          ))
-        }
-        </Card.Group>;
-    } else {
-      cards =
-      <Grid centered columns={1}>
-        <Grid.Column width={10} textAlign='center'>
-        <Message visible >
-          <Message.Content>
-            You have no items stored in your wallet.
-            Use the <Icon name='add circle'/>button to add an item.
-          </Message.Content>
-        </Message>
-      </Grid.Column>
-      </Grid>
-    }
-
     return (
       <MuiThemeProvider>
         <Container>
@@ -276,50 +252,20 @@ export default class MainGrid extends React.Component {
           />
 
           {/* Warning message when the app is not authorised yet */}
-          {this.state.isAuthorised == null &&
-            <Grid centered columns={3}>
-              <Grid.Column width={6}>
-                <Message info compact>
-                  <Message.Content>
-                    <Message.Header>Awaiting for access authorisation</Message.Header>
-                    Please authorise the application from
-                    the SAFE Authenticator in order to access your content:
-                  </Message.Content>
-                  <List as='ul'>
-                    <List.Item as='li'>App Name: {appInfo.name}</List.Item>
-                    <List.Item as='li'>Vendor:   {appInfo.vendor}</List.Item>
-                    <List.Item as='li'>Version:  {appInfo.version}</List.Item>
-                    <List.Item as='li'>Permissions:
-                      <List.Item as='ul'>
-                        {appInfo.permissions.map((p, i) => (
-                          <List.Item key={i}>- {p}</List.Item>
-                        ))}
-                      </List.Item>
-                    </List.Item>
-                  </List>
-                </Message>
-              </Grid.Column>
-            </Grid>
-          }
+          {this.state.isAuthorised == null && <MessageAwatingAuth />}
 
           {/* Warning message when the app authorisation has been revoked */}
-          {this.state.isAuthorised === false &&
-            <Grid centered columns={3}>
-              <Grid.Column width={10}>
-                <Message negative compact>
-                  <Message.Content>
-                    <Message.Header>Application not authorised</Message.Header>
-                    Access authorisation was revoked, the app was disconnected, or it lost
-                    the connection to the network.
-                    <br/><br />Please press the <Icon name='power'/> button to connect again.
-                  </Message.Content>
-                </Message>
-              </Grid.Column>
-            </Grid>
-          }
+          {this.state.isAuthorised === false && <MessageNotAuthorised />}
 
           {/* List of items */}
-          {this.state.isAuthorised && cards}
+          {this.state.isAuthorised &&
+            <ItemCards
+              data={this.state.data}
+              handleView={this.handleOpenViewModal}
+              handleEdit={this.handleOpenEditModal}
+              handleDelete={this.handleOpenDeleteModal}
+            />
+          }
 
           {/* Dialog box for viewing the selected item */}
           <CardView

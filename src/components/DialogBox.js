@@ -4,7 +4,7 @@ import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import NavigationCheck from 'material-ui/svg-icons/navigation/check';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import ActionDelete from 'material-ui/svg-icons/action/delete';
-import { Image, Header, Modal } from 'semantic-ui-react'
+import { Image, Header, Modal, Container, Label } from 'semantic-ui-react'
 import { ItemTypes } from '../common.js';
 
 const styles = {
@@ -64,6 +64,14 @@ export class EditDialogBox extends React.Component {
         </Modal.Header>
         <Modal.Content>
           {this.props.children}
+          {this.props.selected_item && this.props.selected_item.lastUpdate &&
+            <Label attached='bottom left' size='tiny'>
+              Last Update
+              <Label.Detail>
+                {this.props.selected_item.lastUpdate}
+              </Label.Detail>
+            </Label>
+          }
         </Modal.Content>
         <Modal.Actions>
           <RaisedButton

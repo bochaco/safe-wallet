@@ -30,6 +30,7 @@ export const Constants = {
   TYPE_JCARD: 8,
 
   MAX_NUMBER_2FA_CODES: 12,
+  DEFAULT_CARD_COLOR: 'brown',
 }
 
 export const getXorName = (id) => { return base64.encode(crypto.createHash('sha256').update(id).digest('base64')); }

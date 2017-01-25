@@ -63,7 +63,7 @@ sample_SD_coins[ALTCOIN_3_XOR_NAME] = {
 
 export const sample_wallet_data =
 [
-  {id: 28, type: Constants.TYPE_ALTCOIN,
+  {id: 28, type: Constants.TYPE_ALTCOIN, lastUpdate: "Sun, 01 Jan 2017 00:01:30 GMT",
     metadata: {
       label: "My mined AltCoins",
       color: "blue",
@@ -114,7 +114,6 @@ export const sample_wallet_data =
   {id: 30, type: Constants.TYPE_ALTCOIN,
     metadata: {
       label: "AltCoins for daily usage",
-      color: "blue",
       pin: "",
       keepTxs: true,
     },
@@ -124,7 +123,7 @@ export const sample_wallet_data =
       history: [] // this could be part of the coin wallet
     }
   },
-  {id: 10, type: Constants.TYPE_CREDIT_CARD,
+  {id: 10, type: Constants.TYPE_CREDIT_CARD, lastUpdate: "Sun, 01 Jan 2017 00:01:30 GMT",
     metadata: {
       label: "My prepaid VISA card from Bank 'A'",
       color: "brown",
@@ -140,7 +139,7 @@ export const sample_wallet_data =
       network: "VISA",
     }
   },
-  {id: 20, type: Constants.TYPE_PASSWORD,
+  {id: 20, type: Constants.TYPE_PASSWORD, lastUpdate: "Sun, 01 Jan 2017 00:01:30 GMT",
     metadata: {
       label: "Bank 'A' Homebanking",
       color: "red",
@@ -157,7 +156,7 @@ export const sample_wallet_data =
       ]
     }
   },
-  {id: 12, type: Constants.TYPE_PRIV_PUB_KEY,
+  {id: 12, type: Constants.TYPE_PRIV_PUB_KEY, lastUpdate: "Sun, 01 Jan 2017 00:01:30 GMT",
     metadata: {
       label: "Bitcoin savings",
       color: "yellow",

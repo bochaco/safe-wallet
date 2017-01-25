@@ -3,6 +3,7 @@ import TextField from 'material-ui/TextField';
 import { Grid, Image, Header, Icon, List } from 'semantic-ui-react'
 import { Constants } from '../common.js';
 import { EditDialogBox } from './DialogBox.js';
+import { ColorAndLabel } from './Common.js';
 
 import img_credit_card_view from '../img/credit_card3.jpg';
 
@@ -52,8 +53,8 @@ export class CreditCardEdit extends React.Component {
   }
 
   componentDidMount() {
-    if (this.refs.labelInput) {
-      this.refs.labelInput.input.focus();
+    if (this.refs.colorAndLabelInput) {
+      this.refs.colorAndLabelInput.refs.labelInput.input.focus();
     }
   }
 
@@ -61,7 +62,8 @@ export class CreditCardEdit extends React.Component {
     let updatedItem = {
       type: Constants.TYPE_CREDIT_CARD,
       metadata: {
-        label: this.refs.labelInput.input.value,
+        label: this.refs.colorAndLabelInput.refs.labelInput.input.value,
+        color: this.refs.colorAndLabelInput.refs.colorInput.getSelectedItem().value,
       },
       data: {
         cvv: this.refs.cvvInput.input.value,
@@ -85,15 +87,11 @@ export class CreditCardEdit extends React.Component {
       >
         <Grid>
           <Grid.Row columns={5}>
-            <Grid.Column width={7}>
-              <TextField
-                fullWidth={true}
-                floatingLabelText="Label"
-                defaultValue={this.props.selected_item.metadata.label}
-                ref='labelInput'
+            <Grid.Column width={8}>
+              <ColorAndLabel
+                selected_item={this.props.selected_item}
+                ref='colorAndLabelInput'
               />
-            </Grid.Column>
-            <Grid.Column width={1}>
             </Grid.Column>
             <Grid.Column width={2}>
               <TextField
