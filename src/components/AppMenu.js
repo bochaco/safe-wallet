@@ -62,8 +62,12 @@ export default class AppMenu extends React.Component {
         </Menu.Item>
         <Menu.Menu position='right'>
           <Menu.Item>
-            <IconButton onClick={this.props.handleOpenAddModal}><AddCircleOutline color='white' /></IconButton>
-            <IconButton onClick={this.props.handleRefresh}><Autorenew color='white' /></IconButton>
+            {this.props.isAuthorised &&
+            <div>
+              <IconButton onClick={this.props.handleOpenAddModal}><AddCircleOutline color='white' /></IconButton>
+              <IconButton onClick={this.props.handleRefresh}><Autorenew color='white' /></IconButton>
+            </div>
+            }
             <IconButton onClick={this.props.handleOpenAboutModal}><InfoOutline color='white' /></IconButton>
           </Menu.Item>
           <Menu.Item>
