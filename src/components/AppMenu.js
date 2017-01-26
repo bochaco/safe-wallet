@@ -16,7 +16,7 @@ export default class AppMenu extends React.Component {
     this.langOptions = [
       { value: 'en', text: 'English', flag: 'gb' },
       { value: 'es', text: 'Español', flag: 'es' },
-      { value: 'cn', text: 'Chinese', flag: 'cn', disabled: true },
+      { value: 'cn', text: '中文', flag: 'cn', disabled: true },
     ]
 
     this.handleChangeLang = this.handleChangeLang.bind(this);
