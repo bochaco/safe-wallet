@@ -33,7 +33,7 @@ export default class PasswordView extends React.Component {
             <Header.Content>
               {this.props.selected_item.data.username}
               <Header.Subheader>
-                Username
+                {this.props.i18nStrings.item_username}
               </Header.Subheader>
             </Header.Content>
           </Header>
@@ -44,7 +44,7 @@ export default class PasswordView extends React.Component {
             <Header.Content>
               {this.props.selected_item.data.password}
               <Header.Subheader>
-                Password
+                {this.props.i18nStrings.item_password}
               </Header.Subheader>
             </Header.Content>
           </Header>
@@ -141,14 +141,14 @@ export class PasswordEdit extends React.Component {
             <List horizontal>
               <List.Item>
                 <TextField
-                  floatingLabelText={"Question #" + (index+1)}
+                  floatingLabelText={this.props.i18nStrings.item_question + " #" + (index+1)}
                   defaultValue={qa.q}
                   onChange={(e) => {this.handleQChange(index, e)}}
                 />
               </List.Item>
               <List.Item>
                 <TextField
-                  floatingLabelText="Answer"
+                  floatingLabelText={this.props.i18nStrings.item_answer}
                   defaultValue={qa.a}
                   onChange={(e) => {this.handleAChange(index, e)}}
                 />
@@ -168,14 +168,14 @@ export class PasswordEdit extends React.Component {
             <List.Item>
               <TextField
                 defaultValue=""
-                floatingLabelText="Question"
+                floatingLabelText={this.props.i18nStrings.item_question}
                 ref='newQInput'
               />
             </List.Item>
             <List.Item>
               <TextField
                 defaultValue=""
-                floatingLabelText="Answer"
+                floatingLabelText={this.props.i18nStrings.item_answer}
                 ref='newAInput'
               />
             </List.Item>
@@ -199,6 +199,8 @@ export class PasswordEdit extends React.Component {
             <Grid.Column width={10}>
               <ColorAndLabel
                 selected_item={this.props.selected_item}
+                i18nStrings={this.props.i18nStrings}
+                label={this.props.i18nStrings.item_label}
                 ref='colorAndLabelInput'
               />
             </Grid.Column>
@@ -209,7 +211,7 @@ export class PasswordEdit extends React.Component {
             <Grid.Column width={7}>
               <TextField
                 fullWidth={true}
-                floatingLabelText="Username"
+                floatingLabelText={this.props.i18nStrings.item_username}
                 defaultValue={this.props.selected_item.data.username}
                 ref='usernameInput'
               />
@@ -217,7 +219,7 @@ export class PasswordEdit extends React.Component {
             <Grid.Column width={7}>
               <TextField
                 fullWidth={true}
-                floatingLabelText="Password"
+                floatingLabelText={this.props.i18nStrings.item_password}
                 defaultValue={this.props.selected_item.data.password}
                 ref='passwordInput'
               />

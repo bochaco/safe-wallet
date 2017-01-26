@@ -12,12 +12,12 @@ export default class PrivPubKeysView extends React.Component {
       <Grid >
         <Grid.Row>
           <Grid.Column width={3}>
-            <Header as='h4'>Public Key</Header>
+            <Header as='h4'>{this.props.i18nStrings.item_pk}</Header>
           </Grid.Column>
           <Grid.Column width={10}>
           </Grid.Column>
           <Grid.Column width={3}>
-            <Header as='h4'>Private Key</Header>
+            <Header as='h4'>{this.props.i18nStrings.item_sk}</Header>
           </Grid.Column>
         </Grid.Row>
 
@@ -33,7 +33,7 @@ export default class PrivPubKeysView extends React.Component {
               </Header.Subheader>
             </Header>
             <Container textAlign='left'>
-              <Header as='h4'>Balance & Transactions notes:</Header>
+              <Header as='h4'>{this.props.i18nStrings.item_tx_notes}:</Header>
               {this.props.selected_item.data.notes}
             </Container>
           </Grid.Column>
@@ -86,13 +86,15 @@ export class PrivPubKeysEdit extends React.Component {
             <Grid.Column width={8}>
               <ColorAndLabel
                 selected_item={this.props.selected_item}
+                i18nStrings={this.props.i18nStrings}
+                label={this.props.i18nStrings.item_label}
                 ref='colorAndLabelInput'
               />
             </Grid.Column>
             <Grid.Column width={8}>
               <TextField
                 fullWidth={true}
-                floatingLabelText="Public Key"
+                floatingLabelText={this.props.i18nStrings.item_pk}
                 defaultValue={this.props.selected_item.data.pk}
                 ref='pkInput'
               />
@@ -102,7 +104,7 @@ export class PrivPubKeysEdit extends React.Component {
             <Grid.Column width={15}>
               <TextField
                 fullWidth={true}
-                floatingLabelText="Private Key"
+                floatingLabelText={this.props.i18nStrings.item_sk}
                 defaultValue={this.props.selected_item.data.sk}
                 ref='skInput'
               />
@@ -115,7 +117,7 @@ export class PrivPubKeysEdit extends React.Component {
               <TextField
                 fullWidth={true}
                 multiLine={false/*TODO: true*/}
-                floatingLabelText="Balance & Transactions notes"
+                floatingLabelText={this.props.i18nStrings.item_tx_notes}
                 defaultValue={this.props.selected_item.data.notes}
                 ref='notesInput'
               />

@@ -29,13 +29,13 @@ export default class CreditCardView extends React.Component {
             <Header>
               <Icon name='protect' color="brown" />
               <Header.Content>
-                Security Code: {this.props.selected_item.data.cvv}
+                {this.props.i18nStrings.item_credit_card_security_code}: {this.props.selected_item.data.cvv}
               </Header.Content>
             </Header>
             <Header>
               <Icon name='payment' color="brown" />
               <Header.Content>
-                PIN: {this.props.selected_item.data.pin}
+                {this.props.i18nStrings.item_pin}: {this.props.selected_item.data.pin}
               </Header.Content>
             </Header>
           </Grid.Column>
@@ -90,13 +90,15 @@ export class CreditCardEdit extends React.Component {
             <Grid.Column width={8}>
               <ColorAndLabel
                 selected_item={this.props.selected_item}
+                i18nStrings={this.props.i18nStrings}
+                label={this.props.i18nStrings.item_label}
                 ref='colorAndLabelInput'
               />
             </Grid.Column>
             <Grid.Column width={2}>
               <TextField
                 style={styles.customWidth}
-                floatingLabelText="Network/Type"
+                floatingLabelText={this.props.i18nStrings.item_credit_card_type}
                 defaultValue={this.props.selected_item.data.network}
                 ref='networkInput'
               />
@@ -106,7 +108,7 @@ export class CreditCardEdit extends React.Component {
             <Grid.Column width={5}>
               <TextField
                 fullWidth={true}
-                floatingLabelText="Issuer"
+                floatingLabelText={this.props.i18nStrings.item_credit_card_issuer}
                 defaultValue={this.props.selected_item.data.issuer}
                 ref='issuerInput'
               />
@@ -117,7 +119,7 @@ export class CreditCardEdit extends React.Component {
             <Grid.Column width={6}>
               <TextField
                 fullWidth={true}
-                floatingLabelText="Number"
+                floatingLabelText={this.props.i18nStrings.item_credit_card_number}
                 defaultValue={this.props.selected_item.data.number}
                 ref='numberInput'
               />
@@ -130,7 +132,7 @@ export class CreditCardEdit extends React.Component {
                   <List.Content>
                     <TextField
                       style={styles.tinyWidth}
-                      floatingLabelText="Expiry month"
+                      floatingLabelText={this.props.i18nStrings.item_credit_card_expiry_month}
                       defaultValue={this.props.selected_item.data.expiry_month}
                       ref='monthInput'
                     />
@@ -145,7 +147,7 @@ export class CreditCardEdit extends React.Component {
                   <List.Content>
                     <TextField
                       style={styles.customWidth}
-                      floatingLabelText="Expiry year"
+                      floatingLabelText={this.props.i18nStrings.item_credit_card_expiry_year}
                       defaultValue={this.props.selected_item.data.expiry_year}
                       ref='yearInput'
                     />
@@ -158,7 +160,7 @@ export class CreditCardEdit extends React.Component {
           <Grid.Row columns={4}>
             <Grid.Column width={6}>
               <TextField
-                floatingLabelText="Cardholder's Name"
+                floatingLabelText={this.props.i18nStrings.item_credit_card_cardholder}
                 defaultValue={this.props.selected_item.data.name}
                 ref='nameInput'
               />
@@ -168,7 +170,7 @@ export class CreditCardEdit extends React.Component {
             <Grid.Column width={3}>
               <TextField
                 style={styles.tinyWidth}
-                floatingLabelText="CVV"
+                floatingLabelText={this.props.i18nStrings.item_credit_card_cvv}
                 defaultValue={this.props.selected_item.data.cvv}
                 ref='cvvInput'
               />
@@ -176,7 +178,7 @@ export class CreditCardEdit extends React.Component {
             <Grid.Column width={3}>
               <TextField
                 style={styles.tinyWidth}
-                floatingLabelText="PIN"
+                floatingLabelText={this.props.i18nStrings.item_pin}
                 defaultValue={this.props.selected_item.data.pin}
                 ref='pinInput'
               />

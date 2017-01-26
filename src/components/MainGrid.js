@@ -9,8 +9,9 @@ import CardAdd from './CardAdd.js';
 import CardDelete from './CardDelete.js';
 import AppMenu from './AppMenu.js';
 import AboutView from './AboutView.js';
-import { MessageNotAuthorised, MessageAwatingAuth } from './Messages.js';
+import { MessageNotAuthorised, MessageAwatingAuth, MessageNoItems } from './Messages.js';
 import { appInfo } from '../config.js';
+import { Api } from '../i18n/read-content.js';
 
 function loadStorage() {
   if (process.env.REACT_APP_SAFENET_OFF === "1") {
@@ -37,6 +38,8 @@ const initialState = {
   snackbar_message: '',
   selected_item: null,
   selected_type: null,
+  lang: 'en',
+  content: null,
 };
 
 const CHECK_CONNECTION_FREQ = 2000;
@@ -67,6 +70,8 @@ export default class MainGrid extends React.Component {
     this.handleOpenAboutModal = this.handleOpenAboutModal.bind(this);
     this.handleCloseAboutModal = this.handleCloseAboutModal.bind(this);
 
+    this.handleChangeLang = this.handleChangeLang.bind(this);
+
     this.handleOpenSnack = this.handleOpenSnack.bind(this);
     this.handleCloseSnack = this.handleCloseSnack.bind(this);
 
@@ -78,6 +83,7 @@ export default class MainGrid extends React.Component {
   }
 
   componentWillMount() {
+    this.setState({content: Api.getContent(this.state.lang).page});
     this.requestAuthorisation();
   }
 
@@ -97,7 +103,7 @@ export default class MainGrid extends React.Component {
       isTokenValid()
         .then(() => {}, (err) => {
           this.setState(initialState);
-          this.handleOpenSnack("Application authorization was revoked")
+          this.handleOpenSnack(this.state.content.snackbar.fail_auth_revoked)
         })
     }
   }
@@ -130,7 +136,7 @@ export default class MainGrid extends React.Component {
       }, (err) => {
         console.log("Failed refreshing data:", err);
       })
-    this.handleOpenSnack("List of items reloaded from the SAFE network");
+    this.handleOpenSnack(this.state.content.snackbar.items_reloaded);
   }
 
   storeData(data) {
@@ -173,7 +179,7 @@ export default class MainGrid extends React.Component {
         updatedData[this.state.selected_item].data = newItem.data;
       }
       this.storeData(updatedData)
-        .then(() => {this.handleOpenSnack("Item saved in the SAFE network")})
+        .then(() => {this.handleOpenSnack(this.state.content.snackbar.item_saved)})
     }
     this.setState({edit_modal: false, selected_item: null});
   };
@@ -207,8 +213,8 @@ export default class MainGrid extends React.Component {
 
     updatedData.splice(this.state.selected_item, 1);
     this.storeData(updatedData)
-      .then(() => {this.handleOpenSnack("Item deleted from the SAFE network")},
-      (err) => {this.handleOpenSnack("Failed to delete item")})
+      .then(() => {this.handleOpenSnack(this.state.content.snackbar.item_deleted)},
+      (err) => {this.handleOpenSnack(this.state.content.snackbar.fail_deleting)})
 
     this.setState({delete_modal: false, selected_item: null});
   };
@@ -220,6 +226,15 @@ export default class MainGrid extends React.Component {
   handleCloseAboutModal() {
     this.setState({about_modal: false});
   };
+
+  handleChangeLang(lang) {
+    if (lang !== this.state.lang) {
+      this.setState({
+        lang: lang,
+        content: Api.getContent(lang).page
+      });
+    }
+  }
 
   handleOpenSnack(message) {
     this.setState({snackbar: true, snackbar_message: message});
@@ -247,15 +262,17 @@ export default class MainGrid extends React.Component {
             handleOpenAboutModal={this.handleOpenAboutModal}
             handleOpenAddModal={this.handleOpenAddModal}
             handleRefresh={this.handleRefresh}
+            handleChangeLang={this.handleChangeLang}
             isAuthorised={this.state.isAuthorised}
             handlePower={this.handlePower}
+            lang={this.state.lang}
           />
 
           {/* Warning message when the app is not authorised yet */}
-          {this.state.isAuthorised == null && <MessageAwatingAuth />}
+          {this.state.isAuthorised == null && <MessageAwatingAuth i18nStrings={this.state.content.messages} />}
 
           {/* Warning message when the app authorisation has been revoked */}
-          {this.state.isAuthorised === false && <MessageNotAuthorised />}
+          {this.state.isAuthorised === false && <MessageNotAuthorised i18nStrings={this.state.content.messages} />}
 
           {/* List of items */}
           {this.state.isAuthorised &&
@@ -264,6 +281,8 @@ export default class MainGrid extends React.Component {
               handleView={this.handleOpenViewModal}
               handleEdit={this.handleOpenEditModal}
               handleDelete={this.handleOpenDeleteModal}
+              i18nStrings={this.state.content.items}
+              noItemsComponent={<MessageNoItems i18nStrings={this.state.content.messages} />}
             />
           }
 
@@ -272,6 +291,7 @@ export default class MainGrid extends React.Component {
             open={this.state.view_modal}
             selected_item={this.state.data[this.state.selected_item]}
             handleClose={this.handleCloseViewModal}
+            i18nStrings={this.state.content.items}
             loadWalletData={loadWalletData}
             transferCoin={transferCoin}
             readTxInboxData={readTxInboxData}
@@ -287,6 +307,7 @@ export default class MainGrid extends React.Component {
             open={this.state.add_modal}
             handleClose={this.handleCloseAddModal}
             handleSubmit={this.handleSubmitAddModal}
+            i18nStrings={this.state.content.items}
           />
 
           {/* Dialog box for editing the selected item, or adding a new one */}
@@ -296,6 +317,7 @@ export default class MainGrid extends React.Component {
             selected_type={this.state.selected_type}
             handleClose={this.handleCloseEditModal}
             handleSubmit={this.handleSubmitEditModal}
+            i18nStrings={this.state.content.items}
             loadWalletData={loadWalletData}
             createWallet={createWallet}
             createTxInbox={createTxInbox}
@@ -307,12 +329,14 @@ export default class MainGrid extends React.Component {
             selected_item={this.state.data[this.state.selected_item]}
             handleClose={this.handleCloseDeleteModal}
             handleSubmit={this.handleSubmitDeleteModal}
+            i18nStrings={this.state.content.items}
           />
 
           {/* About the app dialog box */}
           <AboutView
             open={this.state.about_modal}
             handleClose={this.handleCloseAboutModal}
+            i18nStrings={this.state.content.about}
           />
 
           {/* Confirmation alert */}

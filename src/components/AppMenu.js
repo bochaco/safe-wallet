@@ -7,11 +7,41 @@ import PowerSettingsNew from 'material-ui/svg-icons/action/power-settings-new';
 import InfoOutline from 'material-ui/svg-icons/action/info-outline';
 import Autorenew from 'material-ui/svg-icons/action/autorenew';
 import '../css/AppMenu.css';
-import { Menu } from 'semantic-ui-react'
+import { Menu, Flag, Dropdown } from 'semantic-ui-react'
 
 export default class AppMenu extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.langOptions = [
+      { value: 'en', text: 'English', flag: 'gb' },
+      { value: 'es', text: 'Español', flag: 'es' },
+      { value: 'cn', text: 'Chinese', flag: 'cn', disabled: true },
+    ]
+
+    this.handleChangeLang = this.handleChangeLang.bind(this);
+  }
+
+  handleChangeLang(event, data) {
+    this.props.handleChangeLang(data.value);
+  }
 
   render() {
+    let flagName;
+    switch(this.props.lang) {
+      case 'en':
+        flagName = 'gb';
+        break;
+      case 'es':
+        flagName = 'es'
+        break;
+      case 'cn':
+        flagName = 'cn';
+        break;
+      default:
+    }
+    let trigger = <Flag name={flagName} />
+
     return (
       <Menu id="appMenu" inverted borderless size="mini">
         <Menu.Item>
@@ -35,6 +65,13 @@ export default class AppMenu extends React.Component {
             <IconButton onClick={this.props.handleOpenAddModal}><AddCircleOutline color='white' /></IconButton>
             <IconButton onClick={this.props.handleRefresh}><Autorenew color='white' /></IconButton>
             <IconButton onClick={this.props.handleOpenAboutModal}><InfoOutline color='white' /></IconButton>
+          </Menu.Item>
+          <Menu.Item>
+            <Dropdown
+              options={this.langOptions}
+              onChange={this.handleChangeLang}
+              trigger={trigger}
+            />
           </Menu.Item>
         </Menu.Menu>
       </Menu>

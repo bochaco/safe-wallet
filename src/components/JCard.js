@@ -124,6 +124,7 @@ export class JCardEdit extends React.Component {
             <Grid.Column width={7}>
               <ColorAndLabel
                 selected_item={this.props.selected_item}
+                i18nStrings={this.props.i18nStrings}
                 ref='colorAndLabelInput'
               />
             </Grid.Column>

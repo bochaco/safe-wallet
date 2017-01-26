@@ -4,7 +4,7 @@ import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import NavigationCheck from 'material-ui/svg-icons/navigation/check';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import ActionDelete from 'material-ui/svg-icons/action/delete';
-import { Image, Header, Modal, Container, Label } from 'semantic-ui-react'
+import { Image, Header, Modal, Label } from 'semantic-ui-react'
 import { ItemTypes } from '../common.js';
 
 const styles = {
@@ -35,7 +35,7 @@ export default class ViewDialogBox extends React.Component {
         </Modal.Content>
         <Modal.Actions>
           <RaisedButton
-            label="Close"
+            label={this.props.i18nStrings.btn_close}
             primary={true}
             icon={<NavigationClose />}
             onTouchTap={this.props.handleClose}
@@ -58,7 +58,7 @@ export class EditDialogBox extends React.Component {
           {
             <Header as='h2'>
               <Image size='mini' src={ItemTypes[this.props.type].icon} />
-              {ItemTypes[this.props.type].title}
+              {this.props.i18nStrings[ItemTypes[this.props.type].title]}
             </Header>
           }
         </Modal.Header>
@@ -66,7 +66,7 @@ export class EditDialogBox extends React.Component {
           {this.props.children}
           {this.props.selected_item && this.props.selected_item.lastUpdate &&
             <Label attached='bottom left' size='tiny'>
-              Last Update
+              {this.props.i18nStrings.last_update}
               <Label.Detail>
                 {this.props.selected_item.lastUpdate}
               </Label.Detail>
@@ -75,13 +75,13 @@ export class EditDialogBox extends React.Component {
         </Modal.Content>
         <Modal.Actions>
           <RaisedButton
-            label="Cancel"
+            label={this.props.i18nStrings.btn_cancel}
             primary={false}
             icon={<NavigationClose />}
             onTouchTap={this.props.handleClose}
           />
           <RaisedButton
-            label={this.props.selected_item ? "Save" : "Add"}
+            label={this.props.selected_item ? this.props.i18nStrings.btn_save : this.props.i18nStrings.btn_add}
             primary={true}
             icon={this.props.selected_item ? <NavigationCheck /> : <ContentAdd />}
             onTouchTap={this.props.handleSubmit}
@@ -97,20 +97,20 @@ export class DeleteDialogBox extends React.Component {
     return (
       <Modal open={this.props.open} size={"small"} >
         <Modal.Header style={styles.dialogBox} >
-          Are you sure you want to delete this item?
+          {this.props.i18nStrings.confirm_delete}
         </Modal.Header>
         <Modal.Content>
           {this.props.children}
         </Modal.Content>
         <Modal.Actions>
           <RaisedButton
-            label="Cancel"
+            label={this.props.i18nStrings.btn_cancel}
             primary={false}
             icon={<NavigationClose />}
             onTouchTap={this.props.handleClose}
           />
           <RaisedButton
-            label="Delete"
+            label={this.props.i18nStrings.btn_delete}
             primary={true}
             icon={<ActionDelete />}
             onTouchTap={this.props.handleSubmit}
@@ -130,20 +130,20 @@ export class ConfirmTransferDialogBox extends React.Component {
         size={"small"}
       >
         <Modal.Header style={styles.dialogBox} >
-          Please confirm the transaction
+          {this.props.i18nStrings.confirm_tx}
         </Modal.Header>
         <Modal.Content>
           {this.props.children}
         </Modal.Content>
         <Modal.Actions>
           <RaisedButton
-            label="Cancel"
+            label={this.props.i18nStrings.btn_cancel}
             primary={false}
             icon={<NavigationClose />}
             onTouchTap={this.props.handleClose}
           />
           <RaisedButton
-            label="Confirm"
+            label={this.props.i18nStrings.btn_confirm}
             primary={true}
             icon={<NavigationCheck />}
             onTouchTap={this.props.handleSubmit}

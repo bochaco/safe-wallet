@@ -1,6 +1,6 @@
 {
   "name": "safe-wallet",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "private": true,
   "devDependencies": {
     "react-scripts": "0.7.0"
@@ -10,7 +10,9 @@
     "qrcode-js": "0.0.2",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
+    "react-redux": "^5.0.2",
     "react-tap-event-plugin": "^2.0.1",
+    "redux": "^3.6.0",
     "safe-js": "^0.3.3",
     "semantic-ui-css": "^2.2.4",
     "semantic-ui-react": "^0.59.0",

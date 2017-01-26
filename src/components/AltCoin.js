@@ -196,15 +196,15 @@ export default class AltCoinView extends React.Component {
   showConfirmTransfer() {
     let amount = this.refs.amountInput.input.value ? parseFloat(this.refs.amountInput.input.value, 10) : 0;
     if (this.refs.recipientInput.input.value.length < 1) {
-      this.setState({recipientError:"Invalid recipient"});
+      this.setState({recipientError: this.props.i18nStrings.msg_invalid_rcpt});
     } else if (amount > Math.floor(amount)) {
-      this.setState({amountError:"Invalid value"});
+      this.setState({amountError: this.props.i18nStrings.msg_invalid_value});
     } else if (amount <= 0) {
-      this.setState({amountError:"Invalid value"});
+      this.setState({amountError: this.props.i18nStrings.msg_invalid_value});
     } else if (amount > this.state.wallet.length) {
-      this.setState({amountError:"Insufficient funds"});
+      this.setState({amountError: this.props.i18nStrings.msg_no_funds});
     } else if (this.refs.pinInput.input.value !== this.props.selected_item.metadata.pin) {
-      this.setState({pinError:"PIN doesn't match"});
+      this.setState({pinError: this.props.i18nStrings.msg_invalid_pin});
     } else {
       this.setState({percent: 0, showConfirm: true });
     }
@@ -294,7 +294,7 @@ export default class AltCoinView extends React.Component {
                         </Dimmer>
                       }
                       <Header.Subheader>
-                        Balance
+                        {this.props.i18nStrings.item_balance}
                       </Header.Subheader>
                     </Header.Content>
                   </Header>
@@ -308,7 +308,7 @@ export default class AltCoinView extends React.Component {
                 <Grid.Column width={14}>
                   <TextField
                     fullWidth={true}
-                    floatingLabelText="Transfer To"
+                    floatingLabelText={this.props.i18nStrings.item_tx_rcpt}
                     errorText={this.state.recipientError}
                     ref='recipientInput'
                     onChange={this.handleRecipientChange}
@@ -322,7 +322,7 @@ export default class AltCoinView extends React.Component {
                 <Grid.Column width={16}>
                   <TextField
                     fullWidth={true}
-                    floatingLabelText="Message / Subject (optional)"
+                    floatingLabelText={this.props.i18nStrings.item_tx_msg}
                     ref='msgInput'
                   />
                 </Grid.Column>
@@ -331,7 +331,7 @@ export default class AltCoinView extends React.Component {
                 <Grid.Column width={5}>
                   <TextField
                     fullWidth={true}
-                    floatingLabelText="Amount"
+                    floatingLabelText={this.props.i18nStrings.item_tx_amount}
                     errorText={this.state.amountError}
                     ref='amountInput'
                     onChange={this.handleAmountChange}
@@ -340,7 +340,7 @@ export default class AltCoinView extends React.Component {
                 <Grid.Column width={4}>
                   <TextField
                     fullWidth={true}
-                    floatingLabelText="PIN"
+                    floatingLabelText={this.props.i18nStrings.item_pin}
                     type="password"
                     errorText={this.state.pinError}
                     ref='pinInput'
@@ -349,7 +349,7 @@ export default class AltCoinView extends React.Component {
                 </Grid.Column>
                 <Grid.Column verticalAlign="bottom" width={7}>
                   <RaisedButton
-                    label="Transfer"
+                    label={this.props.i18nStrings.btn_transfer}
                     primary={false}
                     icon={<ContentSend />}
                     onTouchTap={this.showConfirmTransfer}
@@ -359,7 +359,7 @@ export default class AltCoinView extends React.Component {
             </Grid>
           </Grid.Column>
           <Grid.Column width={6}>
-            Transactions History
+            {this.props.i18nStrings.item_tx_history}
             <List divided verticalAlign='middle' style={styles.scrollable}>
               <List.Item />
               {this.props.selected_item.metadata.keepTxs &&
@@ -383,7 +383,7 @@ export default class AltCoinView extends React.Component {
                   children={
                     <div>
                       <Header as='h4' dividing>
-                        {h.direction === "in" ? "From:" : "To:"}
+                        {h.direction === "in" ? this.props.i18nStrings.item_tx_from : this.props.i18nStrings.item_tx_to}
                         <Header.Subheader>
                           {h.direction === "in" ? h.from : h.to}
                         </Header.Subheader>
@@ -404,7 +404,7 @@ export default class AltCoinView extends React.Component {
         onClose={this.handleHideQR}
       >
         <Modal.Header style={styles.qrPopup}>
-          Public Key
+          {this.props.i18nStrings.item_pk}
         </Modal.Header>
         <Modal.Content style={styles.qrPopup}>
           <Image bordered centered size="medium" src={this.state.qrcode} />
@@ -419,18 +419,19 @@ export default class AltCoinView extends React.Component {
           open={this.state.showConfirm}
           handleClose={this.handleCancelTransfer}
           handleSubmit={this.handleConfirmTransfer}
+          i18nStrings={this.props.i18nStrings}
         >
           <List>
             <List.Item>
               <List horizontal>
                 <List.Item>
-                  {this.state.isTransfering ? 'Transferring' : 'You are about to transfer'}
+                  {this.state.isTransfering ? this.props.i18nStrings.item_tx_in_progress : this.props.i18nStrings.item_tx_to_start}
                 </List.Item>
                 <List.Item>
                   <Header as='h4' color='blue'>{this.refs.amountInput.input.value}</Header>
                 </List.Item>
                 <List.Item>
-                  coin{this.refs.amountInput.input.value > 1 ? 's' : ''} to
+                  {this.refs.amountInput.input.value > 1 ? this.props.i18nStrings.item_tx_coin_plural : this.props.i18nStrings.item_tx_coin_singular}
                 </List.Item>
                 <List.Item>
                   <Header as='h4' color='blue'>{this.refs.recipientInput.input.value}</Header>
@@ -440,7 +441,7 @@ export default class AltCoinView extends React.Component {
             <List.Item>
               {this.state.isTransfering &&
                 <Dimmer active>
-                  Transferring...
+                  {this.props.i18nStrings.item_tx_in_progress}...
                   <Progress percent={this.state.percent} size="medium" indicating inverted color='green' label />
                 </Dimmer>
               }
@@ -472,7 +473,7 @@ export class AltCoinEdit extends React.Component {
     let newPin =  this.props.selected_item.metadata.pin ? this.props.selected_item.metadata.pin : "";
     if (this.refs.pinInput.input.value.length > 0 || this.refs.pinConfirmInput.input.value.length > 0) {
       if (this.refs.pinInput.input.value !== this.refs.pinConfirmInput.input.value) {
-        this.setState({pinError:"PIN doesn't match"});
+        this.setState({pinError: this.props.i18nStrings.msg_invalid_pin});
         return;
       } else {
         newPin = this.refs.pinInput.input.value;
@@ -502,8 +503,8 @@ export class AltCoinEdit extends React.Component {
   };
 
   componentDidMount() {
-    if (this.refs.ColorAndLabelInput) {
-      this.refs.ColorAndLabelInput.refs.labelInput.input.focus();
+    if (this.refs.colorAndLabelInput) {
+      this.refs.colorAndLabelInput.refs.labelInput.input.focus();
     }
   }
 
@@ -518,13 +519,15 @@ export class AltCoinEdit extends React.Component {
             <Grid.Column width={8}>
               <ColorAndLabel
                 selected_item={this.props.selected_item}
+                i18nStrings={this.props.i18nStrings}
+                label={this.props.i18nStrings.item_coin_wallet_label}
                 ref='colorAndLabelInput'
               />
             </Grid.Column>
             <Grid.Column width={8}>
               <TextField
                 fullWidth={true}
-                floatingLabelText="Public Key"
+                floatingLabelText={this.props.i18nStrings.item_pk}
                 defaultValue={this.props.selected_item.data.pk}
                 ref='pkInput'
               />
@@ -534,7 +537,7 @@ export class AltCoinEdit extends React.Component {
             <Grid.Column width={15}>
               <TextField
                 fullWidth={true}
-                floatingLabelText="Private Key"
+                floatingLabelText={this.props.i18nStrings.item_sk}
                 defaultValue={this.props.selected_item.data.sk}
                 ref='skInput'
               />
@@ -546,7 +549,7 @@ export class AltCoinEdit extends React.Component {
             <Grid.Column width={3}>
               <TextField
                 fullWidth={true}
-                floatingLabelText="Set PIN"
+                floatingLabelText={this.props.i18nStrings.item_set_pin}
                 ref='pinInput'
                 type='password'
                 onChange={this.handlePinChange}
@@ -555,7 +558,7 @@ export class AltCoinEdit extends React.Component {
             <Grid.Column width={3}>
               <TextField
                 fullWidth={true}
-                floatingLabelText="Confirm PIN"
+                floatingLabelText={this.props.i18nStrings.item_confirm_pin}
                 ref='pinConfirmInput'
                 type='password'
                 onChange={this.handlePinChange}
@@ -566,7 +569,7 @@ export class AltCoinEdit extends React.Component {
             </Grid.Column>
             <Grid.Column width={7} verticalAlign="middle">
               <Checkbox toggle
-                label="Store full transactions history in this wallet"
+                label={this.props.i18nStrings.item_keep_tx_history}
                 defaultChecked={this.props.selected_item.metadata.keepTxs}
                 ref='historyInput'
               />

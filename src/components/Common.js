@@ -3,14 +3,6 @@ import TextField from 'material-ui/TextField';
 import { Grid, Dropdown, Label } from 'semantic-ui-react'
 import { Constants } from '../common.js';
 
-const colorOptions = [
-  { value: 'brown', text: 'Brown', label:{ color: 'brown', empty: true, circular: true } },
-  { value: 'red', text: 'Red', label:{ color: 'red', empty: true, circular: true } },
-  { value: 'yellow', text: 'Yellow', label:{ color: 'yellow', empty: true, circular: true } },
-  { value: 'violet', text: 'Violet', label:{ color: 'violet', empty: true, circular: true } },
-  { value: 'blue', text: 'Blue', label:{ color: 'blue', empty: true, circular: true } },
-]
-
 export class ColorAndLabel extends React.Component {
   constructor(props) {
     super(props);
@@ -18,6 +10,16 @@ export class ColorAndLabel extends React.Component {
     this.state = {
       currentColor: this.props.selected_item.metadata.color,
     }
+
+    this.colorOptions = [
+      { value: 'brown', text: this.props.i18nStrings.color_brown, label:{ color: 'brown', empty: true, circular: true } },
+      { value: 'red', text: this.props.i18nStrings.color_red, label:{ color: 'red', empty: true, circular: true } },
+      { value: 'yellow', text: this.props.i18nStrings.color_yellow, label:{ color: 'yellow', empty: true, circular: true } },
+      { value: 'orange', text: this.props.i18nStrings.color_orange, label:{ color: 'orange', empty: true, circular: true } },
+      { value: 'violet', text: this.props.i18nStrings.color_violet, label:{ color: 'violet', empty: true, circular: true } },
+      { value: 'blue', text: this.props.i18nStrings.color_blue, label:{ color: 'blue', empty: true, circular: true } },
+    ]
+
     this.handleChange = this.handleChange.bind(this);
   }
 
@@ -25,8 +27,8 @@ export class ColorAndLabel extends React.Component {
     if (this.props.selected_item.metadata.color == null){
       this.setState({currentColor: Constants.DEFAULT_CARD_COLOR});
     }
-
   }
+
   handleChange(e, data) {
     this.setState({currentColor: data.value})
   }
@@ -34,7 +36,7 @@ export class ColorAndLabel extends React.Component {
   render() {
     const trigger = (
       <Label color={this.state.currentColor} horizontal>
-        Color
+        {this.props.i18nStrings.item_color}
       </Label>
     )
 
@@ -44,19 +46,17 @@ export class ColorAndLabel extends React.Component {
           <Grid.Column width={12}>
             <TextField
               fullWidth={true}
-              floatingLabelText="Label / Wallet ID"
+              floatingLabelText={this.props.label}
               defaultValue={this.props.selected_item.metadata.label}
               ref='labelInput'
             />
           </Grid.Column>
           <Grid.Column width={4} verticalAlign='bottom' style={{paddingBottom: 8}}>
             <Dropdown
-              placeholder='Color'
               scrolling
-              options={colorOptions}
+              options={this.colorOptions}
               onChange={this.handleChange}
               trigger={trigger}
-              ref='colorInput'
             />
           </Grid.Column>
         </Grid.Row>

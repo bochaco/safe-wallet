@@ -61,7 +61,7 @@ sample_SD_coins[ALTCOIN_3_XOR_NAME] = {
     prev_owner: SampleKeyPairs.Bob.pk,
 }
 
-export const sample_wallet_data =
+export const sample_wallet_data = 
 [
   {id: 28, type: Constants.TYPE_ALTCOIN, lastUpdate: "Sun, 01 Jan 2017 00:01:30 GMT",
     metadata: {

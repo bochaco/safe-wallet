@@ -7,7 +7,7 @@ import { ColorAndLabel } from './Common.js';
 
 const styles = {
   twoFACodeField: {
-    width: 70,
+    width: 90,
   },
 };
 
@@ -84,7 +84,7 @@ export class TwoFACodesEdit extends React.Component {
       row_codes.push(
         <Grid.Column key={2*i+1}>
           <TextField style={styles.twoFACodeField}
-            floatingLabelText={"Code #" + (i+1)}
+            floatingLabelText={this.props.i18nStrings.item_2fa_code + " #" + (i+1)}
             defaultValue={this.props.selected_item.data[i]}
             ref={'codeInput' + i}
           />
@@ -111,6 +111,8 @@ export class TwoFACodesEdit extends React.Component {
             <Grid.Column width={8}>
               <ColorAndLabel
                 selected_item={this.props.selected_item}
+                i18nStrings={this.props.i18nStrings}
+                label={this.props.i18nStrings.item_label}
                 ref='colorAndLabelInput'
               />
             </Grid.Column>

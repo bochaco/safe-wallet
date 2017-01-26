@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button, Card, Image, Container } from 'semantic-ui-react';
 import { Constants, ItemTypes } from '../common.js';
-import { MessageNoItems } from './Messages.js';
 
 export default class ItemCards extends React.Component {
   render() {
@@ -15,7 +14,7 @@ export default class ItemCards extends React.Component {
       )
     }
 
-    return <MessageNoItems />
+    return this.props.noItemsComponent;
   }
 }
 
@@ -51,7 +50,7 @@ class ItemCard extends React.Component {
         <Card.Content style={{cursor: 'pointer'}} onClick={this.handleViewAction}>
           <Card.Meta>
             <Image floated='left' size='tiny' src={ItemTypes[this.props.item.type].icon} />
-            {ItemTypes[this.props.item.type].title}
+            {this.props.i18nStrings[ItemTypes[this.props.item.type].title]}
           </Card.Meta>
           <Card.Header>
             <br/>

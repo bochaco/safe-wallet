@@ -15,7 +15,7 @@ export default class CardAdd extends React.Component {
   render() {
     const actions = [
       <RaisedButton
-        label="Cancel"
+        label={this.props.i18nStrings.btn_cancel}
         primary={true}
         icon={<NavigationClose />}
         onTouchTap={this.props.handleClose}
@@ -25,7 +25,7 @@ export default class CardAdd extends React.Component {
     return (
       <div>
         <Dialog
-          title="Type of the item to add?"
+          title={this.props.i18nStrings.item_to_add}
           actions={actions}
           modal={false}
           contentStyle={customContentStyle}
@@ -39,7 +39,7 @@ export default class CardAdd extends React.Component {
                   onClick={() => {this.props.handleSubmit(ItemTypes[index].type)}}>
                   <Image size='mini' src={ItemTypes[index].icon} />
                   <List.Content>
-                    <List.Header>{ItemTypes[index].title}</List.Header>
+                    <List.Header>{this.props.i18nStrings[ItemTypes[index].title]}</List.Header>
                   </List.Content>
                 </List.Item>
             ))}

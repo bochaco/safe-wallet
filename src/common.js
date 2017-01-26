@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import * as base64 from 'urlsafe-base64';
 var qrcode=require('qrcode-js');
 import CreditCardView, { CreditCardEdit } from './components/CreditCard.js';
-import JCardView, { JCardEdit } from './components/JCard.js';
+//import JCardView, { JCardEdit } from './components/JCard.js';
 import PasswordView, { PasswordEdit } from './components/Password.js';
 import PrivPubKeysView, { PrivPubKeysEdit } from './components/PrivPubKeys.js';
 import TwoFACodesView, { TwoFACodesEdit } from './components/TwoFACodes.js';
@@ -16,7 +16,7 @@ import icon_qr from './img/qr_code.png';
 import icon_2fa from './img/2fa.png';
 import icon_safecoin from './img/safecoin.png';
 import icon_altcoin from './img/altcoin.png';
-import icon_jcard from './img/jcard.png';
+//import icon_jcard from './img/jcard.png';
 
 export const Constants = {
   TYPE_CREDIT_CARD: 0,
@@ -41,7 +41,7 @@ export const ItemTypes = {};
 
 ItemTypes[Constants.TYPE_CREDIT_CARD] = {
   type: Constants.TYPE_CREDIT_CARD,
-  title: "Credit Card",
+  title: "credit_card",
   icon: icon_cc,
   editDialogFactory: (props) => <CreditCardEdit {...props} />,
   viewDialogFactory: (props) => <CreditCardView {...props} />,
@@ -49,7 +49,7 @@ ItemTypes[Constants.TYPE_CREDIT_CARD] = {
 
 ItemTypes[Constants.TYPE_PASSWORD] = {
   type: Constants.TYPE_PASSWORD,
-  title: "Password",
+  title: "password",
   icon: icon_pwd,
   editDialogFactory: (props) => <PasswordEdit {...props} />,
   viewDialogFactory: (props) => <PasswordView {...props} />,
@@ -57,7 +57,7 @@ ItemTypes[Constants.TYPE_PASSWORD] = {
 
 ItemTypes[Constants.TYPE_PRIV_PUB_KEY] = {
   type: Constants.TYPE_PRIV_PUB_KEY,
-  title: "Priv/Pub Key",
+  title: "priv_pub_key",
   icon: icon_qr,
   editDialogFactory: (props) => <PrivPubKeysEdit {...props} />,
   viewDialogFactory: (props) => <PrivPubKeysView {...props} />,
@@ -65,7 +65,7 @@ ItemTypes[Constants.TYPE_PRIV_PUB_KEY] = {
 
 ItemTypes[Constants.TYPE_2FA_CODES] = {
   type: Constants.TYPE_2FA_CODES,
-  title: "2FA Codes",
+  title: "2fa_codes",
   icon: icon_2fa,
   editDialogFactory: (props) => <TwoFACodesEdit {...props} />,
   viewDialogFactory: (props) => <TwoFACodesView {...props} />,
@@ -73,7 +73,7 @@ ItemTypes[Constants.TYPE_2FA_CODES] = {
 
 ItemTypes[Constants.TYPE_SAFECOIN] = {
   type: Constants.TYPE_SAFECOIN,
-  title: "Safecoin Wallet",
+  title: "safecoin_wallet",
   icon: icon_safecoin,
   editDialogFactory: (props) => <SafecoinEdit {...props} />,
   viewDialogFactory: (props) => <SafecoinView {...props} />,
@@ -81,7 +81,7 @@ ItemTypes[Constants.TYPE_SAFECOIN] = {
 
 ItemTypes[Constants.TYPE_ALTCOIN] = {
   type: Constants.TYPE_ALTCOIN,
-  title: "ThanksCoin Wallet",
+  title: "thankscoin_wallet",
   icon: icon_altcoin,
   editDialogFactory: (props) => <AltCoinEdit {...props} />,
   viewDialogFactory: (props) => <AltCoinView {...props} />,
@@ -89,7 +89,7 @@ ItemTypes[Constants.TYPE_ALTCOIN] = {
 /*
 ItemTypes[Constants.TYPE_JCARD] = {
   type: Constants.TYPE_JCARD,
-  title: "Public Profile",
+  title: "public_profile",
   icon: icon_jcard,
   editDialogFactory: (props) => <JCardEdit {...props} />,
   viewDialogFactory: (props) => <JCardView {...props} />,
