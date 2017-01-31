@@ -57,6 +57,7 @@ export class ColorAndLabel extends React.Component {
               options={this.colorOptions}
               onChange={this.handleChange}
               trigger={trigger}
+              ref='colorInput'
             />
           </Grid.Column>
         </Grid.Row>
