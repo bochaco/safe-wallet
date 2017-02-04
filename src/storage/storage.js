@@ -9,7 +9,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 let AUTH_TOKEN = null;
 let CYPHER_OPTS_SYMMETRIC = null;
-let CONFIG_FILENAME = "safe-wallet-config-v0.0.3.json";
+let CONFIG_FILENAME = "safe-wallet-config.json";
 let DATA_ID = "safe-wallet-app-data"; // this value is by default, it will be overwritten
                                  // with the value read from the config file
 const WALLET_INBOX_PREFIX = "WALLETINBOX-AD-";
@@ -32,7 +32,7 @@ const _createRandomUserPrefix = () => {
 };
 
 const _readConfigData = () => {
-  // TODO: change this to rivate to app with containers
+  // TODO: change this to private to app with containers
   let isSharedFile = false; /* true == DRIVE, false == APP */
   console.log("Fetching config data from SAFE (", CONFIG_FILENAME, ")...");
 
@@ -44,7 +44,12 @@ const _readConfigData = () => {
       console.log("Failed fetching config file");
       let dataId = _createRandomUserPrefix() + '-' + DATA_ID;
       console.log("Creating config file containing data ID =", dataId);
-      let data = JSON.stringify( {'dataId': dataId} );
+      let config_file = {
+        'version': '0.0.6',
+        'dataId': dataId,
+        'preferredLang': 'en',
+      }
+      let data = JSON.stringify( config_file );
       return window.safeNFS.createFile(AUTH_TOKEN, CONFIG_FILENAME, data,
         'application/json', data.length, null, isSharedFile)
         .then(() => {
@@ -60,6 +65,7 @@ const _readConfigData = () => {
 // Auth functions
 export const authoriseApp = (app) => {
   console.log("Authenticating app...");
+  let _configData;
   return window.safeAuth.authorise(app)
     .then((res) => (AUTH_TOKEN = res.token) )
     .then(() => (console.log("Auth Token retrieved") ))
@@ -68,7 +74,11 @@ export const authoriseApp = (app) => {
     .then(_getHandleId)
     .then(handleId => (CYPHER_OPTS_SYMMETRIC = handleId) )
     .then(() => (_readConfigData() ))
-    .then(configData => DATA_ID = configData.dataId)
+    .then((configData) => _configData = configData)
+    .then(() => DATA_ID = _configData.dataId)
+    .then(() => {
+      return Promise.resolve(_configData);
+    })
 }
 
 export const isTokenValid = () => {

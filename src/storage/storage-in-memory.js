@@ -13,7 +13,11 @@ var sd_coins = sample_SD_coins;
 
 export const authoriseApp = (app) => {
   console.log("Authenticating app...");
-  return new Promise(resolve => setTimeout(resolve, 3000));
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve({preferredLang: 'es'})
+    }, 3000)
+  })
 }
 
 export const isTokenValid = () => {

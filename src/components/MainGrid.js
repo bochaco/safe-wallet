@@ -102,7 +102,10 @@ export default class MainGrid extends React.Component {
     if (this.state.isAuthorised) {
       isTokenValid()
         .then(() => {}, (err) => {
-          this.setState(initialState);
+          let newState = initialState;
+          newState.lang = this.state.lang;
+          newState.content = Api.getContent(this.state.lang).page;
+          this.setState(newState);
           this.handleOpenSnack(this.state.content.snackbar.fail_auth_revoked)
         })
     }
@@ -119,10 +122,17 @@ export default class MainGrid extends React.Component {
 
   requestAuthorisation() {
     this.setState({isAuthorised: null});
+    let preferredLang;
     authoriseApp(appInfo)
+      .then((configData) => preferredLang = configData.preferredLang)
       .then(loadAppData)
       .then((parsedData) => {
-        this.setState({isAuthorised: true, data: parsedData});
+        this.setState({
+          isAuthorised: true,
+          data: parsedData,
+          lang: preferredLang,
+          content: Api.getContent(preferredLang).page
+        });
       }, (err) => {
         this.setState({isAuthorised: false, data: {}});
         console.log("Authentication Failed:", err);

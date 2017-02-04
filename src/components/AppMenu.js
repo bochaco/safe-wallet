@@ -17,6 +17,7 @@ export default class AppMenu extends React.Component {
       { value: 'en', text: 'English', flag: 'gb' },
       { value: 'es', text: 'Español', flag: 'es' },
       { value: 'zh', text: '中文', flag: 'cn' },
+      { value: 'jp', text: '日本語', flag: 'jp' },
     ]
 
     this.handleChangeLang = this.handleChangeLang.bind(this);
@@ -38,7 +39,12 @@ export default class AppMenu extends React.Component {
       case 'zh':
         flagName = 'cn';
         break;
+      case 'jp':
+        flagName = 'jp';
+        break;
       default:
+        flagName = 'gb';
+        break;
     }
     let trigger = <Flag name={flagName} />
 
