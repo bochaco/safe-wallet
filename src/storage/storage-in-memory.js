@@ -15,7 +15,7 @@ export const authoriseApp = (app) => {
   console.log("Authenticating app...");
   return new Promise(resolve => {
     setTimeout(() => {
-      resolve({preferredLang: 'es'})
+      resolve({preferredLang: 'en'})
     }, 3000)
   })
 }

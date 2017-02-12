@@ -40,7 +40,7 @@ export class MessageAwatingAuth extends React.Component {
   render() {
     return (
       <Grid centered columns={3}>
-        <Grid.Column width={7}>
+        <Grid.Column width={8}>
           <Message info compact>
             <Message.Content>
               <Message.Header>{this.props.i18nStrings.authorising[0]}</Message.Header>
