@@ -29,25 +29,15 @@ export default class AppMenu extends React.Component {
   }
 
   render() {
-    let flagName;
+    let flagName = this.props.lang;
     switch(this.props.lang) {
       case 'en':
         flagName = 'gb';
         break;
-      case 'es':
-        flagName = 'es'
-        break;
-      case 'de':
-        flagName = 'de'
-        break;
       case 'zh':
         flagName = 'cn';
         break;
-      case 'jp':
-        flagName = 'jp';
-        break;
       default:
-        flagName = 'gb';
         break;
     }
     let trigger = <Flag name={flagName} />
@@ -84,6 +74,7 @@ export default class AppMenu extends React.Component {
             <Dropdown
               options={this.langOptions}
               onChange={this.handleChangeLang}
+              defaultValue={this.props.lang}
               trigger={trigger}
             />
           </Menu.Item>

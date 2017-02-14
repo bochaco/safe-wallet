@@ -61,11 +61,11 @@ sample_SD_coins[ALTCOIN_3_XOR_NAME] = {
     prev_owner: SampleKeyPairs.Bob.pk,
 }
 
-export const sample_wallet_data = 
+export const sample_wallet_data =
 [
   {id: 28, type: Constants.TYPE_ALTCOIN, lastUpdate: "Sun, 01 Jan 2017 00:01:30 GMT",
     metadata: {
-      label: "My mined AltCoins",
+      label: "ThanksCoins from faucet",
       color: "blue",
       pin: "",
       keepTxs: true,
@@ -79,7 +79,7 @@ export const sample_wallet_data =
           direction: "in",
           date: "Sun, 01 Jan 2017 00:01:30 GMT",
           from: SampleKeyPairs.Alice.pk,
-          msg: "AltCoin miner",
+          msg: "ThanksCoin miner",
         },
         {
           amount: 2,
@@ -92,7 +92,7 @@ export const sample_wallet_data =
           direction: "in",
           date: "Sun, 01 Jan 2017 19:25:19 GMT",
           from: SampleKeyPairs.Bob.pk,
-          msg: "AltCoin miner",
+          msg: "ThanksCoin miner",
         },
         {
           amount: 1,
@@ -113,7 +113,7 @@ export const sample_wallet_data =
   },
   {id: 30, type: Constants.TYPE_ALTCOIN,
     metadata: {
-      label: "AltCoins for daily usage",
+      label: "ThanksCoins for daily usage",
       pin: "",
       keepTxs: true,
     },
