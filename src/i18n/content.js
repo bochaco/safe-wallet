@@ -227,18 +227,18 @@ export const Content = [
       },
       "messages": {
         "no_items": [
-          "Sie haben keine Elemente in ihrer Geldbörse gespeichert. Verwenden Sie die Taste ",
-          ", um einen Eintrag hinzuzufügen."
+          "Du hast keine Artikel in deinem Geldbörse gespeichert. Verwend die ",
+          "-Taste, um einen Eintrag hinzuzufügen."
         ],
         "not_auth": [
           "Antrag nicht berechtigt",
           "Die Zugriffsberechtigung wurde widerrufen, die App wurde getrennt oder die Verbindung zum SAFE-Netzwerk ging verloren.",
-          "Drücken Sie die Taste ",
-          ", um die Verbindung erneut herzustellen."
+          "Drücke die ",
+          "-Taste, um die Verbindung erneut herzustellen."
         ],
         "authorising": [
           "Warten auf Zugriffsberechtigung",
-          "Bitte bewilligen Sie den Antrag vom SAFE Authenticator, um auf Ihren Inhalt zuzugreifen: ",
+          "Bitte bestätige den Antrag vom SAFE Authentifizierer, um auf seinen Inhalt zuzugreifen: ",
           "Name der Anwendung: ",
           "Verkäufer:   ",
           "Version:  ",
@@ -265,8 +265,8 @@ export const Content = [
         "btn_confirm": "Bestätigen",
         "btn_close": "Schließen",
         "btn_transfer": "Übertragung",
-        "confirm_delete": "Sind Sie sicher, dass Sie diesen Eintrag löschen möchten?",
-        "confirm_tx": "Bitte bestätigen Sie die Transaktion",
+        "confirm_delete": "Bist Du sicher, dass du den Eintrag löschen möchtest?",
+        "confirm_tx": "Bitte bestätige die Transaktion",
         "item_to_add": "Art des hinzuzufügenden Elements?",
         "item_color": "Farbe",
         "item_label": "Etikette",
@@ -437,7 +437,7 @@ export const Content = [
       "snackbar": {
         "item_saved": "SAFEネットワークに保存されたアイテム",
         "item_deleted": "SAFEネットワークからアイテムが削除されました",
-        "items_reloaded": "SAFEネットワークから再ロードされたアイテムのリスト",
+        "items_reloaded": "SAFEネットワークから再ロードされたアイテム",
         "fail_deleting": "アイテムの削除に失敗しました",
         "fail_auth_revoked": "アプリケーション認証が取り消されました",
       },
@@ -462,7 +462,7 @@ export const Content = [
         ],
         "permissions": {
           "SAFE_DRIVE_ACCESS": "（アカウントのドライブへのアクセス）",
-          "LOW_LEVEL_API": "（安全な低レベルAPI）",
+          "LOW_LEVEL_API": "（低レベルAPI）",
         },
       },
       "items": {
@@ -478,11 +478,11 @@ export const Content = [
         "btn_save": "保存",
         "btn_add": "追加",
         "btn_delete": "削除",
-        "btn_confirm": "確認",
+        "btn_confirm": "確定",
         "btn_close": "閉じる",
         "btn_transfer": "転送",
         "confirm_delete": "本当にこのアイテムを削除しますか？",
-        "confirm_tx": "取引を確認してください",
+        "confirm_tx": "確認してください",
         "item_to_add": "追加するアイテムのタイプ？",
         "item_color": "色",
         "item_label": "ラベル",
@@ -492,7 +492,7 @@ export const Content = [
         "item_tx_msg": "メッセージ/件名（オプション）",
         "item_tx_amount": "金額",
         "item_tx_from": "から：",
-        "item_tx_to": "に：",
+        "item_tx_to": "名宛人：",
         "item_tx_in_progress": "転送中",
         "item_tx_to_start": "あなたは転送しようとしています",
         "item_tx_coin_singular": "コインを",
@@ -501,7 +501,7 @@ export const Content = [
         "item_pin": "PIN",
         "item_pk": "公開鍵",
         "item_sk": "秘密鍵",
-        "item_set_pin": "PINを設定",
+        "item_set_pin": "PINコードを設定",
         "item_confirm_pin": "PINを確認する",
         "item_keep_tx_history": "完全な取引履歴をこのウォレットに保存する",
         "item_credit_card_security_code": "セキュリティコード",
