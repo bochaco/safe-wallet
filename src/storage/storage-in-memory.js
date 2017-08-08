@@ -1,6 +1,7 @@
 /*
   Helper functions to store data in memory needed for demos and dev tasks
 */
+import crypto from 'crypto';
 import { getXorName } from '../common.js';
 import {sample_SD_wallets, sample_SD_tx_inboxes, sample_SD_coins, sample_wallet_data} from './sample-data.js';
 
@@ -11,28 +12,42 @@ var sd_wallets = sample_SD_wallets;
 var sd_tx_inboxes = sample_SD_tx_inboxes;
 var sd_coins = sample_SD_coins;
 
-export const authoriseApp = (app) => {
-  console.log("Authenticating app...");
+export const connectApp = (app, permissions) => {
+  console.log("Authorising app...");
   return new Promise(resolve => {
     setTimeout(() => {
-      resolve({preferredLang: 'en'})
+      resolve('en')
     }, 3000)
   })
 }
 
-export const isTokenValid = () => {
+export const disconnectApp = () => {
+  console.log("Disconnecting...");
+}
+
+export const isConnected = () => {
   return Promise.resolve(true);
 }
 
 export const loadAppData = () => {
-  console.log("Reading the app data into memory...");
+  console.log("Reading the app data from memory...");
   return Promise.resolve(app_data);
 }
 
-export const saveAppData = (data) => {
-  console.log("Saving app data in memory...");
-  app_data = data.slice();
-  return Promise.resolve(app_data);
+export const saveAppItem = (item) => {
+  console.log("Saving app data into memory...");
+  if (!item.id) {
+    item.id = crypto.randomBytes(16).toString('hex');
+  }
+
+  app_data[item.id] = item;
+  return Promise.resolve(item);
+}
+
+export const deleteAppItem = (item) => {
+  console.log("Removing item from memory...");
+  delete app_data[item.id];
+  return Promise.resolve();
 }
 
 export const loadWalletData = (pk) => {

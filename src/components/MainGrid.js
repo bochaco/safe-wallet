@@ -10,7 +10,7 @@ import CardDelete from './CardDelete.js';
 import AppMenu from './AppMenu.js';
 import AboutView from './AboutView.js';
 import { MessageNotAuthorised, MessageAwatingAuth, MessageNoItems } from './Messages.js';
-import { appInfo } from '../config.js';
+import { appInfo, appPermissions } from '../config.js';
 import { Api } from '../i18n/read-content.js';
 
 function loadStorage() {
@@ -22,13 +22,15 @@ function loadStorage() {
   }
 }
 
-var {authoriseApp, isTokenValid, loadAppData, saveAppData, loadWalletData,
+const NET_STATE_CONNECTED = 'Connected';
+
+var {connectApp, disconnectApp, loadAppData, saveAppItem, deleteAppItem, loadWalletData,
   transferCoin, createWallet, saveWalletData, /*deleteWallet,*/ checkOwnership,
   createTxInbox, readTxInboxData, /*deleteTxInbox,*/ emptyTxInbox, sendTxNotif} = loadStorage();
 
 const initialState = {
   isAuthorised: false,
-  data: [],
+  data: {},
   view_modal: false,
   edit_modal: false,
   add_modal: false,
@@ -42,8 +44,6 @@ const initialState = {
   content: null,
 };
 
-const CHECK_CONNECTION_FREQ = 2000;
-
 export default class MainGrid extends React.Component {
   constructor(props) {
     super(props);
@@ -51,6 +51,7 @@ export default class MainGrid extends React.Component {
     this.state = initialState;
 
     this.handleRefresh = this.handleRefresh.bind(this);
+    this.networkStateUpdate = this.networkStateUpdate.bind(this);
 
     this.handleOpenViewModal = this.handleOpenViewModal.bind(this);
     this.handleCloseViewModal = this.handleCloseViewModal.bind(this);
@@ -76,55 +77,51 @@ export default class MainGrid extends React.Component {
     this.handleCloseSnack = this.handleCloseSnack.bind(this);
 
     this.handlePower = this.handlePower.bind(this);
-    this.requestAuthorisation = this.requestAuthorisation.bind(this);
+    this.connectApplication = this.connectApplication.bind(this);
     this.storeData = this.storeData.bind(this);
+    this.deleteData = this.deleteData.bind(this);
 
     this.appendTx2History = this.appendTx2History.bind(this);
   }
 
   componentWillMount() {
     this.setState({content: Api.getContent(this.state.lang).page});
-    this.requestAuthorisation();
   }
 
   componentDidMount() {
-    this.timerID = setInterval(
-      () => this.tick(),
-      CHECK_CONNECTION_FREQ
-    );
+    this.connectApplication();
   }
 
   componentWillUnmount() {
     clearInterval(this.timerID);
   }
 
-  tick() {
-    if (this.state.isAuthorised) {
-      isTokenValid()
-        .then(() => {}, (err) => {
-          let newState = initialState;
-          newState.lang = this.state.lang;
-          newState.content = Api.getContent(this.state.lang).page;
-          this.setState(newState);
-          this.handleOpenSnack(this.state.content.snackbar.fail_auth_revoked)
-        })
+  networkStateUpdate(state) {
+    console.log("NEW STATE:", this.state.isAuthorised, state)
+    if (this.state.isAuthorised && state !== NET_STATE_CONNECTED) {
+      let newState = initialState;
+      newState.lang = this.state.lang;
+      newState.content = Api.getContent(this.state.lang).page;
+      this.setState(newState);
+      this.handleOpenSnack(this.state.content.snackbar.fail_auth_revoked)
     }
   }
 
   handlePower() {
+      // Note that state.isAuthorised can be null when it's in authorisation process
       if (this.state.isAuthorised === false) {
-        this.requestAuthorisation();
+        this.connectApplication();
       } else if (this.state.isAuthorised) {
-        // TODO!!!!: send to revoke access!!!!!!!!!!!!!!!
+        disconnectApp();
         this.setState({isAuthorised: false});
       }
   }
 
-  requestAuthorisation() {
+  connectApplication() {
     this.setState({isAuthorised: null});
     let preferredLang;
-    authoriseApp(appInfo)
-      .then((configData) => preferredLang = configData.preferredLang)
+    connectApp(appInfo, appPermissions, this.networkStateUpdate)
+      .then((configData) => preferredLang = configData)
       .then(loadAppData)
       .then((parsedData) => {
         this.setState({
@@ -133,9 +130,10 @@ export default class MainGrid extends React.Component {
           lang: preferredLang,
           content: Api.getContent(preferredLang).page
         });
-      }, (err) => {
+      })
+      .catch((err) => {
         this.setState({isAuthorised: false, data: {}});
-        console.log("Authentication Failed:", err);
+        console.log("Authorisation or connection failed:", err);
       })
   }
 
@@ -144,31 +142,50 @@ export default class MainGrid extends React.Component {
       .then((parsedData) => {
         this.setState({data: parsedData});
       }, (err) => {
-        console.log("Failed refreshing data:", err);
+        console.log("Failed refreshing data: ", err);
       })
     this.handleOpenSnack(this.state.content.snackbar.items_reloaded);
   }
 
-  storeData(data) {
-    return saveAppData(data)
-      .then((parsedData) => {
-        this.setState({data: parsedData});
+  storeData(item) {
+    let item2save = {
+      id: this.state.selected_item,
+      version: this.state.selected_item ? this.state.data[this.state.selected_item].version : null,
+      content: item
+    };
+
+    return saveAppItem(item2save)
+      .then((savedItem) => {
+        let updatedData = this.state.data;
+        updatedData[savedItem.id] = savedItem;
+        this.setState({data: updatedData});
       }, (err) => {
         throw Error("Failed storing data:", err);
       })
   }
 
-  handleOpenViewModal(index) {
-    this.setState({view_modal: true, selected_item: index});
+  deleteData(item) {
+    return deleteAppItem(item)
+      .then(() => {
+        let updatedData = this.state.data;
+        delete updatedData[item.id];
+        this.setState({data: updatedData});
+      }, (err) => {
+        throw Error("Failed deleting data:", err);
+      })
+  }
+
+  handleOpenViewModal(id) {
+    this.setState({view_modal: true, selected_item: id});
   };
 
   handleCloseViewModal() {
     this.setState({view_modal: false, selected_item: null});
   };
 
-  handleOpenEditModal(index) {
-    if (index != null) {
-      this.setState({edit_modal: true, selected_item: index});
+  handleOpenEditModal(id) {
+    if (id != null) {
+      this.setState({edit_modal: true, selected_item: id});
     }
   };
 
@@ -176,19 +193,10 @@ export default class MainGrid extends React.Component {
     this.setState({edit_modal: false, selected_item: null});
   };
 
-  handleSubmitEditModal(newItem) {
-    if (newItem != null) {
-      let updatedData = this.state.data;
-      if (this.state.selected_item == null) { // then add a new item
-        newItem.id = 100; // TODO: this needs to be reviewed, perhaps is the key of the MD entry
-        newItem.lastUpdate = (new Date()).toUTCString();
-        updatedData.push(newItem);
-      } else {
-        updatedData[this.state.selected_item].lastUpdate = (new Date()).toUTCString();
-        updatedData[this.state.selected_item].metadata = newItem.metadata;
-        updatedData[this.state.selected_item].data = newItem.data;
-      }
-      this.storeData(updatedData)
+  handleSubmitEditModal(item) {
+    if (item != null) {
+      item.lastUpdate = (new Date()).toUTCString();
+      this.storeData(item)
         .then(() => {this.handleOpenSnack(this.state.content.snackbar.item_saved)})
     }
     this.setState({edit_modal: false, selected_item: null});
@@ -206,8 +214,8 @@ export default class MainGrid extends React.Component {
     this.setState({selected_type: type, add_modal: false, edit_modal: true});
   };
 
-  handleOpenDeleteModal(index) {
-    this.setState({delete_modal: true, selected_item: index});
+  handleOpenDeleteModal(id) {
+    this.setState({delete_modal: true, selected_item: id});
   };
 
   handleCloseDeleteModal() {
@@ -215,14 +223,11 @@ export default class MainGrid extends React.Component {
   };
 
   handleSubmitDeleteModal() {
-    let updatedData = this.state.data;
-
     //TODO; not sure if this should be done in production
 //    deleteTxInbox(this.state.data[this.state.selected_item].data.pk);
 //    deleteWallet(this.state.data[this.state.selected_item].data.pk);
 
-    updatedData.splice(this.state.selected_item, 1);
-    this.storeData(updatedData)
+    this.deleteData(this.state.data[this.state.selected_item])
       .then(() => {this.handleOpenSnack(this.state.content.snackbar.item_deleted)},
       (err) => {this.handleOpenSnack(this.state.content.snackbar.fail_deleting)})
 
@@ -264,6 +269,11 @@ export default class MainGrid extends React.Component {
   }
 
   render() {
+    let selectedItemContent;
+    if (this.state.selected_item) {
+      selectedItemContent = this.state.data[this.state.selected_item].content;
+    }
+
     return (
       <MuiThemeProvider>
         <Container>
@@ -299,7 +309,7 @@ export default class MainGrid extends React.Component {
           {/* Dialog box for viewing the selected item */}
           <CardView
             open={this.state.view_modal}
-            selected_item={this.state.data[this.state.selected_item]}
+            selected_item={selectedItemContent}
             handleClose={this.handleCloseViewModal}
             i18nStrings={this.state.content.items}
             loadWalletData={loadWalletData}
@@ -323,7 +333,7 @@ export default class MainGrid extends React.Component {
           {/* Dialog box for editing the selected item, or adding a new one */}
           <CardEdit
             open={this.state.edit_modal}
-            selected_item={this.state.data[this.state.selected_item]}
+            selected_item={selectedItemContent}
             selected_type={this.state.selected_type}
             handleClose={this.handleCloseEditModal}
             handleSubmit={this.handleSubmitEditModal}
@@ -336,7 +346,7 @@ export default class MainGrid extends React.Component {
           {/* Dialog box for deleting the selected item */}
           <CardDelete
             open={this.state.delete_modal}
-            selected_item={this.state.data[this.state.selected_item]}
+            selected_item={selectedItemContent}
             handleClose={this.handleCloseDeleteModal}
             handleSubmit={this.handleSubmitDeleteModal}
             i18nStrings={this.state.content.items}

@@ -1,6 +1,7 @@
 {
   "name": "safe-wallet",
-  "version": "0.0.7",
+  "homepage": "file:///home/bochaco/work/safe-wallet/build",
+  "version": "0.0.10",
   "private": true,
   "devDependencies": {
     "react-scripts": "0.7.0"

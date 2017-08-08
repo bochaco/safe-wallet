@@ -1,6 +1,6 @@
 import React from 'react'
 import { Grid, Message, Icon, List } from 'semantic-ui-react';
-import { appInfo } from '../config.js';
+import { appInfo, appPermissions } from '../config.js';
 
 export class MessageNoItems extends React.Component {
   render() {
@@ -49,11 +49,11 @@ export class MessageAwatingAuth extends React.Component {
             <List as='ul'>
               <List.Item as='li'>{this.props.i18nStrings.authorising[2]}{appInfo.name}</List.Item>
               <List.Item as='li'>{this.props.i18nStrings.authorising[3]}{appInfo.vendor}</List.Item>
-              <List.Item as='li'>{this.props.i18nStrings.authorising[4]}{appInfo.version}</List.Item>
+              <List.Item as='li'>{this.props.i18nStrings.authorising[4]}{appInfo.id}</List.Item>
               <List.Item as='li'>{this.props.i18nStrings.authorising[5]}
                 <List.Item as='ul'>
-                  {appInfo.permissions.map((p, i) => (
-                    <List.Item key={i}>- {p} {this.props.i18nStrings.permissions[p]}</List.Item>
+                  {Object.keys(appPermissions).map((key) => (
+                    <List.Item key={key}>- {key} {this.props.i18nStrings.permissions[appPermissions[key]]}</List.Item>
                   ))}
                 </List.Item>
               </List.Item>

@@ -7,8 +7,8 @@ export default class ItemCards extends React.Component {
     if (Object.keys(this.props.data).length > 0) {
       return (
         <Card.Group itemsPerRow={3}>
-        {this.props.data.map((item, index) => (
-          <ItemCard key={index} index={index} item={item} {...this.props} />
+        {Object.keys(this.props.data).map((key) => (
+          <ItemCard key={this.props.data[key].id} index={this.props.data[key].id} item={this.props.data[key].content} {...this.props} />
         ))}
         </Card.Group>
       )
