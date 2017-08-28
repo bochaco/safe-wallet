@@ -1,33 +1,26 @@
 /*
   Helper functions to store data in memory needed for demos and dev tasks
 */
-import crypto from 'crypto';
-import { getXorName } from '../common.js';
-import {sample_SD_wallets, sample_SD_tx_inboxes, sample_SD_coins, sample_wallet_data} from './sample-data.js';
-
-const WALLET_INBOX_PREFIX = 'INBOX-';
+import { genTxId, genAppItemId } from '../common.js';
+import {getXorName, sample_wallets, sample_tx_inboxes, sample_coins, sample_wallet_data} from './sample-data.js';
 
 var app_data = sample_wallet_data;
-var sd_wallets = sample_SD_wallets;
-var sd_tx_inboxes = sample_SD_tx_inboxes;
-var sd_coins = sample_SD_coins;
+var wallets = sample_wallets;
+var tx_inboxes = sample_tx_inboxes;
+var coins = sample_coins;
+
+export const readConfigData = () => Promise.resolve('en');
 
 export const connectApp = (app, permissions) => {
   console.log("Authorising app...");
   return new Promise(resolve => {
     setTimeout(() => {
-      resolve('en')
+      resolve()
     }, 3000)
   })
 }
 
-export const disconnectApp = () => {
-  console.log("Disconnecting...");
-}
-
-export const isConnected = () => {
-  return Promise.resolve(true);
-}
+export const disconnectApp = () => console.log("Disconnecting...");
 
 export const loadAppData = () => {
   console.log("Reading the app data from memory...");
@@ -37,7 +30,7 @@ export const loadAppData = () => {
 export const saveAppItem = (item) => {
   console.log("Saving app data into memory...");
   if (!item.id) {
-    item.id = crypto.randomBytes(16).toString('hex');
+    item.id = genAppItemId();
   }
 
   app_data[item.id] = item;
@@ -52,57 +45,65 @@ export const deleteAppItem = (item) => {
 
 export const loadWalletData = (pk) => {
   console.log("Reading the coin wallet into memory...");
-  let dataId = getXorName(pk);
-  if (!sd_wallets[dataId]) {
-    sd_wallets[dataId] = [];
+  let xorName = getXorName(pk);
+  if (!wallets[xorName]) {
+    wallets[xorName] = [];
   }
-  return Promise.resolve(sd_wallets[dataId]);
+  return Promise.resolve(wallets[xorName]);
 }
 
 export const createWallet = (pk) => {
-  let dataId = getXorName(pk);
-  console.log("Creating wallet in memory...", pk, dataId);
-  if (!sd_wallets[dataId]) {
-    sd_wallets[dataId] = [];
+  let xorName = getXorName(pk);
+  console.log("Creating wallet in memory...", pk, xorName);
+  if (!wallets[xorName]) {
+    wallets[xorName] = [];
   }
-  return Promise.resolve(sd_wallets[dataId]);
+  return Promise.resolve();
 }
 
-export const saveWalletData = (pk, data) => {
-  let dataId = getXorName(pk);
+export const storeCoinsToWallet = (pk, data) => {
+  let xorName = getXorName(pk);
   console.log("Saving coin wallet data in the network...");
-  sd_wallets[dataId] = data;
+  wallets[xorName] = data;
   return Promise.resolve(data);
 }
 
 export const createTxInbox = (pk) => {
-  let dataId = getXorName(WALLET_INBOX_PREFIX + pk);
-  console.log("Creating TX inbox in memory...", pk, dataId);
-  if (!sd_tx_inboxes[dataId]) {
-    sd_tx_inboxes[dataId] = [];
+  let xorName = getXorName(pk);
+  console.log("Creating TX inbox in memory...", pk, xorName);
+  if (!tx_inboxes[xorName]) {
+    tx_inboxes[xorName] = [];
   }
-  return Promise.resolve(sd_tx_inboxes[dataId]);
+  return Promise.resolve();
 }
 
-export const readTxInboxData = (pk, index) => {
-  let dataId = getXorName(WALLET_INBOX_PREFIX + pk);
-  console.log("Reading TX inbox in memory...", pk, dataId);
-  if (!sd_tx_inboxes[dataId]) {
-    sd_tx_inboxes[dataId] = [];
+export const readTxInboxData = (pk) => {
+  let xorName = getXorName(pk);
+  console.log("Reading TX inbox in memory...", pk, xorName);
+  if (!tx_inboxes[xorName]) {
+    tx_inboxes[xorName] = [];
   }
 
-  if (index === null) {
-    return Promise.resolve({dataLength: sd_tx_inboxes[dataId].length});
-  }
+  return Promise.resolve(tx_inboxes[xorName]);
+}
 
-  let r = sd_tx_inboxes[dataId][index];
-  sd_tx_inboxes[dataId].splice(index, 1);
-  return Promise.resolve(r);
+export const removeTxInboxData = (pk, txs) => {
+  let xorName = getXorName(pk);
+  console.log("Removing TXs from TX inbox in memory...", pk);
+  if (!tx_inboxes[xorName]) {
+    tx_inboxes[xorName] = [];
+  }
+  let tx_inbox = tx_inboxes[xorName];
+  txs.forEach((tx) => {
+    const index = tx_inbox.find((elem) => elem.id === tx.id);
+    tx_inbox.splice(index, 1);
+  })
+  return Promise.resolve();
 }
 
 export const checkOwnership = (coinId, pk) => {
   console.log("Reading coin info...", pk, coinId);
-  let data = sd_coins[coinId];
+  let data = coins[coinId];
   console.log("Coin data:", data);
   if (data.owner !== pk) {
       throw Error ("Ownership doesn't match", pk, data);
@@ -112,34 +113,37 @@ export const checkOwnership = (coinId, pk) => {
 }
 
 export const sendTxNotif = (pk, coinIds, msg) => {
-  let recipientInbox = getXorName(WALLET_INBOX_PREFIX + pk);
+  let recipientInbox = getXorName(pk);
+  let id = genTxId();
   let tx = {
+    id,
     coinIds: coinIds,
     msg: msg,
     date: (new Date()).toUTCString()
   }
 
-  if (sd_tx_inboxes[recipientInbox]) {
-    sd_tx_inboxes[recipientInbox].push(tx);
+  if (tx_inboxes[recipientInbox]) {
+    tx_inboxes[recipientInbox].push(tx);
   } else {
-    sd_tx_inboxes[recipientInbox] = [tx];
+    tx_inboxes[recipientInbox] = [tx];
   }
 }
 
 export const transferCoin = (coinId, pk, sk, recipient) => {
   console.log("Transfering coin's ownership in memory...", coinId, recipient);
 
-  let wallet = sd_wallets[getXorName(pk)];
+  let wallet = wallets[getXorName(pk)];
   // let's check if the coinId is found in the wallet
   let index = wallet.indexOf(coinId);
-  if (index >= 0 && checkOwnership(coinId, pk)) {
-    // ok, let's make the transfer now
-    // change ownership
-    sd_coins[coinId].owner = recipient;
-    sd_coins[coinId].prev_owner = pk;
-  } else {
-    console.error("Error, coin is not owned");
+  if (index >= 0) {
+    return checkOwnership(coinId, pk)
+      .then(() => {
+        // ok, let's make the transfer now
+        // change ownership
+        coins[coinId].owner = recipient;
+        coins[coinId].prev_owner = pk;
+        return Promise.resolve();
+      })
   }
-
-  return Promise.resolve(wallet);
+  return Promise.reject("Error: coin is not owned");
 }

@@ -1,6 +1,6 @@
 {
   "name": "safe-wallet",
-  "homepage": "file:///home/bochaco/work/safe-wallet/build",
+  "homepage": "file:///home/bochaco/work/safe-wallet/build/",
   "version": "0.0.10",
   "private": true,
   "devDependencies": {

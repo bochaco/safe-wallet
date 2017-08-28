@@ -3,7 +3,8 @@ import { Image, List, Item } from 'semantic-ui-react'
 import ViewDialogBox from './DialogBox.js';
 
 import applogo from '../img/app_logo.png';
-import { appInfo } from '../config.js';
+import apptitle from '../img/branding.png';
+let appInfo = require('../../package.json');
 
 const customContentStyle = {
   textAlign: "left"
@@ -13,16 +14,16 @@ export default class AboutView extends React.Component {
   render() {
     return (
       <ViewDialogBox {...this.props}
-        title={this.props.i18nStrings.about}
+        title={<Image src={apptitle} />}
         size="small"
         style={customContentStyle}
       >
         <Item.Group>
           <Item>
-            <Image avatar src={applogo} />
+            <Image src={applogo} />
 
             <Item.Content>
-              <Item.Header>SAFE Wallet</Item.Header>
+              <Item.Header></Item.Header>
               <Item.Description>{this.props.i18nStrings.description}</Item.Description>
               <Item.Meta>
                 <List>

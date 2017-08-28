@@ -57,6 +57,7 @@ export class ColorAndLabel extends React.Component {
               options={this.colorOptions}
               onChange={this.handleChange}
               trigger={trigger}
+              defaultValue={this.props.selected_item.metadata.color}
               ref='colorInput'
             />
           </Grid.Column>

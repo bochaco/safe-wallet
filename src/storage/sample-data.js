@@ -1,5 +1,10 @@
 /* Sample data only for testing or dev tasks */
-import { Constants, getXorName } from '../common.js';
+import crypto from 'crypto';
+import { Constants } from '../common.js';
+
+export const getXorName = (id) => {
+  return crypto.createHash('sha256').update(id).digest('base64');
+}
 
 const SampleKeyPairs = {
   Me: {
@@ -29,34 +34,31 @@ const ALTCOIN_1_XOR_NAME = getXorName("altcoin1");
 const ALTCOIN_2_XOR_NAME = getXorName("altcoin2");
 const ALTCOIN_3_XOR_NAME = getXorName("altcoin3");
 
-export const sample_SD_tx_inboxes = {};
+export const sample_tx_inboxes = {};
 
-export const sample_SD_wallets = {};
+export const sample_wallets = {};
 // wallet of Me.pk
-sample_SD_wallets[ME_PK_XOR_NAME] = [
+sample_wallets[ME_PK_XOR_NAME] = [
   ALTCOIN_1_XOR_NAME,
   ALTCOIN_2_XOR_NAME,
   ALTCOIN_3_XOR_NAME,
 ];
 
-export const sample_SD_coins = {};
-// altcoin1 SD
-sample_SD_coins[ALTCOIN_1_XOR_NAME] = {
-    type_tag: 15001,
+export const sample_coins = {};
+// altcoin1
+sample_coins[ALTCOIN_1_XOR_NAME] = {
     owner: SampleKeyPairs.Me.pk,
     prev_owner: SampleKeyPairs.Alice.pk,
 }
 
-// altcoin2 SD
-sample_SD_coins[ALTCOIN_2_XOR_NAME] = {
-    type_tag: 15001,
+// altcoin2
+sample_coins[ALTCOIN_2_XOR_NAME] = {
     owner: SampleKeyPairs.Me.pk,
     prev_owner: SampleKeyPairs.Alice.pk,
 }
 
-// altcoin3 SD
-sample_SD_coins[ALTCOIN_3_XOR_NAME] = {
-    type_tag: 15001,
+// altcoin3
+sample_coins[ALTCOIN_3_XOR_NAME] = {
     owner: SampleKeyPairs.Me.pk,
     prev_owner: SampleKeyPairs.Bob.pk,
 }

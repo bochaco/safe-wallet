@@ -89,11 +89,9 @@ export default class AltCoinView extends React.Component {
 
   readWalletData() {
     this.props.loadWalletData(this.props.selected_item.data.pk)
-      .then(wallet => {
+      .then((wallet) => {
         console.log("Reading wallet", this.props.selected_item.data.pk, wallet);
-        if (wallet) {
-          this.setState({wallet: wallet, loadingWallet: false});
-        }
+        this.setState({wallet: wallet, loadingWallet: false});
       });
   }
 
@@ -102,72 +100,74 @@ export default class AltCoinView extends React.Component {
         return Promise.resolve({coinsAccepted: [], prev_owner: null});
       }
 
-      let currentCoin = coins[0];
-      console.log("Checking coind ID:", currentCoin);
-      return this.props.checkOwnership(currentCoin, pk)
-        .then((coinData) => {
-          // the coin is mine, let's add it unless it's already in my wallet
-          if (this.state.wallet.indexOf(currentCoin) < 0) {
-            console.log("Coin accepted");
-            coins.splice(0, 1);
-            return this.checkOwnershipOfCoins(coins, pk)
-              .then(({coinsAccepted, _}) => {
-                coinsAccepted.push(currentCoin);
-                return {coinsAccepted: coinsAccepted, prev_owner: coinData.prev_owner};
-              })
-          } else {
-            // somebody trying to cheat?? I had that coin in my wallet already
-            throw Error("The coin already existed in my wallet, so ignoring it");
-          }
-        }, (err) => {
-          // somebody trying to cheat??
-          throw Error("The coin doesn't belong to me, so ignoring it");
-        })
+      let coinsAccepted = [];
+      let prevOwner;
+      return Promise.all(coins.map((currentCoin) => {
+        console.log("Checking coind ID:", currentCoin.toString(16));
+        return this.props.checkOwnership(currentCoin, pk)
+          .then((coinData) => {
+            // the coin is mine, let's add it unless it's already in my wallet
+            prevOwner = coinData.prev_owner;
+            if (this.state.wallet.indexOf(currentCoin) < 0) {
+              console.log("Coin accepted: ", currentCoin);
+              coinsAccepted.push(currentCoin);
+            } else {
+              // somebody trying to cheat?? I had that coin in my wallet already
+              throw Error("The coin already existed in my wallet, so discard TX");
+            }
+          }, (err) => {
+            // somebody trying to cheat??
+            throw Error("The coin doesn't belong to me, so ignore TX");
+          })
+      }))
+      .then(() => ({coinsAccepted, prevOwner}));
   }
 
   tick() {
-    let pk = this.props.selected_item.data.pk;
-    this.props.readTxInboxData(pk, null)
-      .then(txInbox => {
-        //console.log("Read wallet TX inbox", pk, txInbox);
-        // is there any new tx?
-        if (txInbox.dataLength > 0) {
-          // Now let's iterate thru each TX
-          console.log("Some TX received", txInbox.dataLength)
+    const pk = this.props.selected_item.data.pk;
+    let historyTxs = [];
 
-          for (let i=0; i<txInbox.dataLength; i++) {
-            let _txInfo;
-//            console.log("iterating agin", i) // we need to fix this, it iterates again before the tx was deleted
-            this.props.readTxInboxData(pk, 0)
-              .then(txInfo => _txInfo = txInfo)
-              .then(() => this.checkOwnershipOfCoins(_txInfo.coinIds, pk))
-              .then(({coinsAccepted, prev_owner}) => {
-                let newWallet = this.state.wallet;
-                newWallet.push(...coinsAccepted);
-                console.log("Updated wallet", newWallet);
-                // save updated wallet in state and in SAFEnet
-                this.props.saveWalletData(pk, newWallet)
-                  .then(() => {
-                    this.setState({wallet: newWallet});
-                    if (this.props.selected_item.metadata.keepTxs) {
-                      // save the new TX in the history
-                      let tx = {
-                        amount: coinsAccepted.length,
-                        direction: "in",
-                        date: _txInfo.date,
-                        from: prev_owner,
-                        msg: _txInfo.msg,
-                      }
-                      console.log("Storing tx in history", tx);
-                      this.props.appendTx2History(tx);
-                    }
-                  })
+    // Let's read new TX's, if there is any ...
+    return this.props.readTxInboxData(pk)
+      .then((txs) => Promise.all(txs.map((txInfo) => {
+        return this.checkOwnershipOfCoins(txInfo.coinIds, pk)
+          .then(({coinsAccepted, prevOwner}) => {
+            let newWallet = this.state.wallet;
+            newWallet.push(...coinsAccepted);
+            console.log("Updated wallet", newWallet);
+            // save updated wallet in state and in SAFEnet
+            return this.props.storeCoinsToWallet(pk, newWallet)
+              .then(() => {
+                this.setState({wallet: newWallet});
+                if (this.props.selected_item.metadata.keepTxs) {
+                  // save the new TX in the history
+                  let tx = {
+                    amount: coinsAccepted.length,
+                    direction: "in",
+                    date: txInfo.date,
+                    from: prevOwner,
+                    msg: txInfo.msg,
+                  }
+                  historyTxs.push(tx);
+                }
               })
+          });
+        }))
+        .then(() => {
+          if (txs.length > 0) {
+            return this.props.removeTxInboxData(pk, txs)
+              .then(() => {
+                if (historyTxs.length > 0) {
+                  let updatedTxs = this.props.selected_item.data.history;
+                  Array.prototype.push.apply(updatedTxs, historyTxs);
+                  console.log("Storing inbound TX's in history");
+                  return this.props.updateTxHistory(updatedTxs);
+                }
+              });
           }
-        }
-      });
+        })
+      );
   }
-
 
   handleRecipientChange() {
       this.setState({recipientError: ""});
@@ -215,24 +215,22 @@ export default class AltCoinView extends React.Component {
       return Promise.resolve([]);
     }
 
-    let coinId= this.state.wallet[amount-1];
-    let _coinIds;
+    let coinId = this.state.wallet[amount-1];
+    let coinIds;
     console.log("Transfering coin", coinId);
 
-    return this.props.transferCoin(
-        coinId,
-        this.props.selected_item.data.pk,
-        this.props.selected_item.data.sk,
-        this.refs.recipientInput.input.value,
-    )
-      .then(id => console.log("Coin transferred"))
+    return this.makeTransfer(amount-1, percentStep)
+      .then((_coinIds) => coinIds = _coinIds)
+      .then(() => this.props.transferCoin(
+          coinId,
+          this.props.selected_item.data.pk,
+          this.props.selected_item.data.sk,
+          this.refs.recipientInput.input.value,
+      ))
+      .then(() => console.log("Coin transferred"))
       .then(() => this.setState({percent: this.state.percent + percentStep}))
-      .then(() => this.makeTransfer(amount-1, percentStep))
-      .then((coinIds) => _coinIds = coinIds)
-      .then(() => _coinIds.push(coinId))
-      .then(() => {
-        return _coinIds;
-      });
+      .then(() => coinIds.push(coinId))
+      .then(() => coinIds);
   }
 
   handleConfirmTransfer() {
@@ -244,15 +242,15 @@ export default class AltCoinView extends React.Component {
     let percentStep = Math.floor(100 / (amount+2));
     let coinIds, updatedWallet = this.state.wallet;
     console.log("Transfering coins: ", amount);
-    this.makeTransfer(amount, percentStep)
+    return this.makeTransfer(amount, percentStep)
       .then((_coinIds) => coinIds = _coinIds)
       .then(() => this.setState({percent: this.state.percent + percentStep}))
       .then(() => this.props.sendTxNotif(recipient, coinIds, msg))
-      .then(() => updatedWallet.splice(0, amount))
+      .then(() => updatedWallet.splice(0, amount)) // TODO: remove the coins with id in coinIds var instead
       .then(() => this.setState({percent: this.state.percent + percentStep}))
-      .then(() => this.props.saveWalletData(this.props.selected_item.data.pk, updatedWallet))
-      .then((wallet) => {
-        this.setState({wallet: wallet});
+      .then(() => this.props.storeCoinsToWallet(this.props.selected_item.data.pk, updatedWallet))
+      .then(() => {
+        this.setState({wallet: updatedWallet});
         if (this.props.selected_item.metadata.keepTxs) {
           // save the new TX in the history
           let historyTx = {
@@ -262,8 +260,10 @@ export default class AltCoinView extends React.Component {
             to: recipient,
             msg: msg,
           }
-          console.log("Storing tx in history", historyTx);
-          this.props.appendTx2History(historyTx);
+          console.log("Storing outbound TX's in history", historyTx);
+          let updatedTxs = this.props.selected_item.data.history;
+          updatedTxs.push(historyTx);
+          this.props.updateTxHistory(updatedTxs);
         }
         this.refs.pinInput.input.value = null;
         this.setState({showConfirm: false, isTransfering: false });
@@ -496,10 +496,14 @@ export class AltCoinEdit extends React.Component {
       }
     }
 
-    // Create the wallet and inbox based on the label
-    this.props.createWallet(updatedItem.data.pk)
-      .then(data => this.props.createTxInbox(updatedItem.data.pk))
-      .then(data => this.props.handleSubmit(updatedItem));
+    if (this.props.selected_item_id) {
+      return this.props.handleSubmit(updatedItem);
+    } else {
+      // Create the wallet and inbox based on the Public Key
+      return this.props.createWallet(updatedItem.data.pk)
+        .then(() => this.props.createTxInbox(updatedItem.data.pk))
+        .then(() => this.props.handleSubmit(updatedItem));
+    }
   };
 
   componentDidMount() {

@@ -1,69 +1,76 @@
 /*
-  Helper functions to store data in the SAFEnet
+  Layer which takes care of storing data on the SAFEnet
 */
-import crypto from 'crypto';
-//import { getXorName } from '../common.js';
+import { genTxId, genAppItemId } from '../common.js';
 
-//if (process.env.NODE_ENV !== 'production') {
-//  require('safe_app_web_api');
-//}
-
-const ENTRY_KEY_CONFIG = 'safe-wallet-app-config';
 const TAG_TYPE_DATA = 17112016;
-const CONFIG_KEY_APP_DATA = 'appData';
-const CONFIG_KEY_VERSION = 'version';
-const CONFIG_KEY_PREFERRED_LANG = 'preferredLang';
-//const WALLET_INBOX_PREFIX = "WALLETINBOX-AD-";
+const TAG_TYPE_WALLET = 1012017;
+const TAG_TYPE_WALLET_TX_INBOX = 20082018;
+const TAG_TYPE_THANKS_COIN = 21082018;
+
+const ENTRY_KEY_CONFIG = 'app_config';
+
+const CONFIG_ENTRY_KEY_APP_DATA = 'app_data';
+const CONFIG_ENTRY_KEY_VERSION = 'version';
+const CONFIG_ENTRY_KEY_PREFERRED_LANG = 'lang';
+
+const COIN_ENTRY_KEY_DATA = 'coin-data';
+
+const TX_INBOX_ENTRY_KEY_PK = '__enc_pk';
+const WALLET_ENTRY_KEY_COINS = '__coins';
+
+const ERR_NO_SUCH_ENTRY = -106;
 
 let APP_HANDLE = null;
 let DATA_HANDLE = null;
 
-const _readConfigData = () => {
+export const readConfigData = () => {
   console.log("Fetching config data from app's home container...");
-  return window.safeApp.getHomeContainer(APP_HANDLE)
-    .then((homeContainer) => window.safeMutableData.encryptKey(homeContainer, ENTRY_KEY_CONFIG)
-      .then((encKey) => window.safeMutableData.get(homeContainer, encKey)
-        .then((encValue) => window.safeMutableData.decrypt(homeContainer, encValue.buf))
-        .then((decrypted) => { return JSON.parse(decrypted); })
+  return window.safeApp.getOwnContainer(APP_HANDLE)
+    .then((ownContainerHandle) => window.safeMutableData.encryptKey(ownContainerHandle, ENTRY_KEY_CONFIG)
+      .then((encKey) => window.safeMutableData.get(ownContainerHandle, encKey)
+        .then((encValue) => window.safeMutableData.decrypt(ownContainerHandle, encValue.buf))
+        .then((decrypted) => JSON.parse(decrypted))
       .catch((err) => {
-        // FIXME: Check if ERR_NO_SUCH_ENTRY
-        //if (err.code !== -106) {
-        //  console.log("Failed fetching config data: ", err);
-        //  throw err;
-        //}
+        if (err.code !== ERR_NO_SUCH_ENTRY) {
+          console.log("Failed fetching config data: ", err.code, err.message);
+          throw err;
+        }
         console.log("Generating config data...");
-        let storedConfig = {
-          [CONFIG_KEY_VERSION]: '0.0.10',
-          [CONFIG_KEY_PREFERRED_LANG]: 'en'
+        let configToStore = {
+          [CONFIG_ENTRY_KEY_VERSION]: '0.0.10',
+          [CONFIG_ENTRY_KEY_PREFERRED_LANG]: 'en'
         };
+
         return window.safeMutableData.newRandomPrivate(APP_HANDLE, TAG_TYPE_DATA)
           .then((mdHandle) => window.safeMutableData.quickSetup(mdHandle, {}))
-          .then((mdHandle) => window.safeMutableData.serialise(mdHandle))
-          .then((serialised) => {
-            storedConfig[CONFIG_KEY_APP_DATA] = serialised;
-            console.log("Config data generated:", storedConfig);
-            return window.safeMutableData.newMutation(APP_HANDLE)
-              .then((mutHandle) => window.safeMutableData.encryptKey(homeContainer, ENTRY_KEY_CONFIG)
-                .then((encKey) => window.safeMutableData.encryptValue(homeContainer, JSON.stringify(storedConfig))
-                  .then((encValue) => window.safeMutableDataMutation.insert(mutHandle, encKey, encValue))
+          .then((mdHandle) => window.safeMutableData.serialise(mdHandle)
+            .then((serialised) => {
+              window.safeMutableData.free(mdHandle);
+              configToStore[CONFIG_ENTRY_KEY_APP_DATA] = serialised;
+              return window.safeMutableData.newMutation(APP_HANDLE)
+                .then((mutHandle) => window.safeMutableData.encryptKey(ownContainerHandle, ENTRY_KEY_CONFIG)
+                  .then((encKey) => window.safeMutableData.encryptValue(ownContainerHandle, JSON.stringify(configToStore))
+                    .then((encValue) => window.safeMutableDataMutation.insert(mutHandle, encKey, encValue))
+                  )
                 )
-                .then(() => window.safeMutableData.applyEntriesMutation(homeContainer, mutHandle))
-                .then(() => window.safeMutableDataMutation.free(mutHandle))
-              )
-              .then(() => {
-                console.log("Config data stored in app's home container")
-                window.safeMutableData.free(homeContainer);
-                return storedConfig;
-              })
-          }, (err) => {
-            throw Error("Failed generating config data");
-          });
+                .then(() => {
+                  console.log("Config data stored in app's own container")
+                  window.safeMutableData.free(ownContainerHandle);
+                  return configToStore;
+                })
+            }, (err) => {
+              throw Error("Failed generating config data");
+            })
+          );
       })))
-    .then((storedConfig) => window.safeMutableData.fromSerial(APP_HANDLE, storedConfig[CONFIG_KEY_APP_DATA])
+    .then((storedConfig) => window.safeMutableData.fromSerial(APP_HANDLE, storedConfig[CONFIG_ENTRY_KEY_APP_DATA])
       .then((dataMdHandle) => {
         DATA_HANDLE = dataMdHandle;
         return storedConfig;
-      }));
+      })
+    )
+    .then((configData) => configData.preferredLang);
 }
 
 // Auth & connection functions
@@ -76,8 +83,6 @@ export const connectApp = (app, permissions, networkStateCb) => {
     .then((authUri) => window.safeApp.connectAuthorised(APP_HANDLE, authUri))
     .then(() => window.safeApp.refreshContainersPermissions(APP_HANDLE))
     .then(() => (console.log("App connected")))
-    .then(() => _readConfigData())
-    .then((configData) => configData.preferredLang);
 }
 
 export const disconnectApp = () => {
@@ -86,12 +91,14 @@ export const disconnectApp = () => {
   DATA_HANDLE = null;
   window.safeApp.free(APP_HANDLE);
   APP_HANDLE = null;
+  console.log("App disconnected by user");
 }
 
 const _decryptEntries = (rawEntries) => {
   let data = {};
   return Promise.all(rawEntries.map((entry) => {
-      if (entry.value.buf.length === 0) { //FIXME: this condition is a work around for a limitation in safe_core
+      // Ignore soft-deleted items
+      if (entry.value.buf.length === 0) {
         return Promise.resolve();
       }
 
@@ -103,7 +110,6 @@ const _decryptEntries = (rawEntries) => {
               version: entry.value.version,
               content: JSON.parse(decValue.toString())
             }
-            console.log("ITEM READ:", item);
             data[item.id] = item;
           }));
     }))
@@ -133,7 +139,7 @@ export const saveAppItem = (item) => {
   let version = 0;
   let id = item.id;
   if (!item.id) {
-    id = crypto.randomBytes(16).toString('hex');
+    id = genAppItemId();
   } else {
     version = item.version + 1;
   }
@@ -164,7 +170,6 @@ export const saveAppItem = (item) => {
 
 export const deleteAppItem = (item) => {
   console.log("Removing item in the network...");
-  console.log("REMOVING:", item.version)
   return window.safeMutableData.newMutation(APP_HANDLE)
     .then((mutHandle) => window.safeMutableData.encryptKey(DATA_HANDLE, item.id)
       .then((encKey) => window.safeMutableDataMutation.remove(mutHandle, encKey, item.version + 1))
@@ -177,196 +182,169 @@ export const deleteAppItem = (item) => {
     });
 }
 
-/*
-const _createRandomUserPrefix = () => {
-  let randomString = '';
-  for (var i = 0; i < 10; i++) {
-    // and ten random ascii chars
-    randomString += String.fromCharCode(Math.floor(Math.random(100) * 100));
-  }
-  return btoa(`${(new Date()).getTime()}-${randomString}`);
-};
-
-/*
 // Wallet management functions
-export const loadWalletData = (pk) => {
-  let dataId = getXorName(pk);
-  console.log("Reading the coin wallet info...", pk, dataId);
-  return _loadData(dataId, CYPHER_OPTS_SYMMETRIC);
-}
-
-export const createWallet = (pk) => {
-  let dataId = getXorName(pk);
-  console.log("Creating the coin wallet...", pk, dataId);
-  return _fetchSDataHandle(dataId, CYPHER_OPTS_SYMMETRIC)
-    .then((handleId) => {
-      console.log("Wallet created successfully");
-      return handleId
-    }, (err) => {
-      console.error("Failed creating coin wallet:", err);
-    })
-}
-
-export const saveWalletData = (pk, data) => {
-  const payload = new Buffer(JSON.stringify(data)).toString('base64');
-  let dataId = getXorName(pk);
-
-  console.log("Saving coin wallet data in the network...");
-
-  return _getSDataHandle(dataId)
-    .then((handleId) => {
-      // let's try to save the data now!
-      return window.safeStructuredData.updateData(APP_HANDLE, handleId, payload, CYPHER_OPTS_SYMMETRIC)
-        .then(() => window.safeStructuredData.post(APP_HANDLE, handleId))
-        .then(() => {
-          console.log("Coin wallet data saved in the network successfully");
-          return data;
-        }, (err) => {
-          throw Error("Error when updating coin wallet data:", err);
-        })
-
-    }, (err) => {
-      throw Error("Failed loading coin wallet data:", err);
-    })
-}
-*/
-/*export const deleteWallet = (pk) => {
-  let dataId = getXorName(pk);
-  console.log("Deleting coin wallet...", dataId);
-  return _getSDataHandle(dataId)
-    .then( (handleId) => {
-      console.log("Data handle fetched:", handleId);
-      window.safeStructuredData.del(APP_HANDLE, handleId)
-        .then(res => console.log("Coin wallet deleted"));
-      })
-}*/
-/*
-export const checkOwnership = (coinId, pk) => {
-  console.log("Reading coin info...", pk, coinId);
-  return _loadExistingData(coinId)
-    .then(data => {
-      console.log("Coin data:", data);
-      if (data.owner !== pk) {
-        throw Error ("Ownership doesn't match", pk, data);
-      }
-      return data;
-    })
-}
-
-const _transferOwnership = (coinId, pk, recipient) => {
-  let recipientInboxId = getXorName(WALLET_INBOX_PREFIX + recipient);
-  let _coinData, _handleId;
-  let _recipientHandleId, _cypherOptsAssymmetric;
-  return checkOwnership(coinId, pk)
-    .then(data => _coinData = data)
-    .then(() => _coinData.prev_owner = _coinData.owner)
-    .then(() => _coinData.owner = recipient)
-    .then(() => console.log("Updated coin:", _coinData))
-    .then(() => _getSDataHandle(coinId))
-    .then((handleId) => _handleId = handleId)
-    .then(() => _coinData = new Buffer(JSON.stringify(_coinData)).toString('base64'))
-    .then(() => _getADataHandle(recipientInboxId))
-    .then((handleId) => _recipientHandleId = handleId)
-    .then(() => _getEncryptionHandle(_recipientHandleId))
-    .then(encryptHandle => _cypherOptsAssymmetric = encryptHandle)
-    .then(() => window.safeStructuredData.updateData(APP_HANDLE, _handleId, _coinData, _cypherOptsAssymmetric))
-    .then(() => window.safeStructuredData.post(APP_HANDLE, _handleId))
-    .then(() => {
-      console.log("Coin's ownership transferred in the network successfully");
-      window.safeAppendableData.dropHandle(APP_HANDLE, _recipientHandleId);
-      return _coinData;
-    }, (err) => {
-      throw Error("Error when transferring coin's ownership:", err);
-    })
-}
-*/
-/*
-// Tx Inbox management functions
-export const readTxInboxData = (pk, index) => {
-  let dataId = getXorName(WALLET_INBOX_PREFIX + pk);
-  if (index === null) {
-    return _loadAData(dataId);
-  } else {
-    let _handleId, _txHandleId, _readerHandle, _txInfo;
-    return _getADataHandle(dataId)
-      .then((handleId) => _handleId = handleId)
-      .then(() => window.safeAppendableData.getDataIdAt(APP_HANDLE, _handleId, index))
-      .then(_getHandleId)
-      .then((handleId) => _txHandleId = handleId)
-      .then(() => window.safeImmutableData.getReaderHandle(APP_HANDLE, _txHandleId))
-      .then(_getHandleId)
-      .then((handleId) => _readerHandle = handleId)
-      .then(() => window.safeImmutableData.read(APP_HANDLE, _readerHandle))
-      .then((res) => res.json ? res.json() : JSON.parse(new Buffer(res).toString()))
-      .then((parsedData) => _txInfo = parsedData)
-      .then(() => window.safeImmutableData.dropReader(APP_HANDLE, _readerHandle))
-      .then(() => window.safeAppendableData.removeAt(APP_HANDLE, _handleId, index))
-      .then(() => window.safeAppendableData.post(APP_HANDLE, _handleId))
-      .then(() => window.safeAppendableData.dropHandle(APP_HANDLE, _handleId))
-      .then(() => {
-        return _txInfo;
-      })
-  }
+const _genXorName = (id) => {
+  return window.safeCrypto.sha3Hash(APP_HANDLE, id);
 }
 
 export const createTxInbox = (pk) => {
-  let dataId = getXorName(WALLET_INBOX_PREFIX + pk);
-  console.log("Creating TX inbox...", dataId);
-  return _createAData(dataId)
-    .then((id) => {
-      return id
-    }, (err) => {
-      console.error("Failed creating TX inbox:", err);
-    })
+  console.log("Creating TX inbox...", pk);
+  let baseInbox = {
+    [TX_INBOX_ENTRY_KEY_PK]: pk
+  };
+  let inboxHandle;
+  let permSetHandle;
+  return _genXorName(pk)
+    .then((xorName) => window.safeMutableData.newPublic(APP_HANDLE, xorName, TAG_TYPE_WALLET_TX_INBOX))
+    .then((mdHandle) => window.safeMutableData.quickSetup(mdHandle, baseInbox)) //TODO: set metadata
+    .then((mdHandle) => inboxHandle = mdHandle)
+    .then(() => window.safeMutableData.newPermissionSet(APP_HANDLE))
+    .then((pmSetHandle) => permSetHandle = pmSetHandle)
+    .then(() => window.safeMutableDataPermissionsSet.setAllow(permSetHandle, 'Insert'))
+    .then(() => window.safeMutableData.setUserPermissions(inboxHandle, null, permSetHandle, 1))
+    .then(() => window.safeMutableDataPermissionsSet.free(permSetHandle))
+    .then(() => window.safeMutableData.free(inboxHandle))
 }
 
-const _appendToTxInbox = (id, content) => {
-  let _handleId, _cypherOptsAssymmetric, _immHandleId, _immToAppendHandleId;
-  return _getADataHandle(id)
-    .then((handleId) => _handleId = handleId)
-    .then(() => _getEncryptionHandle(_handleId))
-    .then(encryptHandle => _cypherOptsAssymmetric = encryptHandle)
-    .then(() => window.safeImmutableData.getWriterHandle(APP_HANDLE))
-    .then(_getHandleId)
-    .then(handleId => _immHandleId = handleId)
-    .then(() => window.safeImmutableData.write(APP_HANDLE, _immHandleId, content))
-    .then(() => window.safeImmutableData.closeWriter(APP_HANDLE, _immHandleId, _cypherOptsAssymmetric))
-    .then(_getHandleId)
-    .then(handleId => _immToAppendHandleId = handleId)
-    .then(() => window.safeImmutableData.dropWriter(APP_HANDLE, _immHandleId))
-    .then(() => window.safeAppendableData.append(APP_HANDLE, _handleId, _immToAppendHandleId))
-    .then(() => window.safeAppendableData.dropHandle(APP_HANDLE, _handleId))
+export const createWallet = (pk) => {
+  console.log("Creating the coin wallet...", pk);
+  const emptyCoins = {
+    [WALLET_ENTRY_KEY_COINS]: JSON.stringify([])
+  }
+  return _genXorName(pk)
+    .then((xorName) => window.safeMutableData.newPublic(APP_HANDLE, xorName, TAG_TYPE_WALLET)) //TODO: make it private and encrypted
+    .then((inboxHandle) => window.safeMutableData.quickSetup(inboxHandle, emptyCoins)) //TODO: set metadata & support the case that it exists already
+    .then((inboxHandle) => window.safeMutableData.free(inboxHandle));
+}
+
+export const loadWalletData = (pk) => {
+  // We store the wallet inbox at the sha3 hash value of its PublicKey
+  // so it's easy to find by other wallet apps to transfer coins.
+  console.log("Reading the coin wallet info...", pk);
+  return _genXorName(pk)
+    .then((xorName) => window.safeMutableData.newPublic(APP_HANDLE, xorName, TAG_TYPE_WALLET))
+    .then((walletHandle) => window.safeMutableData.get(walletHandle, WALLET_ENTRY_KEY_COINS)
+      .then((coins) => {
+        window.safeMutableData.free(walletHandle);
+        return JSON.parse(coins.buf.toString());
+      })
+    );
+}
+
+export const storeCoinsToWallet = (pk, coins) => {
+  console.log("Saving coins in the wallet on the network...");
+  return _genXorName(pk)
+    .then((xorName) => window.safeMutableData.newPublic(APP_HANDLE, xorName, TAG_TYPE_WALLET))
+    .then((walletHandle) => window.safeMutableData.get(walletHandle, WALLET_ENTRY_KEY_COINS)
+      .then((currentCoins) => window.safeMutableData.newMutation(APP_HANDLE)
+        .then((mutHandle) => window.safeMutableDataMutation.update(mutHandle, WALLET_ENTRY_KEY_COINS, JSON.stringify(coins), currentCoins.version + 1)
+          .then(() => window.safeMutableData.applyEntriesMutation(walletHandle, mutHandle))
+          .then(() => window.safeMutableDataMutation.free(mutHandle))
+        )
+        .then(() => window.safeMutableData.free(walletHandle))
+      )
+    );
+}
+
+// Tx Inbox management functions
+const _decryptTxs = (encryptedTxs) => {
+  return encryptedTxs.map((encryptedTx) => {
+    // TODO: decrypt each entry's tx
+    return Object.assign({ id: encryptedTx.id }, JSON.parse(encryptedTx.tx));
+  });
+}
+
+export const readTxInboxData = (pk) => {
+  let encryptedTxs = [];
+  return _genXorName(pk)
+    .then((xorName) => window.safeMutableData.newPublic(APP_HANDLE, xorName, TAG_TYPE_WALLET_TX_INBOX))
+    .then((inboxHandle) => window.safeMutableData.getEntries(inboxHandle)
+      .then((entriesHandle) => window.safeMutableDataEntries.forEach(entriesHandle, (id, tx) => {
+          // Ignore soft-deleted items and the Public encryption key entry
+          if (id.toString() !== TX_INBOX_ENTRY_KEY_PK && tx.buf.length > 0) {
+            encryptedTxs.push({ id: id.toString(), tx: tx.buf.toString() });
+          }
+        })
+        .then(() => _decryptTxs(encryptedTxs))
+        .then((decryptedTxs) => {
+          window.safeMutableDataEntries.free(entriesHandle);
+          window.safeMutableData.free(inboxHandle);
+          return decryptedTxs;
+        })
+      )
+    );
+}
+
+export const removeTxInboxData = (pk, txs) => {
+  return window.safeMutableData.newMutation(APP_HANDLE)
+    .then((mutHandle) => Promise.all(txs.map((tx) => window.safeMutableDataMutation.remove(mutHandle, tx.id, 1)))
+      .then(() => _genXorName(pk))
+      .then((xorName) => window.safeMutableData.newPublic(APP_HANDLE, xorName, TAG_TYPE_WALLET_TX_INBOX))
+      .then((txInboxHandle) => window.safeMutableData.applyEntriesMutation(txInboxHandle, mutHandle)
+        .then(() => window.safeMutableData.free(txInboxHandle))
+      )
+      .then(() => window.safeMutableDataMutation.free(mutHandle))
+    );
+}
+
+const _checkOwnership = (coin, pk) => {
+  const coinData = JSON.parse(coin);
+  console.log("Coin data: ", coinData);
+  if (coinData.owner !== pk) {
+    throw Error ("Ownership doesn't match", pk, coinData);
+  }
+  return Promise.resolve(coinData);
+}
+
+export const checkOwnership = (coinId, pk) => {
+  console.log("Reading coin data...", pk, coinId);
+  return window.safeMutableData.newPublic(APP_HANDLE, Buffer.from(coinId, 'hex'), TAG_TYPE_THANKS_COIN)
+    .then((coinHandle) => window.safeMutableData.get(coinHandle, COIN_ENTRY_KEY_DATA)
+      .then((coin) => {
+        window.safeMutableData.free(coinHandle);
+        return _checkOwnership(coin.buf.toString(), pk);
+      })
+    );
 }
 
 export const sendTxNotif = (pk, coinIds, msg) => {
-  let txInboxId = getXorName(WALLET_INBOX_PREFIX + pk);
-  let data = {
+  let id = genTxId();
+  let tx = {
     coinIds: coinIds,
     msg: msg,
     date: (new Date()).toUTCString()
   }
-  const txNotif = new Uint8Array(new Buffer(JSON.stringify(data)));
+  const txNotif = JSON.stringify(tx);
 
   console.log("Saving TX inbox data in the network...");
-  return _appendToTxInbox(txInboxId, txNotif)
-    .then(() => console.log("TX notification sent"))
+  return window.safeMutableData.newMutation(APP_HANDLE)
+    .then((mutHandle) => window.safeMutableDataMutation.insert(mutHandle, id, txNotif) // TODO: encrypt notif
+      .then(() =>  _genXorName(pk))
+      .then((xorName) => window.safeMutableData.newPublic(APP_HANDLE, xorName, TAG_TYPE_WALLET_TX_INBOX))
+      .then((txInboxHandle) => window.safeMutableData.applyEntriesMutation(txInboxHandle, mutHandle)
+        .then(() => window.safeMutableData.free(txInboxHandle))
+      )
+      .then(() => window.safeMutableDataMutation.free(mutHandle))
+    );
 }
-*/
-/*export const deleteTxInbox = (pk) => {
-  let dataId = getXorName(WALLET_INBOX_PREFIX + pk);
-  console.log("Deleting TX inbox...", dataId);
-  return _getSDataHandle(dataId)
-    .then( (handleId) => {
-      console.log("Data handle fetched:", handleId);
-      window.safeStructuredData.del(APP_HANDLE, handleId)
-        .then(res => console.log("Inbox deleted"));
-      })
-}*/
-/*
+
 export const transferCoin = (coinId, pk, sk, recipient) => {
   console.log("Transfering coin's ownership in the network...", coinId, recipient);
 
-  return _transferOwnership(coinId, pk, recipient)
-      .then((coinData) => {return coinId})
+  return window.safeMutableData.newPublic(APP_HANDLE, Buffer.from(coinId, 'hex'), TAG_TYPE_THANKS_COIN)
+    .then((coinHandle) => window.safeMutableData.get(coinHandle, COIN_ENTRY_KEY_DATA)
+      .then((coin) => _checkOwnership(coin.buf.toString(), pk)
+        .then((coinData) => {
+          coinData.owner = recipient;
+          coinData.prev_owner = pk;
+          console.log("Coin's new ownership: ", coinData);
+          return window.safeMutableData.newMutation(APP_HANDLE)
+            .then((mutHandle) => window.safeMutableDataMutation.update(mutHandle, COIN_ENTRY_KEY_DATA, JSON.stringify(coinData), coin.version + 1)
+              .then(() => window.safeMutableData.applyEntriesMutation(coinHandle, mutHandle))
+              .then(() => window.safeMutableDataMutation.free(mutHandle))
+            );
+        })
+      )
+      .then(() => window.safeMutableData.free(coinHandle))
+    );
 }
-*/

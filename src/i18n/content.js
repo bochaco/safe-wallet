@@ -25,12 +25,11 @@ export const Content = [
           "Please authorise the application from the SAFE Authenticator in order to access your content: ",
           "App Name: ",
           "Vendor:   ",
-          "Version:  ", //TODO change to id
+          "App ID:  ", //TODO translate other langs
           "Permissions requested: "
         ],
-        "permissions": { //TODO change permissions to read/update/etc.
-          "SAFE_DRIVE_ACCESS": "(account's Drive access)",
-          "LOW_LEVEL_API": "(SAFE low level API)",
+        "permissions": { //TODO translate other langs
+          "App's own container": "(for storing configuration data)"
         },
       },
       "items": {

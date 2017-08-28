@@ -1,7 +1,6 @@
 import React from 'react';
 import crypto from 'crypto';
-import * as base64 from 'urlsafe-base64';
-var qrcode=require('qrcode-js');
+var qrcode = require('qrcode-js');
 import CreditCardView, { CreditCardEdit } from './components/CreditCard.js';
 //import JCardView, { JCardEdit } from './components/JCard.js';
 import PasswordView, { PasswordEdit } from './components/Password.js';
@@ -33,7 +32,8 @@ export const Constants = {
   DEFAULT_CARD_COLOR: 'brown',
 }
 
-export const getXorName = (id) => { return base64.encode(crypto.createHash('sha256').update(id).digest('base64')); }
+export const genTxId = () => { return crypto.randomBytes(16).toString('hex'); }
+export const genAppItemId = () => { return crypto.randomBytes(16).toString('hex'); }
 
 export const getQRCode = (url) => { return qrcode.toDataURL(url, 4); }
 

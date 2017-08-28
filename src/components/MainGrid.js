@@ -24,9 +24,10 @@ function loadStorage() {
 
 const NET_STATE_CONNECTED = 'Connected';
 
-var {connectApp, disconnectApp, loadAppData, saveAppItem, deleteAppItem, loadWalletData,
-  transferCoin, createWallet, saveWalletData, /*deleteWallet,*/ checkOwnership,
-  createTxInbox, readTxInboxData, /*deleteTxInbox,*/ emptyTxInbox, sendTxNotif} = loadStorage();
+var {connectApp, disconnectApp, readConfigData, loadAppData, saveAppItem,
+  deleteAppItem, loadWalletData, transferCoin, createWallet, storeCoinsToWallet,
+  createTxInbox, readTxInboxData, removeTxInboxData,
+  checkOwnership, emptyTxInbox, sendTxNotif} = loadStorage();
 
 const initialState = {
   isAuthorised: false,
@@ -81,7 +82,7 @@ export default class MainGrid extends React.Component {
     this.storeData = this.storeData.bind(this);
     this.deleteData = this.deleteData.bind(this);
 
-    this.appendTx2History = this.appendTx2History.bind(this);
+    this.updateTxHistory = this.updateTxHistory.bind(this);
   }
 
   componentWillMount() {
@@ -121,8 +122,9 @@ export default class MainGrid extends React.Component {
     this.setState({isAuthorised: null});
     let preferredLang;
     connectApp(appInfo, appPermissions, this.networkStateUpdate)
+      .then(() => readConfigData())
       .then((configData) => preferredLang = configData)
-      .then(loadAppData)
+      .then(() => loadAppData())
       .then((parsedData) => {
         this.setState({
           isAuthorised: true,
@@ -223,10 +225,6 @@ export default class MainGrid extends React.Component {
   };
 
   handleSubmitDeleteModal() {
-    //TODO; not sure if this should be done in production
-//    deleteTxInbox(this.state.data[this.state.selected_item].data.pk);
-//    deleteWallet(this.state.data[this.state.selected_item].data.pk);
-
     this.deleteData(this.state.data[this.state.selected_item])
       .then(() => {this.handleOpenSnack(this.state.content.snackbar.item_deleted)},
       (err) => {this.handleOpenSnack(this.state.content.snackbar.fail_deleting)})
@@ -259,13 +257,10 @@ export default class MainGrid extends React.Component {
     this.setState({snackbar: false});
   };
 
-  appendTx2History(tx) {
-      let updatedData = this.state.data;
-      if (!updatedData[this.state.selected_item].data.history) {
-        updatedData[this.state.selected_item].data.history = [];
-      }
-      updatedData[this.state.selected_item].data.history.push(tx);
-      this.storeData(updatedData);
+  updateTxHistory(historyTxs) {
+    let updatedItem = this.state.data[this.state.selected_item].content
+    updatedItem.data.history = historyTxs;
+    return this.storeData(updatedItem);
   }
 
   render() {
@@ -315,10 +310,11 @@ export default class MainGrid extends React.Component {
             loadWalletData={loadWalletData}
             transferCoin={transferCoin}
             readTxInboxData={readTxInboxData}
-            saveWalletData={saveWalletData}
+            removeTxInboxData={removeTxInboxData}
+            storeCoinsToWallet={storeCoinsToWallet}
             checkOwnership={checkOwnership}
             emptyTxInbox={emptyTxInbox}
-            appendTx2History={this.appendTx2History}
+            updateTxHistory={this.updateTxHistory}
             sendTxNotif={sendTxNotif}
           />
 
@@ -334,6 +330,7 @@ export default class MainGrid extends React.Component {
           <CardEdit
             open={this.state.edit_modal}
             selected_item={selectedItemContent}
+            selected_item_id={this.state.selected_item}
             selected_type={this.state.selected_type}
             handleClose={this.handleCloseEditModal}
             handleSubmit={this.handleSubmitEditModal}
