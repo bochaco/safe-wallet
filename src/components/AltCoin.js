@@ -7,7 +7,7 @@ import { Constants, getQRCode } from '../common.js';
 import { EditDialogBox, ConfirmTransferDialogBox } from './DialogBox.js';
 import { ColorAndLabel } from './Common.js';
 
-import img_altcoinicon from '../img/icon_altcoin.png';
+import img_balance from '../img/icon-balance.png';
 
 const styles = {
   popup: {
@@ -88,7 +88,7 @@ export default class AltCoinView extends React.Component {
   }
 
   readWalletData() {
-    this.props.loadWalletData(this.props.selected_item.data.pk)
+    this.props.loadWalletData(this.props.selected_item.data.wallet)
       .then((wallet) => {
         console.log("Reading wallet", this.props.selected_item.data.pk, wallet);
         this.setState({wallet: wallet, loadingWallet: false});
@@ -125,18 +125,21 @@ export default class AltCoinView extends React.Component {
 
   tick() {
     const pk = this.props.selected_item.data.pk;
+    const encPk = this.props.selected_item.data.tx_inbox_pk;
+    const encSk = this.props.selected_item.data.tx_inbox_sk;
     let historyTxs = [];
 
     // Let's read new TX's, if there is any ...
-    return this.props.readTxInboxData(pk)
+    return this.props.readTxInboxData(pk, encPk, encSk)
       .then((txs) => Promise.all(txs.map((txInfo) => {
+        console.log("TX notification received. TX id: ", txInfo.id);
         return this.checkOwnershipOfCoins(txInfo.coinIds, pk)
           .then(({coinsAccepted, prevOwner}) => {
             let newWallet = this.state.wallet;
             newWallet.push(...coinsAccepted);
             console.log("Updated wallet", newWallet);
             // save updated wallet in state and in SAFEnet
-            return this.props.storeCoinsToWallet(pk, newWallet)
+            return this.props.storeCoinsToWallet(this.props.selected_item.data.wallet, newWallet)
               .then(() => {
                 this.setState({wallet: newWallet});
                 if (this.props.selected_item.metadata.keepTxs) {
@@ -248,7 +251,7 @@ export default class AltCoinView extends React.Component {
       .then(() => this.props.sendTxNotif(recipient, coinIds, msg))
       .then(() => updatedWallet.splice(0, amount)) // TODO: remove the coins with id in coinIds var instead
       .then(() => this.setState({percent: this.state.percent + percentStep}))
-      .then(() => this.props.storeCoinsToWallet(this.props.selected_item.data.pk, updatedWallet))
+      .then(() => this.props.storeCoinsToWallet(this.props.selected_item.data.wallet, updatedWallet))
       .then(() => {
         this.setState({wallet: updatedWallet});
         if (this.props.selected_item.metadata.keepTxs) {
@@ -285,7 +288,7 @@ export default class AltCoinView extends React.Component {
               <Grid.Row>
                 <Grid.Column verticalAlign="middle" width={11}>
                   <Header as='h1' color="blue">
-                    <Image size="mini" src={img_altcoinicon} />
+                    <Image size="mini" src={img_balance} />
                     <Header.Content>
                       {this.getBalance()}
                       {this.state.loadingWallet &&
@@ -490,6 +493,10 @@ export class AltCoinEdit extends React.Component {
         keepTxs: this.refs.historyInput.state.checked,
       },
       data: {
+        wallet_id: this.refs.walletIdInput.input.value,
+        wallet: this.props.selected_item.data.wallet,
+        tx_inbox_pk: this.props.selected_item.data.tx_inbox_pk,
+        tx_inbox_sk: this.props.selected_item.data.tx_inbox_sk,
         pk: this.refs.pkInput.input.value,
         sk: this.refs.skInput.input.value,
         history: this.refs.historyInput.state.checked ? history : [],
@@ -501,7 +508,13 @@ export class AltCoinEdit extends React.Component {
     } else {
       // Create the wallet and inbox based on the Public Key
       return this.props.createWallet(updatedItem.data.pk)
-        .then(() => this.props.createTxInbox(updatedItem.data.pk))
+        .then((wallet) => this.props.createTxInbox(updatedItem.data.pk)
+          .then((encKeys) => {
+            updatedItem.data.wallet = wallet;
+            updatedItem.data.tx_inbox_pk = encKeys.pk;
+            updatedItem.data.tx_inbox_sk = encKeys.sk;
+          })
+        )
         .then(() => this.props.handleSubmit(updatedItem));
     }
   };
@@ -530,11 +543,23 @@ export class AltCoinEdit extends React.Component {
             </Grid.Column>
             <Grid.Column width={8}>
               <TextField
+                disabled
+                fullWidth={true}
+                floatingLabelText={this.props.i18nStrings.item_wallet_id}
+                ref='walletIdInput'
+              />
+            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row>
+            <Grid.Column width={15}>
+              <TextField
                 fullWidth={true}
                 floatingLabelText={this.props.i18nStrings.item_pk}
                 defaultValue={this.props.selected_item.data.pk}
                 ref='pkInput'
               />
+            </Grid.Column>
+            <Grid.Column width={1}>
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>

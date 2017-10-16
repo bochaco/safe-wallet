@@ -1,16 +1,25 @@
 import React from 'react';
-import { Button, Card, Image, Container } from 'semantic-ui-react';
+import { List, Label, Grid, Button, Card, Image } from 'semantic-ui-react';
 import { Constants, ItemTypes } from '../common.js';
 
 export default class ItemCards extends React.Component {
   render() {
     if (Object.keys(this.props.data).length > 0) {
       return (
-        <Card.Group itemsPerRow={3}>
-        {Object.keys(this.props.data).map((key) => (
-          <ItemCard key={this.props.data[key].id} index={this.props.data[key].id} item={this.props.data[key].content} {...this.props} />
-        ))}
-        </Card.Group>
+        <Grid padded centered>
+          <Grid.Column width={15}>
+            <Card.Group itemsPerRow={3} stackable>
+            {Object.keys(this.props.data).map((key) => (
+              <ItemCard
+                key={this.props.data[key].id}
+                index={this.props.data[key].id}
+                item={this.props.data[key].content}
+                {...this.props}
+              />
+            ))}
+            </Card.Group>
+          </Grid.Column>
+        </Grid>
       )
     }
 
@@ -46,24 +55,30 @@ class ItemCard extends React.Component {
     }
 
     return (
-      <Card color={color}>
+      <Card id='itemCard'>
         <Card.Content style={{cursor: 'pointer'}} onClick={this.handleViewAction}>
+          <Image floated='left' src={ItemTypes[this.props.item.type].icon} />
+          <Card.Header>
+          </Card.Header>
           <Card.Meta>
-            <Image floated='left' size='tiny' src={ItemTypes[this.props.item.type].icon} />
             {this.props.i18nStrings[ItemTypes[this.props.item.type].title]}
           </Card.Meta>
-          <Card.Header>
-            <br/>
-            {this.props.item.metadata.label}
-          </Card.Header>
+          <Card.Description>
+            <h3>{this.props.item.metadata.label}</h3>
+          </Card.Description>
         </Card.Content>
         <Card.Content extra>
-          <Container textAlign='right'>
-              <Button inverted circular icon='edit' color={color}
-                onClick={this.handleEditAction} />
-              <Button inverted circular icon='trash outline' color={color}
-                onClick={this.handleDeleteAction} />
-          </Container>
+          <List>
+            <List.Item>
+              <Label circular color={color} empty />
+              <List.Content verticalAlign='middle' floated='right'>
+                <Button id='btnCard' circular icon='edit'
+                  onClick={this.handleEditAction} />
+                <Button id='btnCard' circular icon='trash outline'
+                  onClick={this.handleDeleteAction} />
+              </List.Content>
+            </List.Item>
+          </List>
         </Card.Content>
       </Card>
     );

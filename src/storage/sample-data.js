@@ -76,6 +76,10 @@ export const sample_wallet_data = {
         keepTxs: true,
       },
       data: {
+        wallet_id: "dailywallet",
+        wallet: sample_wallets[ME_PK_XOR_NAME],
+        tx_inbox_pk: SampleKeyPairs.Me.pk,
+        tx_inbox_sk: SampleKeyPairs.Me.sk,
         pk: SampleKeyPairs.Me.pk,
         sk: SampleKeyPairs.Me.sk,
         history: [ // this could be part of the coin wallet
@@ -128,6 +132,10 @@ export const sample_wallet_data = {
         keepTxs: true,
       },
       data: {
+        wallet_id: "shopcashier",
+        wallet: [],
+        tx_inbox_pk: SampleKeyPairs.Bob.pk,
+        tx_inbox_sk: SampleKeyPairs.Bob.sk,
         pk: SampleKeyPairs.Bob.pk,
         sk: SampleKeyPairs.Bob.sk,
         history: [] // this could be part of the coin wallet

@@ -2,25 +2,27 @@ import React from 'react';
 import { Image, List, Item } from 'semantic-ui-react'
 import ViewDialogBox from './DialogBox.js';
 
-import applogo from '../img/app_logo.png';
-import apptitle from '../img/branding.png';
+import anita from '../img/anita.png';
+import branding from '../img/branding.png';
 let appInfo = require('../../package.json');
 
 const customContentStyle = {
   textAlign: "left"
 };
 
+const DONATIONS_ADDR = '1KSJhUdDGZz2mx6WBw6Lco8RaPxqzTzRLL';
+
 export default class AboutView extends React.Component {
   render() {
     return (
       <ViewDialogBox {...this.props}
-        title={<Image src={apptitle} />}
+        title={<Image src={branding} size='small' />}
         size="small"
         style={customContentStyle}
       >
         <Item.Group>
           <Item>
-            <Image src={applogo} />
+            <Image src={anita} />
 
             <Item.Content>
               <Item.Header></Item.Header>
@@ -35,7 +37,7 @@ export default class AboutView extends React.Component {
                       </List.Content>
                 </List.Item>
                 <List.Item>
-                  {this.props.i18nStrings.donations} <span fontFamily='Courier New'><b>1KSJhUdDGZz2mx6WBw6Lco8RaPxqzTzRLL</b></span>
+                  {this.props.i18nStrings.donations} <span fontFamily='Courier New'><b>{DONATIONS_ADDR}</b></span>
                 </List.Item>
                 </List>
               </Item.Meta>

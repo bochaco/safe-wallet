@@ -1,0 +1,50 @@
+#appMenu {
+  background: #ffffff;
+}
+
+#logoHdr {
+  width: 220px;
+  height: auto;
+}
+
+#mainContainer {
+  background: #00bcd4;
+}
+
+#msgAwaiting {
+  font-size: 4vmin;
+  color: #ffffff;
+}
+
+#antAwaiting {
+  width: 420px;
+  height: auto;
+}
+
+#msgNoItems {
+  font-family: 'Raleway-Bold', sans-serif;
+}
+
+#textNoItems {
+  top: 25%;
+  left: 51%;
+  position: absolute;
+  width: 23%;
+  font-size: 1.7vmin;
+}
+
+#itemCard {
+  border-style: solid;
+  border-color: #ffffff;
+  border-width: 2px;
+}
+
+#itemCard:hover {
+  border-style: solid;
+  border-color: #00bcd4;
+  border-width: 2px;
+}
+
+#btnCard:hover {
+  background-color: #00bcd4;
+}

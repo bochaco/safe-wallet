@@ -43,13 +43,12 @@ export const deleteAppItem = (item) => {
   return Promise.resolve();
 }
 
-export const loadWalletData = (pk) => {
+export const loadWalletData = (wallet) => {
   console.log("Reading the coin wallet into memory...");
-  let xorName = getXorName(pk);
-  if (!wallets[xorName]) {
-    wallets[xorName] = [];
+  if (!wallet) {
+    wallet = [];
   }
-  return Promise.resolve(wallets[xorName]);
+  return Promise.resolve(wallet);
 }
 
 export const createWallet = (pk) => {
@@ -58,13 +57,11 @@ export const createWallet = (pk) => {
   if (!wallets[xorName]) {
     wallets[xorName] = [];
   }
-  return Promise.resolve();
+  return Promise.resolve(wallets[xorName]);
 }
 
-export const storeCoinsToWallet = (pk, data) => {
-  let xorName = getXorName(pk);
+export const storeCoinsToWallet = (wallet, data) => {
   console.log("Saving coin wallet data in the network...");
-  wallets[xorName] = data;
   return Promise.resolve(data);
 }
 
@@ -74,10 +71,10 @@ export const createTxInbox = (pk) => {
   if (!tx_inboxes[xorName]) {
     tx_inboxes[xorName] = [];
   }
-  return Promise.resolve();
+  return Promise.resolve({pk, sk: null});
 }
 
-export const readTxInboxData = (pk) => {
+export const readTxInboxData = (pk, encPk, encSk) => {
   let xorName = getXorName(pk);
   console.log("Reading TX inbox in memory...", pk, xorName);
   if (!tx_inboxes[xorName]) {

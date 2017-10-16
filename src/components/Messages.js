@@ -1,18 +1,23 @@
 import React from 'react'
-import { Grid, Message, Icon, List } from 'semantic-ui-react';
-import { appInfo, appPermissions } from '../config.js';
+import { Image, Grid, Message, Icon } from 'semantic-ui-react';
+import cup_of_tea from '../img/safe-wallet-logo.gif';
+import logotipo from '../img/logo-white.png';
 
-export class MessageNoItems extends React.Component {
+export class MessageAwatingAuth extends React.Component {
   render() {
     return (
-      <Grid centered columns={1}>
-        <Grid.Column width={10} textAlign='center'>
-          <Message visible >
-            <Message.Content>
-              {this.props.i18nStrings.no_items[0]}<Icon name='add circle'/>{this.props.i18nStrings.no_items[1]}
-            </Message.Content>
-          </Message>
-        </Grid.Column>
+      <Grid id='msgAwaiting' verticalAlign='middle' centered padded>
+        <Grid.Row>
+          {this.props.i18nStrings.authorising[0]}
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column>
+            <Image id='antAwaiting' src={cup_of_tea} centered />
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row id='msgAwaitingFooter'>
+          <Image src={logotipo} centered />
+        </Grid.Row>
       </Grid>
     )
   }
@@ -21,45 +26,42 @@ export class MessageNoItems extends React.Component {
 export class MessageNotAuthorised extends React.Component {
   render() {
     return (
-      <Grid centered columns={3}>
-        <Grid.Column width={10}>
-          <Message negative compact>
-            <Message.Content>
-              <Message.Header>{this.props.i18nStrings.not_auth[0]}</Message.Header>
-              {this.props.i18nStrings.not_auth[1]}
-              <br/><br />{this.props.i18nStrings.not_auth[2]}<Icon name='power'/>{this.props.i18nStrings.not_auth[3]}
-            </Message.Content>
-          </Message>
-        </Grid.Column>
+      <Grid centered columns={3} padded>
+        <Grid.Row>
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column width={10}>
+            <Message negative compact icon>
+              <Icon name='plug' />
+              <Message.Content>
+                <Message.Header>{this.props.i18nStrings.not_auth[0]}</Message.Header>
+                {this.props.i18nStrings.not_auth[1]}
+                <br/><br />{this.props.i18nStrings.not_auth[2]}<Icon name='power'/>{this.props.i18nStrings.not_auth[3]}
+              </Message.Content>
+            </Message>
+          </Grid.Column>
+        </Grid.Row>
       </Grid>
     )
   }
 }
 
-export class MessageAwatingAuth extends React.Component {
+export class MessageNoItems extends React.Component {
   render() {
     return (
-      <Grid centered columns={3}>
-        <Grid.Column width={8}>
-          <Message info compact>
-            <Message.Content>
-              <Message.Header>{this.props.i18nStrings.authorising[0]}</Message.Header>
-              {this.props.i18nStrings.authorising[1]}
-            </Message.Content>
-            <List as='ul'>
-              <List.Item as='li'>{this.props.i18nStrings.authorising[2]}{appInfo.name}</List.Item>
-              <List.Item as='li'>{this.props.i18nStrings.authorising[3]}{appInfo.vendor}</List.Item>
-              <List.Item as='li'>{this.props.i18nStrings.authorising[4]}{appInfo.id}</List.Item>
-              <List.Item as='li'>{this.props.i18nStrings.authorising[5]}
-                <List.Item as='ul'>
-                  {Object.keys(appPermissions).map((key) => (
-                    <List.Item key={key}>- {key} {this.props.i18nStrings.permissions[appPermissions[key]]}</List.Item>
-                  ))}
-                </List.Item>
-              </List.Item>
-            </List>
-          </Message>
-        </Grid.Column>
+      <Grid id='msgNoItems' centered columns={1} padded>
+        <Grid.Row>
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column width={8}>
+            <Message icon>
+              <Icon name='hand peace' />
+              <Message.Content>
+                {this.props.i18nStrings.no_items[0]} <Icon name='add circle'/>{this.props.i18nStrings.no_items[1]}
+              </Message.Content>
+            </Message>
+          </Grid.Column>
+        </Grid.Row>
       </Grid>
     )
   }

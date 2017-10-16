@@ -11,8 +11,8 @@ export const Content = [
       },
       "messages": {
         "no_items": [
-          "You have no items stored in your wallet. Use the ",
-          "button to add an item."
+          "You have no items stored in your wallet. Use the button",
+          "to add an item."
         ],
         "not_auth": [
           "Application not authorised",
@@ -22,14 +22,15 @@ export const Content = [
         ],
         "authorising": [
           "Awaiting for access authorisation",
-          "Please authorise the application from the SAFE Authenticator in order to access your content: ",
+          "Please authorise the application from the SAFE Authenticator in order to access your content",
           "App Name: ",
           "Vendor:   ",
           "App ID:  ", //TODO translate other langs
           "Permissions requested: "
         ],
         "permissions": { //TODO translate other langs
-          "App's own container": "(for storing configuration data)"
+          "own_container": "(for storing configuration data)",
+          "_publicNames": ""
         },
       },
       "items": {
@@ -50,7 +51,7 @@ export const Content = [
         "btn_transfer": "Transfer",
         "confirm_delete": "Are you sure you want to delete this item?",
         "confirm_tx": "Please confirm the transaction",
-        "item_to_add": "Type of the item to add?",
+        "item_to_add": "Type of item to add?",
         "item_color": "Color",
         "item_label": "Label",
         "item_coin_wallet_label": "Label / Wallet ID",
@@ -66,6 +67,7 @@ export const Content = [
         "item_tx_coin_plural": "coins to",
         "item_tx_history": "Transactions History",
         "item_pin": "PIN",
+        "item_wallet_id": "Wallet ID (public ID)", // TODO: translate to other langs
         "item_pk": "Public Key",
         "item_sk": "Private Key",
         "item_set_pin": "Set PIN",
@@ -118,7 +120,7 @@ export const Content = [
       },
       "messages": {
         "no_items": [
-          "No tienes items almacenados en tu billetera. Utiliza el botón ",
+          "No tienes items almacenados en tu billetera. Utiliza el botón",
           "para agregar un item."
         ],
         "not_auth": [
@@ -129,7 +131,7 @@ export const Content = [
         ],
         "authorising": [
           "Esperando autorización de acceso",
-          "Por favor autoriza la aplicación desde el Autenticador de la red SAFE para poder acceder a tu información: ",
+          "Por favor autoriza la aplicación desde el Autenticador de la red SAFE para poder acceder a tu información",
           "Nombre de la aplicación: ",
           "Proveedor:   ",
           "Versión:  ",
@@ -226,7 +228,7 @@ export const Content = [
       },
       "messages": {
         "no_items": [
-          "Du hast keine Artikel in deinem Geldbörse gespeichert. Verwend die ",
+          "Du hast keine Artikel in deinem Geldbörse gespeichert. Verwend die",
           "-Taste, um einen Eintrag hinzuzufügen."
         ],
         "not_auth": [
@@ -334,7 +336,7 @@ export const Content = [
       },
       "messages": {
         "no_items": [
-          "您的钱包中没有任何项目。 使用",
+          "您的钱包中没有任何项目。使用",
           "按钮添加项目。"
         ],
         "not_auth": [
@@ -443,7 +445,8 @@ export const Content = [
       "messages": {
         "no_items": [
           "あなたの財布には商品がありません。",
-          "ボタンを押して項目を追加してください。"
+          "ボタンを押して項目を追加してください。",
+          ""
         ],
         "not_auth": [
           "許可され​​ていないアプリケーション",

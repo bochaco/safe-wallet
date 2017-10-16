@@ -41,7 +41,7 @@ const initialState = {
   snackbar_message: '',
   selected_item: null,
   selected_type: null,
-  lang: 'en',
+  lang: Api.validateLang(window.navigator.language.substring(0,2)),
   content: null,
 };
 
@@ -123,13 +123,13 @@ export default class MainGrid extends React.Component {
     let preferredLang;
     connectApp(appInfo, appPermissions, this.networkStateUpdate)
       .then(() => readConfigData())
-      .then((configData) => preferredLang = configData)
+      .then((lang) => preferredLang = lang)
       .then(() => loadAppData())
       .then((parsedData) => {
         this.setState({
           isAuthorised: true,
           data: parsedData,
-          lang: preferredLang,
+          //lang: preferredLang,
           content: Api.getContent(preferredLang).page
         });
       })
@@ -271,17 +271,19 @@ export default class MainGrid extends React.Component {
 
     return (
       <MuiThemeProvider>
-        <Container>
+        <Container fluid id='mainContainer'>
           {/* Top menu bar */}
-          <AppMenu
-            handleOpenAboutModal={this.handleOpenAboutModal}
-            handleOpenAddModal={this.handleOpenAddModal}
-            handleRefresh={this.handleRefresh}
-            handleChangeLang={this.handleChangeLang}
-            isAuthorised={this.state.isAuthorised}
-            handlePower={this.handlePower}
-            lang={this.state.lang}
-          />
+          {this.state.isAuthorised != null &&
+            <AppMenu
+              handleOpenAboutModal={this.handleOpenAboutModal}
+              handleOpenAddModal={this.handleOpenAddModal}
+              handleRefresh={this.handleRefresh}
+              handleChangeLang={this.handleChangeLang}
+              isAuthorised={this.state.isAuthorised}
+              handlePower={this.handlePower}
+              lang={this.state.lang}
+            />
+          }
 
           {/* Warning message when the app is not authorised yet */}
           {this.state.isAuthorised == null && <MessageAwatingAuth i18nStrings={this.state.content.messages} />}
@@ -362,6 +364,7 @@ export default class MainGrid extends React.Component {
             message={this.state.snackbar_message}
             autoHideDuration={4000}
             onRequestClose={this.handleCloseSnack}
+            bodyStyle={{backgroundColor: '#666666'}}
           />
 
         </Container>

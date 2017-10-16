@@ -25,7 +25,7 @@ export default class ViewDialogBox extends React.Component {
         <Modal.Header style={this.props.style}>
           {this.props.title ? this.props.title :
               (<Header as='h2'>
-                <Image size='mini' src={ItemTypes[this.props.selected_item.type].icon} />
+                <Image src={ItemTypes[this.props.selected_item.type].icon} />
                 {" " + this.props.selected_item.metadata.label}
               </Header>)
           }
@@ -57,7 +57,7 @@ export class EditDialogBox extends React.Component {
         <Modal.Header style={styles.dialogBox} >
           {
             <Header as='h2'>
-              <Image size='mini' src={ItemTypes[this.props.type].icon} />
+              <Image src={ItemTypes[this.props.type].icon} />
               {this.props.i18nStrings[ItemTypes[this.props.type].title]}
             </Header>
           }

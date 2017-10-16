@@ -6,8 +6,8 @@ import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import PowerSettingsNew from 'material-ui/svg-icons/action/power-settings-new';
 import InfoOutline from 'material-ui/svg-icons/action/info-outline';
 import Autorenew from 'material-ui/svg-icons/action/autorenew';
-import '../css/AppMenu.css';
-import { Menu, Flag, Dropdown } from 'semantic-ui-react'
+import { Image, Menu, Flag, Dropdown } from 'semantic-ui-react'
+import logo_header from '../img/logo-header-415x98.png';
 
 export default class AppMenu extends React.Component {
   constructor(props) {
@@ -43,32 +43,32 @@ export default class AppMenu extends React.Component {
     let trigger = <Flag name={flagName} />
 
     return (
-      <Menu id="appMenu" inverted borderless size="mini">
+      <Menu id='appMenu' inverted borderless>
         <Menu.Item>
           {this.props.isAuthorised == null
             ? <IconButton>
-                <CircularProgress color='white' size={25} thickness={2} />
+                <CircularProgress color='#00bcd4' size={25} thickness={2} />
               </IconButton>
             : <IconButton onClick={this.props.handlePower}>
                 {this.props.isAuthorised
-                    ? <NavigationClose color="white" />
-                    : <PowerSettingsNew color="white" />
+                    ? <NavigationClose color="#00bcd4" />
+                    : <PowerSettingsNew color="#00bcd4" />
                 }
               </IconButton>
           }
         </Menu.Item>
-        <Menu.Item header as="h2">
-          SAFE Wallet
+        <Menu.Item fitted='vertically'>
+          <Image id='logoHdr' src={logo_header} verticalAlign='middle' />
         </Menu.Item>
-        <Menu.Menu position='right'>
+        <Menu.Menu position='right' only='widescreen'>
           <Menu.Item>
             {this.props.isAuthorised &&
             <div>
-              <IconButton onClick={this.props.handleOpenAddModal}><AddCircleOutline color='white' /></IconButton>
-              <IconButton onClick={this.props.handleRefresh}><Autorenew color='white' /></IconButton>
+              <IconButton onClick={this.props.handleOpenAddModal}><AddCircleOutline color='#00bcd4' /></IconButton>
+              <IconButton onClick={this.props.handleRefresh}><Autorenew color='#00bcd4' /></IconButton>
             </div>
             }
-            <IconButton onClick={this.props.handleOpenAboutModal}><InfoOutline color='white' /></IconButton>
+            <IconButton onClick={this.props.handleOpenAboutModal}><InfoOutline color='#00bcd4' /></IconButton>
           </Menu.Item>
           <Menu.Item>
             <Dropdown

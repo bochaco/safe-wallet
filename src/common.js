@@ -9,12 +9,12 @@ import TwoFACodesView, { TwoFACodesEdit } from './components/TwoFACodes.js';
 import SafecoinView, { SafecoinEdit } from './components/Safecoin.js';
 import AltCoinView, { AltCoinEdit } from './components/AltCoin.js';
 
-import icon_cc from './img/credit_card.jpg';
-import icon_pwd from './img/password.jpg';
-import icon_qr from './img/qr_code.png';
+import icon_cc from './img/icon-creditcards.png';
+import icon_pwd from './img/icon-passwords.png';
+import icon_keys from './img/icon-keys.png';
 import icon_2fa from './img/2fa.png';
-import icon_safecoin from './img/safecoin.png';
-import icon_altcoin from './img/altcoin.png';
+import icon_safecoin from './img/icon-safecoins.png';
+import icon_altcoin from './img/icon-altcoins.png';
 //import icon_jcard from './img/jcard.png';
 
 export const Constants = {
@@ -32,10 +32,10 @@ export const Constants = {
   DEFAULT_CARD_COLOR: 'brown',
 }
 
-export const genTxId = () => { return crypto.randomBytes(16).toString('hex'); }
-export const genAppItemId = () => { return crypto.randomBytes(16).toString('hex'); }
+export const genTxId = () => crypto.randomBytes(16).toString('hex');
+export const genAppItemId = () => crypto.randomBytes(16).toString('hex');
 
-export const getQRCode = (url) => { return qrcode.toDataURL(url, 4); }
+export const getQRCode = (url) => qrcode.toDataURL(url, 4);
 
 export const ItemTypes = {};
 
@@ -58,7 +58,7 @@ ItemTypes[Constants.TYPE_PASSWORD] = {
 ItemTypes[Constants.TYPE_PRIV_PUB_KEY] = {
   type: Constants.TYPE_PRIV_PUB_KEY,
   title: "priv_pub_key",
-  icon: icon_qr,
+  icon: icon_keys,
   editDialogFactory: (props) => <PrivPubKeysEdit {...props} />,
   viewDialogFactory: (props) => <PrivPubKeysView {...props} />,
 };

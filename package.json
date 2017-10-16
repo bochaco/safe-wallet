@@ -1,10 +1,10 @@
 {
   "name": "safe-wallet",
-  "homepage": "file:///home/bochaco/work/safe-wallet/build/",
   "version": "0.0.10",
   "private": true,
   "devDependencies": {
-    "react-scripts": "0.7.0"
+    "react-scripts": "0.7.0",
+    "semantic-ui": "^2.2.13"
   },
   "dependencies": {
     "material-ui": "^0.16.1",
@@ -15,12 +15,12 @@
     "react-tap-event-plugin": "^2.0.1",
     "redux": "^3.6.0",
     "safe-js": "^0.3.3",
-    "semantic-ui-css": "^2.2.4",
     "semantic-ui-react": "^0.59.0",
     "urlsafe-base64": "^1.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
+    "start-nonet": "REACT_APP_SAFENET_OFF=1 react-scripts start",
     "build": "react-scripts build",
     "build-nosafenet": "REACT_APP_SAFENET_OFF=1 react-scripts build",
     "test": "react-scripts test --env=jsdom",

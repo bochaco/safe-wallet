@@ -22,7 +22,7 @@ export default class TwoFACodesView extends React.Component {
         row_codes.push(
           <Grid.Column key={2*i+1}>
             {this.props.selected_item.data[i] ?
-            <Segment color="violet" size="big" textAlign="center" secondary>
+            <Segment size="big" textAlign="center" secondary>
               {this.props.selected_item.data[i]}
             </Segment>
             : ''}

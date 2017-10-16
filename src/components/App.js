@@ -7,6 +7,14 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
 
 class App extends Component {
+  componentWillMount() {
+      document.body.style.backgroundColor = "#00bcd4";
+  }
+
+  componentWillUnmount() {
+      document.body.style.backgroundColor = null;
+  }
+
   render() {
     return (
       <MainGrid />
