@@ -60,7 +60,7 @@ export default class AppMenu extends React.Component {
         <Menu.Item fitted='vertically'>
           <Image id='logoHdr' src={logo_header} verticalAlign='middle' />
         </Menu.Item>
-        <Menu.Menu position='right' only='widescreen'>
+        <Menu.Menu position='right'>
           <Menu.Item>
             {this.props.isAuthorised &&
             <div>

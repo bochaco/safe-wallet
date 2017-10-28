@@ -12,24 +12,12 @@ import AboutView from './AboutView.js';
 import { MessageNotAuthorised, MessageAwatingAuth, MessageNoItems } from './Messages.js';
 import { appInfo, appPermissions } from '../config.js';
 import { Api } from '../i18n/read-content.js';
-
-function loadStorage() {
-  if (process.env.REACT_APP_SAFENET_OFF === "1") {
-    console.log('SAFE_NET_OFF env var detected. Working with data in memory only');
-    return require('../storage/storage-in-memory.js');
-  } else {
-    return require('../storage/storage.js');
-  }
-}
+import { storage, altcoinWallet } from '../storage/safe-net.js';
 
 const NET_STATE_CONNECTED = 'Connected';
 
-var {connectApp, disconnectApp, readConfigData, loadAppData, saveAppItem,
-  deleteAppItem, loadWalletData, transferCoin, createWallet, storeCoinsToWallet,
-  createTxInbox, readTxInboxData, removeTxInboxData,
-  checkOwnership, emptyTxInbox, sendTxNotif} = loadStorage();
-
 const initialState = {
+  safeAppHandle: null,
   isAuthorised: false,
   data: {},
   view_modal: false,
@@ -113,20 +101,22 @@ export default class MainGrid extends React.Component {
       if (this.state.isAuthorised === false) {
         this.connectApplication();
       } else if (this.state.isAuthorised) {
-        disconnectApp();
-        this.setState({isAuthorised: false});
+        storage.disconnectApp();
+        this.setState({safeAppHandle: null, isAuthorised: false});
       }
   }
 
   connectApplication() {
     this.setState({isAuthorised: null});
-    let preferredLang;
-    connectApp(appInfo, appPermissions, this.networkStateUpdate)
-      .then(() => readConfigData())
+    let preferredLang, safeAppHandle;
+    storage.connectApp(appInfo, appPermissions, this.networkStateUpdate)
+      .then((appHandle) => safeAppHandle = appHandle)
+      .then(() => storage.readConfigData())
       .then((lang) => preferredLang = lang)
-      .then(() => loadAppData())
+      .then(() => storage.loadAppData())
       .then((parsedData) => {
         this.setState({
+          safeAppHandle,
           isAuthorised: true,
           data: parsedData,
           //lang: preferredLang,
@@ -140,7 +130,7 @@ export default class MainGrid extends React.Component {
   }
 
   handleRefresh() {
-    loadAppData()
+    storage.loadAppData()
       .then((parsedData) => {
         this.setState({data: parsedData});
       }, (err) => {
@@ -156,7 +146,7 @@ export default class MainGrid extends React.Component {
       content: item
     };
 
-    return saveAppItem(item2save)
+    return storage.saveAppItem(item2save)
       .then((savedItem) => {
         let updatedData = this.state.data;
         updatedData[savedItem.id] = savedItem;
@@ -167,7 +157,7 @@ export default class MainGrid extends React.Component {
   }
 
   deleteData(item) {
-    return deleteAppItem(item)
+    return storage.deleteAppItem(item)
       .then(() => {
         let updatedData = this.state.data;
         delete updatedData[item.id];
@@ -309,15 +299,9 @@ export default class MainGrid extends React.Component {
             selected_item={selectedItemContent}
             handleClose={this.handleCloseViewModal}
             i18nStrings={this.state.content.items}
-            loadWalletData={loadWalletData}
-            transferCoin={transferCoin}
-            readTxInboxData={readTxInboxData}
-            removeTxInboxData={removeTxInboxData}
-            storeCoinsToWallet={storeCoinsToWallet}
-            checkOwnership={checkOwnership}
-            emptyTxInbox={emptyTxInbox}
             updateTxHistory={this.updateTxHistory}
-            sendTxNotif={sendTxNotif}
+            safeAppHandle={this.state.safeAppHandle}
+            altcoinWallet={altcoinWallet}
           />
 
           {/* Dialog box for choosing the type of item to add */}
@@ -337,9 +321,8 @@ export default class MainGrid extends React.Component {
             handleClose={this.handleCloseEditModal}
             handleSubmit={this.handleSubmitEditModal}
             i18nStrings={this.state.content.items}
-            loadWalletData={loadWalletData}
-            createWallet={createWallet}
-            createTxInbox={createTxInbox}
+            safeAppHandle={this.state.safeAppHandle}
+            altcoinWallet={altcoinWallet}
           />
 
           {/* Dialog box for deleting the selected item */}

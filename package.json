@@ -14,7 +14,7 @@
     "react-redux": "^5.0.2",
     "react-tap-event-plugin": "^2.0.1",
     "redux": "^3.6.0",
-    "safe-js": "^0.3.3",
+    "safe-coins-wallet": "^0.0.2",
     "semantic-ui-react": "^0.59.0",
     "urlsafe-base64": "^1.0.0"
   },

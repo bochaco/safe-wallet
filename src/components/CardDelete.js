@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid, Image, Header } from 'semantic-ui-react';
-import { ItemTypes } from '../common';
+import { ItemTypes } from '../common.js';
 import { DeleteDialogBox } from './DialogBox.js';
 
 export default class CardDelete extends React.Component {

@@ -3,7 +3,7 @@ import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import { List, Image } from 'semantic-ui-react'
-import { ItemTypes } from '../common';
+import { ItemTypes } from '../common.js';
 
 const customContentStyle = {
   width: '30%',
