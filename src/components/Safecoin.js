@@ -4,7 +4,9 @@ import { EditDialogBox } from './DialogBox.js';
 
 export default class SafecoinView extends React.Component {
   render() {
-    return null;
+    return (
+      <div>{this.props.i18nStrings.item_safecoin_coming_soon}</div>
+    );
   }
 }
 
@@ -25,6 +27,7 @@ export class SafecoinEdit extends React.Component {
         type={Constants.TYPE_SAFECOIN}
         handleSubmit={this.props.handleClose}
       >
+      <div>{this.props.i18nStrings.item_safecoin_coming_soon}</div>
       </EditDialogBox>
     );
   }
