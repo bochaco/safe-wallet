@@ -11,10 +11,11 @@ import AppMenu from './AppMenu.js';
 import AboutView from './AboutView.js';
 import { MessageNotAuthorised, MessageAwatingAuth, MessageNoItems } from './Messages.js';
 import { appInfo, appPermissions } from '../config.js';
-import { Api } from '../i18n/read-content.js';
+import { ContentApi } from '../i18n/read-content.js';
 import { storage, altcoinWallet } from '../storage/safe-net.js';
 
 const NET_STATE_CONNECTED = 'Connected';
+const LOCALE_LANG = ContentApi.validateLang(window.navigator.language.substring(0,2));
 
 const initialState = {
   safeAppHandle: null,
@@ -29,8 +30,8 @@ const initialState = {
   snackbar_message: '',
   selected_item: null,
   selected_type: null,
-  lang: Api.validateLang(window.navigator.language.substring(0,2)),
-  content: null,
+  lang: LOCALE_LANG,
+  content: ContentApi.getContent(LOCALE_LANG).page,
 };
 
 export default class MainGrid extends React.Component {
@@ -74,7 +75,6 @@ export default class MainGrid extends React.Component {
   }
 
   componentWillMount() {
-    this.setState({content: Api.getContent(this.state.lang).page});
   }
 
   componentDidMount() {
@@ -90,7 +90,7 @@ export default class MainGrid extends React.Component {
     if (this.state.isAuthorised && state !== NET_STATE_CONNECTED) {
       let newState = initialState;
       newState.lang = this.state.lang;
-      newState.content = Api.getContent(this.state.lang).page;
+      newState.content = this.state.content;
       this.setState(newState);
       this.handleOpenSnack(this.state.content.snackbar.fail_auth_revoked)
     }
@@ -108,11 +108,11 @@ export default class MainGrid extends React.Component {
 
   connectApplication() {
     this.setState({isAuthorised: null});
-    let preferredLang, safeAppHandle;
+    let safeAppHandle;//, preferredLang;
     storage.connectApp(appInfo, appPermissions, this.networkStateUpdate)
       .then((appHandle) => safeAppHandle = appHandle)
       .then(() => storage.readConfigData())
-      .then((lang) => preferredLang = lang)
+      //.then((lang) => preferredLang = ContentApi.validateLang(lang))
       .then(() => storage.loadAppData())
       .then((parsedData) => {
         this.setState({
@@ -120,7 +120,7 @@ export default class MainGrid extends React.Component {
           isAuthorised: true,
           data: parsedData,
           //lang: preferredLang,
-          content: Api.getContent(preferredLang).page
+          //content: ContentApi.getContent(preferredLang).page
         });
       })
       .catch((err) => {
@@ -234,7 +234,7 @@ export default class MainGrid extends React.Component {
     if (lang !== this.state.lang) {
       this.setState({
         lang: lang,
-        content: Api.getContent(lang).page
+        content: ContentApi.getContent(lang).page
       });
     }
   }

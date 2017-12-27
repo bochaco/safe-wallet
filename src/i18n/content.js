@@ -1,6 +1,9 @@
 export const Content = [
   {
     "lang": "en",
+    "text": "English",
+    "flag": "gb",
+    "enabled": true,
     "page": {
       "snackbar": {
         "item_saved": "Item saved in the SAFE network",
@@ -111,6 +114,9 @@ export const Content = [
   },
   {
     "lang": "es",
+    "text": "Español",
+    "flag": "es",
+    "enabled": true,
     "page": {
       "snackbar": {
         "item_saved": "Item guardado en la red SAFE",
@@ -220,6 +226,9 @@ export const Content = [
   },
   {
     "lang": "de",
+    "text": "Deutsch",
+    "flag": "de",
+    "enabled": true,
     "page": {
       "snackbar": {
         "item_saved": "Im SAFE-Netzwerk gespeichertes Item",
@@ -329,6 +338,9 @@ export const Content = [
   },
   {
     "lang": "zh",
+    "text": "中文",
+    "flag": "cn",
+    "enabled": true,
     "page": {
       "snackbar": {
         "item_saved": "项目保存在SAFE网络中", // SAFE网络
@@ -438,6 +450,9 @@ export const Content = [
   },
   {
     "lang": "jp",
+    "text": "日本語",
+    "flag": "jp",
+    "enabled": true,
     "page": {
       "snackbar": {
         "item_saved": "SAFEネットワークに保存されたアイテム",
@@ -548,6 +563,9 @@ export const Content = [
   },
   {
     "lang": "ko",
+    "text": "韓國語",
+    "flag": "kr",
+    "enabled": false,
     "page": {
       "snackbar": {
         "item_saved": "SAFE 네트워크에 저장된 항목",

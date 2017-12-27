@@ -8,18 +8,18 @@ import InfoOutline from 'material-ui/svg-icons/action/info-outline';
 import Autorenew from 'material-ui/svg-icons/action/autorenew';
 import { Image, Menu, Flag, Dropdown } from 'semantic-ui-react'
 import logo_header from '../img/logo-header-415x98.png';
+import { ContentApi } from '../i18n/read-content.js';
 
 export default class AppMenu extends React.Component {
   constructor(props) {
     super(props);
 
-    this.langOptions = [
-      { value: 'en', text: 'English', flag: 'gb' },
-      { value: 'es', text: 'Español', flag: 'es' },
-      { value: 'de', text: 'Deutsch', flag: 'de' },
-      { value: 'zh', text: '中文', flag: 'cn' },
-      { value: 'jp', text: '日本語', flag: 'jp' },
-    ]
+    const langs = ContentApi.langsEnabled();
+    this.langOptions = langs.map((lang) => ({
+        value: lang.lang,
+        text: lang.text,
+        flag: lang.flag
+    }));
 
     this.handleChangeLang = this.handleChangeLang.bind(this);
   }
@@ -29,17 +29,7 @@ export default class AppMenu extends React.Component {
   }
 
   render() {
-    let flagName = this.props.lang;
-    switch(this.props.lang) {
-      case 'en':
-        flagName = 'gb';
-        break;
-      case 'zh':
-        flagName = 'cn';
-        break;
-      default:
-        break;
-    }
+    const flagName = this.langOptions.filter(obj => obj.value === this.props.lang)[0].flag;
     let trigger = <Flag name={flagName} />
 
     return (
