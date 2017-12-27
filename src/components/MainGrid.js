@@ -13,13 +13,15 @@ import { MessageNotAuthorised, MessageAwatingAuth, MessageNoItems } from './Mess
 import { appInfo, appPermissions } from '../config.js';
 import { ContentApi } from '../i18n/read-content.js';
 import { storage, altcoinWallet } from '../storage/safe-net.js';
+import { Constants } from '../common.js';
 
 const NET_STATE_CONNECTED = 'Connected';
+
 const LOCALE_LANG = ContentApi.validateLang(window.navigator.language.substring(0,2));
 
 const initialState = {
   safeAppHandle: null,
-  isAuthorised: false,
+  appState: Constants.APP_STATE_INIT,
   data: {},
   view_modal: false,
   edit_modal: false,
@@ -86,8 +88,8 @@ export default class MainGrid extends React.Component {
   }
 
   networkStateUpdate(state) {
-    console.log("NEW STATE:", this.state.isAuthorised, state)
-    if (this.state.isAuthorised && state !== NET_STATE_CONNECTED) {
+    console.log("NEW STATE:", this.state.appState, state)
+    if (this.state.appState && state !== NET_STATE_CONNECTED) {
       let newState = initialState;
       newState.lang = this.state.lang;
       newState.content = this.state.content;
@@ -97,34 +99,37 @@ export default class MainGrid extends React.Component {
   }
 
   handlePower() {
-      // Note that state.isAuthorised can be null when it's in authorisation process
-      if (this.state.isAuthorised === false) {
-        this.connectApplication();
-      } else if (this.state.isAuthorised) {
-        storage.disconnectApp();
-        this.setState({safeAppHandle: null, isAuthorised: false});
-      }
+    if (this.state.appState === Constants.APP_STATE_INIT) {
+      this.connectApplication();
+    } else if (this.state.appState === Constants.APP_STATE_CONNECTED) {
+      storage.disconnectApp();
+      this.setState({safeAppHandle: null, appState: Constants.APP_STATE_INIT});
+    }
   }
 
   connectApplication() {
-    this.setState({isAuthorised: null});
+    this.setState({appState: Constants.APP_STATE_AUTHORISING});
     let safeAppHandle;//, preferredLang;
-    storage.connectApp(appInfo, appPermissions, this.networkStateUpdate)
-      .then((appHandle) => safeAppHandle = appHandle)
+    storage.authoriseApp(appInfo, appPermissions, this.networkStateUpdate)
+      .then((authInfo) => {
+        safeAppHandle = authInfo.appHandle;
+        this.setState({appState: Constants.APP_STATE_CONNECTING});
+        return storage.connectApp(authInfo.authUri);
+      })
       .then(() => storage.readConfigData())
       //.then((lang) => preferredLang = ContentApi.validateLang(lang))
       .then(() => storage.loadAppData())
       .then((parsedData) => {
         this.setState({
           safeAppHandle,
-          isAuthorised: true,
+          appState: Constants.APP_STATE_CONNECTED,
           data: parsedData,
           //lang: preferredLang,
           //content: ContentApi.getContent(preferredLang).page
         });
       })
       .catch((err) => {
-        this.setState({isAuthorised: false, data: {}});
+        this.setState({appState: Constants.APP_STATE_INIT, data: {}});
         console.log("Authorisation or connection failed:", err);
       })
   }
@@ -263,26 +268,35 @@ export default class MainGrid extends React.Component {
       <MuiThemeProvider>
         <Container fluid id='mainContainer'>
           {/* Top menu bar */}
-          {this.state.isAuthorised != null &&
+          {(this.state.appState === Constants.APP_STATE_INIT
+            || this.state.appState === Constants.APP_STATE_CONNECTED) &&
             <AppMenu
               handleOpenAboutModal={this.handleOpenAboutModal}
               handleOpenAddModal={this.handleOpenAddModal}
               handleRefresh={this.handleRefresh}
               handleChangeLang={this.handleChangeLang}
-              isAuthorised={this.state.isAuthorised}
+              appState={this.state.appState}
               handlePower={this.handlePower}
               lang={this.state.lang}
             />
           }
 
           {/* Warning message when the app is not authorised yet */}
-          {this.state.isAuthorised == null && <MessageAwatingAuth i18nStrings={this.state.content.messages} />}
+          {(this.state.appState === Constants.APP_STATE_AUTHORISING
+            || this.state.appState === Constants.APP_STATE_CONNECTING) &&
+            <MessageAwatingAuth
+              i18nStrings={this.state.content.messages}
+              appState={this.state.appState}
+            />
+          }
 
           {/* Warning message when the app authorisation has been revoked */}
-          {this.state.isAuthorised === false && <MessageNotAuthorised i18nStrings={this.state.content.messages} />}
+          {this.state.appState === Constants.APP_STATE_INIT &&
+            <MessageNotAuthorised i18nStrings={this.state.content.messages} />
+          }
 
           {/* List of items */}
-          {this.state.isAuthorised &&
+          {this.state.appState === Constants.APP_STATE_CONNECTED &&
             <ItemCards
               data={this.state.data}
               handleView={this.handleOpenViewModal}

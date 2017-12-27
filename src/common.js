@@ -30,6 +30,11 @@ export const Constants = {
 
   MAX_NUMBER_2FA_CODES: 12,
   DEFAULT_CARD_COLOR: 'brown',
+
+  APP_STATE_INIT: 1,
+  APP_STATE_AUTHORISING: 2,
+  APP_STATE_CONNECTING: 3,
+  APP_STATE_CONNECTED: 4,
 }
 
 export const genTxId = () => crypto.randomBytes(16).toString('hex');

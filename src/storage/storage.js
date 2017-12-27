@@ -98,17 +98,21 @@ export const readConfigData = () => {
 }
 
 // Auth & connection functions
-export const connectApp = (app, perms, networkStateCb) => {
+export const authoriseApp = (app, perms, networkStateCb) => {
   console.log("Authorising app...");
   return window.safeApp.initialise(app, networkStateCb)
     .then((res) => (APP_HANDLE = res) )
     .then(() => (console.log("App handle retrieved ", APP_HANDLE) ))
     .then(() => window.safeApp.authorise(APP_HANDLE, perms.containers, perms.options))
-    .then((authUri) => window.safeApp.connectAuthorised(APP_HANDLE, authUri))
+    .then((authUri) => ({ appHandle: APP_HANDLE, authUri }));
+}
+
+export const connectApp = (authUri) => {
+  console.log("Connecting to the network...");
+  return window.safeApp.connectAuthorised(APP_HANDLE, authUri)
     .then(() => window.safeApp.refreshContainersPermissions(APP_HANDLE))
     .then(() => {
       console.log("App connected");
-      return APP_HANDLE;
     });
 }
 

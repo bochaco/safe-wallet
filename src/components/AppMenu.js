@@ -9,6 +9,7 @@ import Autorenew from 'material-ui/svg-icons/action/autorenew';
 import { Image, Menu, Flag, Dropdown } from 'semantic-ui-react'
 import logo_header from '../img/logo-header-415x98.png';
 import { ContentApi } from '../i18n/read-content.js';
+import { Constants } from '../common.js';
 
 export default class AppMenu extends React.Component {
   constructor(props) {
@@ -35,12 +36,12 @@ export default class AppMenu extends React.Component {
     return (
       <Menu id='appMenu' inverted borderless>
         <Menu.Item>
-          {this.props.isAuthorised == null
+          {this.props.appState === Constants.APP_STATE_AUTHORISING
             ? <IconButton>
                 <CircularProgress color='#00bcd4' size={25} thickness={2} />
               </IconButton>
             : <IconButton onClick={this.props.handlePower}>
-                {this.props.isAuthorised
+                {this.props.appState === Constants.APP_STATE_CONNECTED
                     ? <NavigationClose color="#00bcd4" />
                     : <PowerSettingsNew color="#00bcd4" />
                 }
@@ -52,7 +53,7 @@ export default class AppMenu extends React.Component {
         </Menu.Item>
         <Menu.Menu position='right'>
           <Menu.Item>
-            {this.props.isAuthorised &&
+            {this.props.appState === Constants.APP_STATE_CONNECTED &&
             <div>
               <IconButton onClick={this.props.handleOpenAddModal}><AddCircleOutline color='#00bcd4' /></IconButton>
               <IconButton onClick={this.props.handleRefresh}><Autorenew color='#00bcd4' /></IconButton>

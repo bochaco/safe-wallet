@@ -2,13 +2,17 @@ import React from 'react'
 import { Image, Grid, Message, Icon } from 'semantic-ui-react';
 import cup_of_tea from '../img/safe-wallet-logo.gif';
 import logotipo from '../img/logo-white.png';
+import { Constants } from '../common.js';
 
 export class MessageAwatingAuth extends React.Component {
   render() {
     return (
       <Grid id='msgAwaiting' verticalAlign='middle' centered padded>
         <Grid.Row>
-          {this.props.i18nStrings.authorising[0]}
+          {this.props.appState === Constants.APP_STATE_AUTHORISING
+            ? this.props.i18nStrings.authorising[0]
+            : this.props.i18nStrings.authorising[1]
+          }
         </Grid.Row>
         <Grid.Row>
           <Grid.Column>

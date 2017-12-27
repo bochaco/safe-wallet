@@ -25,16 +25,13 @@ export const Content = [
         ],
         "authorising": [
           "Awaiting for access authorisation",
+          "...connecting to the SAFE network",
           "Please authorise the application from the SAFE Authenticator in order to access your content",
           "App Name: ",
           "Vendor:   ",
           "App ID:  ", //TODO translate other langs
           "Permissions requested: "
         ],
-        "permissions": { //TODO translate other langs
-          "own_container": "(for storing configuration data)",
-          "_publicNames": ""
-        },
       },
       "items": {
         "credit_card": "Credit Card",
@@ -138,16 +135,13 @@ export const Content = [
         ],
         "authorising": [
           "Esperando autorización de acceso",
+          "...conectando a la red SAFE",
           "Por favor autoriza la aplicación desde el Autenticador de la red SAFE para poder acceder a tu información",
           "Nombre de la aplicación: ",
           "Proveedor:   ",
           "Versión:  ",
           "Permisos solicitados: "
         ],
-        "permissions": {
-          "SAFE_DRIVE_ACCESS": "(acceso al Drive de la cuenta)",
-          "LOW_LEVEL_API": "(acceso a la API de bajo nivel)",
-        }
       },
       "items": {
         "credit_card": "Tarjeta de Crédito",
@@ -250,16 +244,13 @@ export const Content = [
         ],
         "authorising": [
           "Warten auf Zugriffsberechtigung",
+          "... Verbindung zum SAFE-Netzwerk",
           "Bitte bestätige den Antrag vom SAFE Authentifizierer, um auf seinen Inhalt zuzugreifen: ",
           "Name der Anwendung: ",
           "Verkäufer:   ",
           "Version:  ",
           "Erforderliche Berechtigungen: "
         ],
-        "permissions": {
-          "SAFE_DRIVE_ACCESS": "(Zugriff auf das Laufwerk des Kontos)",
-          "LOW_LEVEL_API": "(SAFE low level API)",
-        },
       },
       "items": {
         "credit_card": "Kreditkarte",
@@ -362,16 +353,13 @@ export const Content = [
         ],
         "authorising": [
           "等待访问授权",
+          "连接到SAFE网络",
           "请授权来自SAFE Authenticator的申请,以便访问您的内容: ",
           "应用名称:  ",
           "供应商:    ",
           "版:       ",
           "请求的权限: "
         ],
-        "permissions": {
-          "SAFE_DRIVE_ACCESS": "（帐户的云端硬盘访问权限）",
-          "LOW_LEVEL_API": "（SAFE低级API）",
-        },
       },
       "items": {
         "credit_card": "信用卡",
@@ -475,16 +463,13 @@ export const Content = [
         ],
         "authorising": [
           "アクセス許可待ち",
+          "... SAFEネットワークに接続する",
           "あなたのコンテンツにアクセスするには、SAFE認証システムからアプリケーションを認証してください：",
           "アプリケーション名：",
           "ベンダー：",
           "バージョン：",
           "要求された権限："
         ],
-        "permissions": {
-          "SAFE_DRIVE_ACCESS": "（アカウントのドライブへのアクセス）",
-          "LOW_LEVEL_API": "（低レベルAPI）",
-        },
       },
       "items": {
         "credit_card": "クレジットカード",
@@ -588,16 +573,13 @@ export const Content = [
         ],
         "authorising": [
           "アクセス許可待ち",
+          "... SAFE 네트워크에 연결 중",
           "あなたのコンテンツにアクセスするには、SAFE認証システムからアプリケーションを認証してください：",
           "アプリケーション名：",
           "ベンダー：",
           "バージョン：",
           "要求された権限："
         ],
-        "permissions": {
-          "SAFE_DRIVE_ACCESS": "（アカウントのドライブへのアクセス）",
-          "LOW_LEVEL_API": "（低レベルAPI）",
-        },
       },
       "items": {
         "credit_card": "クレジットカード",

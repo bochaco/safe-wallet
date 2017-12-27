@@ -8,12 +8,21 @@ var wallet_data = sample_wallet_data;
 
 export const readConfigData = () => Promise.resolve('en');
 
-export const connectApp = (app, permissions) => {
+export const authoriseApp = (app, permissions) => {
   console.log("Authorising app...");
   return new Promise(resolve => {
     setTimeout(() => {
+      resolve({appHandle: '', authUri: ''})
+    }, 1500)
+  })
+}
+
+export const connectApp = (authUri) => {
+  console.log("Connecing to the network...");
+  return new Promise(resolve => {
+    setTimeout(() => {
       resolve()
-    }, 3000)
+    }, 1500)
   })
 }
 
