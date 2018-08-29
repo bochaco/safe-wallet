@@ -11,13 +11,14 @@ const CONFIG_ENTRY_KEY_PREFERRED_LANG = 'lang';
 
 const ERR_NO_SUCH_ENTRY = -106;
 
-let APP_HANDLE = null;
-let DATA_HANDLE = null;
+let walletSafeApp = null;
+let walletDataMd = null;
 
-const _readEncryptedEntry = (md, key) => {
-  return window.safeMutableData.encryptKey(md, key)
-    .then((encKey) => window.safeMutableData.get(md, encKey))
-    .then((encValue) => window.safeMutableData.decrypt(md, encValue.buf));
+const _readEncryptedEntry = async (md, key) => {
+  const encKey = await md.encryptKey(key);
+  const encValue = await md.get(encKey);
+  const decryptedValue = await md.decrypt(encValue.buf);
+  return decryptedValue;
 }
 
 const _readEncryptedEntries = (md) => {
@@ -32,141 +33,116 @@ const _readEncryptedEntries = (md) => {
     .then(() => retData)
 }
 
-const _insertEntriesEncrypted = (md, data) => {
-  return window.safeMutableData.newMutation(APP_HANDLE)
-    .then((mutHandle) => Promise.all(Object.keys(data).map((key) => {
-        return window.safeMutableData.encryptKey(md, key)
-          .then((encKey) => window.safeMutableData.encryptValue(md, data[key])
-            .then((encValue) => window.safeMutableDataMutation.insert(mutHandle, encKey, encValue))
-          )
-      }))
-      .then(() => window.safeMutableData.applyEntriesMutation(md, mutHandle))
-      .then(() => window.safeMutableDataMutation.free(mutHandle))
-    );
+const _insertEntriesEncrypted = async (md, data) => {
+  const mutations = await walletSafeApp.mutableData.newMutation();
+  await Promise.all(Object.keys(data).map(async (key) => {
+    const encKey = await md.encryptKey(key);
+    const encValue = await md.encryptValue(data[key]);
+    await mutations.insert(encKey, encValue);
+  }));
+  await md.applyEntriesMutation(mutations);
 }
 
-const _generateConfigData = (md) => {
+const _generateConfigData = async (md) => {
   console.log("Generating config data...");
-  return window.safeMutableData.newRandomPrivate(APP_HANDLE, TAG_TYPE_DATA)
-    .then((mdHandle) => window.safeMutableData.quickSetup(mdHandle, {}))
-    .then((mdHandle) => window.safeMutableData.serialise(mdHandle)
-      .then((serialised) => {
-        window.safeMutableData.free(mdHandle);
-        let configToStore = {
-          [CONFIG_ENTRY_KEY_VERSION]: '0.0.10',
-          [CONFIG_ENTRY_KEY_PREFERRED_LANG]: 'en',
-          [CONFIG_ENTRY_KEY_APP_DATA]: new Uint8Array(serialised)
-        };
-        return _insertEntriesEncrypted(md, configToStore)
-          .then(() => {
-            console.log("Config data stored in app's own container: ", configToStore)
-            return _readEncryptedEntries(md); // TODO: try to avoid reaing them again
-          });
-      }, (err) => {
-        throw Error("Failed generating config data: ", err.code, err.message);
-      })
-    );
+  const randomPrivMd = await walletSafeApp.mutableData.newRandomPrivate(TAG_TYPE_DATA);
+  await randomPrivMd.quickSetup({});
+  const serialised = await randomPrivMd.serialise();
+  let configToStore = {
+    [CONFIG_ENTRY_KEY_VERSION]: '0.0.10',
+    [CONFIG_ENTRY_KEY_PREFERRED_LANG]: 'en',
+    [CONFIG_ENTRY_KEY_APP_DATA]: new Uint8Array(serialised)
+  };
+  try {
+    await _insertEntriesEncrypted(md, configToStore);
+    console.log("Config data stored in app's own container: ", configToStore)
+    return _readEncryptedEntries(md); // TODO: try to avoid reaing them again
+  } catch (err) {
+    throw Error("Failed generating config data: ", err.code, err.message);
+  }
 }
 
 const _fromArrayBuffer = (buf) => {
   return String.fromCharCode.apply(null, new Uint8Array(buf));
 }
 
-export const readConfigData = () => {
-  console.log("Fetching config data from app's home container...");
-  let ownContainerHandle;
-  return window.safeApp.getOwnContainer(APP_HANDLE).then((handle) => {
-    ownContainerHandle = handle;
-    return _readEncryptedEntries(ownContainerHandle)
-      .catch((err) => {
-        if (err.code !== ERR_NO_SUCH_ENTRY) {
-          console.log("Failed fetching config data: ", err.code, err.message);
-          throw err;
-        }
-        return _generateConfigData(ownContainerHandle)
-      });
-  })
-  .then((storedConfig) => window.safeMutableData.fromSerial(APP_HANDLE, storedConfig[CONFIG_ENTRY_KEY_APP_DATA])
-    .then((dataMdHandle) => {
-      window.safeMutableData.free(ownContainerHandle);
-      DATA_HANDLE = dataMdHandle;
-      let lang = _fromArrayBuffer(storedConfig[CONFIG_ENTRY_KEY_PREFERRED_LANG]);
-      console.log('Finished reading config');
-      return lang;
-    })
-  )
+export const readConfigData = async () => {
+  console.log("Fetching config data from app's own container...");
+  const ownContainerMd = await walletSafeApp.auth.getOwnContainer();
+  let storedConfig;
+  try {
+    storedConfig = await _readEncryptedEntries(ownContainerMd);
+  } catch(err) {
+    if (err.code !== ERR_NO_SUCH_ENTRY) {
+      console.log("Failed fetching config data: ", err.code, err.message);
+      throw err;
+    }
+    storedConfig = await _generateConfigData(ownContainerMd);
+  }
+
+  walletDataMd = await walletSafeApp.mutableData.fromSerial(storedConfig[CONFIG_ENTRY_KEY_APP_DATA]);
+  let lang = _fromArrayBuffer(storedConfig[CONFIG_ENTRY_KEY_PREFERRED_LANG]);
+  console.log('Finished reading config');
+  return lang;
 }
 
 // Auth & connection functions
-export const authoriseApp = (app, perms, networkStateCb) => {
+export const authoriseApp = async (appInfo, perms, networkStateCb) => {
   console.log("Authorising app...");
-  return window.safeApp.initialise(app, networkStateCb)
-    .then((res) => (APP_HANDLE = res) )
-    .then(() => (console.log("App handle retrieved ", APP_HANDLE) ))
-    .then(() => window.safeApp.authorise(APP_HANDLE, perms.containers, perms.options))
-    .then((authUri) => ({ appHandle: APP_HANDLE, authUri }));
+  walletSafeApp = await window.safe.initialiseApp(appInfo, networkStateCb);
+  console.log("safeApp intance initialised...");
+  const authReqUri = await walletSafeApp.auth.genAuthUri(perms.containers, perms.options);
+  console.log("Authorisation request URI generated: ", authReqUri);
+  const authUri = await window.safe.authorise(authReqUri);
+  return { appHandle: walletSafeApp, authUri };
 }
 
-export const connectApp = (authUri) => {
+export const connectApp = async (authUri) => {
   console.log("Connecting to the network...");
-  return window.safeApp.connectAuthorised(APP_HANDLE, authUri)
-    .then(() => window.safeApp.refreshContainersPermissions(APP_HANDLE))
-    .then(() => {
-      console.log("App connected");
-    });
+  await walletSafeApp.auth.loginFromUri(authUri);
+  await walletSafeApp.auth.refreshContainersPermissions();
+  console.log("App connected");
 }
 
 export const disconnectApp = () => {
   console.log("Disconnecting...");
-  window.safeMutableData.free(DATA_HANDLE);
-  DATA_HANDLE = null;
-  window.safeApp.free(APP_HANDLE);
-  APP_HANDLE = null;
+  walletDataMd = null;
+  walletSafeApp = null;
   console.log("App disconnected by the user");
 }
 
-const _decryptEntries = (rawEntries) => {
+const _decryptEntries = async (rawEntries) => {
   let data = {};
-  return Promise.all(rawEntries.map((entry) => {
+  await Promise.all(rawEntries.map(async (entry) => {
     // Ignore soft-deleted items
     if (entry.value.buf.length === 0) {
       return Promise.resolve();
     }
 
-    return window.safeMutableData.decrypt(DATA_HANDLE, entry.key)
-      .then((decKey) => window.safeMutableData.decrypt(DATA_HANDLE, entry.value.buf)
-        .then((decValue) => {
-          let item = {
-            id: _fromArrayBuffer(decKey),
-            version: entry.value.version,
-            content: JSON.parse(_fromArrayBuffer(decValue))
-          }
-          data[item.id] = item;
-        }));
-  }))
-  .then(() => data);
+    const decKey = await walletDataMd.decrypt(entry.key);
+    const decValue = await walletDataMd.decrypt(entry.value.buf);
+    let item = {
+      id: _fromArrayBuffer(decKey),
+      version: entry.value.version,
+      content: JSON.parse(_fromArrayBuffer(decValue))
+    }
+    data[item.id] = item;
+  }));
+
+  return data;
 }
 
 // App data management functions
-export const loadAppData = () => {
+export const loadAppData = async () => {
   console.log('Loading data...');
-  let rawEntries = [];
-  return window.safeMutableData.getEntries(DATA_HANDLE)
-    .then((entriesHandle) => window.safeMutableDataEntries.forEach(entriesHandle, (key, value) => {
-        rawEntries.push({key, value});
-      })
-      .then(() => {
-        window.safeMutableDataEntries.free(entriesHandle);
-        return _decryptEntries(rawEntries);
-      })
-    )
-    .then((data) => {
-      console.log('Finished reading data');
-      return data;
-    });
+  const entries = await walletDataMd.getEntries();
+  const rawEntries = await entries.listEntries();
+  const data = await _decryptEntries(rawEntries);
+  console.log('Finished reading data');
+  return data;
 }
 
-export const saveAppItem = (item) => {
+export const saveAppItem = async (item) => {
   console.log("Saving app data in the network...");
   let version = 0;
   let id = item.id;
@@ -176,40 +152,28 @@ export const saveAppItem = (item) => {
     version = item.version + 1;
   }
 
-  return window.safeMutableData.newMutation(APP_HANDLE)
-    .then((mutHandle) => window.safeMutableData.encryptKey(DATA_HANDLE, id)
-      .then((encKey) => window.safeMutableData.encryptValue(DATA_HANDLE, JSON.stringify(item.content))
-        .then((encValue) => {
-          if (item.id) {
-            console.log("...updating item...");
-            return window.safeMutableDataMutation.update(mutHandle, encKey, encValue, version);
-          } else {
-            console.log("...inserting item...");
-            return window.safeMutableDataMutation.insert(mutHandle, encKey, encValue);
-          }
-        })
-      )
-      .then(() => window.safeMutableData.applyEntriesMutation(DATA_HANDLE, mutHandle))
-      .then(() => window.safeMutableDataMutation.free(mutHandle))
-    )
-    .then(() => {
-      console.log("App item saved in the network successfully");
-      item.id = id;
-      item.version = version;
-      return item;
-    });
+  const mutations = await walletSafeApp.mutableData.newMutation();
+  const encKey = await walletDataMd.encryptKey(id);
+  const encValue = await walletDataMd.encryptValue(JSON.stringify(item.content));
+  if (item.id) {
+    console.log("...updating item...");
+    await mutations.update(encKey, encValue, version);
+  } else {
+    console.log("...inserting item...");
+    await mutations.insert(encKey, encValue);
+  }
+  await walletDataMd.applyEntriesMutation(mutations);
+  console.log("App item saved in the network successfully");
+  item.id = id;
+  item.version = version;
+  return item;
 }
 
-export const deleteAppItem = (item) => {
+export const deleteAppItem = async (item) => {
   console.log("Removing item from the network...");
-  return window.safeMutableData.newMutation(APP_HANDLE)
-    .then((mutHandle) => window.safeMutableData.encryptKey(DATA_HANDLE, item.id)
-      .then((encKey) => window.safeMutableDataMutation.remove(mutHandle, encKey, item.version + 1))
-      .then(() => window.safeMutableData.applyEntriesMutation(DATA_HANDLE, mutHandle))
-      .then(() => window.safeMutableDataMutation.free(mutHandle))
-    )
-    .then(() => {
-      console.log("App item removed from the network successfully");
-      return;
-    });
+  const mutations = await walletSafeApp.mutableData.newMutation();
+  const encKey = await walletDataMd.encryptKey(item.id);
+  await mutations.delete(encKey, item.version + 1);
+  await walletDataMd.applyEntriesMutation(mutations);
+  console.log("App item removed from the network successfully");
 }

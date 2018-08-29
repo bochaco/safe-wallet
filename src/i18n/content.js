@@ -6,9 +6,9 @@ export const Content = [
     "enabled": true,
     "page": {
       "snackbar": {
-        "item_saved": "Item saved in the SAFE network",
-        "item_deleted": "Item deleted from the SAFE network",
-        "items_reloaded": "List of items reloaded from the SAFE network",
+        "item_saved": "Item saved in the SAFE Network",
+        "item_deleted": "Item deleted from the SAFE Network",
+        "items_reloaded": "List of items reloaded from the SAFE Network",
         "fail_deleting": "Failed to delete item",
         "fail_auth_revoked": "Application authorization was revoked",
       },
@@ -19,13 +19,13 @@ export const Content = [
         ],
         "not_auth": [
           "Application not authorised",
-          "Access authorisation was revoked, the app was disconnected, or it lost the connection to the SAFE network.",
+          "Access authorisation was revoked, the app was disconnected, or it lost the connection to the SAFE Network.",
           "Please press the ",
           "button to connect again."
         ],
         "authorising": [
           "Awaiting for access authorisation",
-          "...connecting to the SAFE network",
+          "...connecting to the SAFE Network",
           "Please authorise the application from the SAFE Authenticator in order to access your content",
           "App Name: ",
           "Vendor:   ",
@@ -102,7 +102,7 @@ export const Content = [
       "about": {
         "btn_close": "Close",
         "about": "About SAFE Wallet",
-        "description": "The first wallet in the SAFE network to manage credit card numbers, passwords, safecoin/altcoins wallet(s), and many other type of personal information.",
+        "description": "The first wallet in the SAFE Network to manage credit card numbers, passwords, safecoin/altcoins wallet(s), and many other type of personal information.",
         "version": "Version",
         "by": "by",
         "donations": "Donations are welcome and appreciated!",

@@ -88,7 +88,7 @@ export default class MainGrid extends React.Component {
   }
 
   networkStateUpdate(state) {
-    console.log("NEW STATE:", this.state.appState, state)
+    console.log("Network connection state changed to:", state)
     if (this.state.appState && state !== NET_STATE_CONNECTED) {
       let newState = initialState;
       newState.lang = this.state.lang;
