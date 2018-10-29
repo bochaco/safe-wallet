@@ -1,9 +1,6 @@
 import React from 'react';
-import RaisedButton from 'material-ui/RaisedButton';
-import NavigationClose from 'material-ui/svg-icons/navigation/close';
-import NavigationCheck from 'material-ui/svg-icons/navigation/check';
-import ContentAdd from 'material-ui/svg-icons/content/add';
-import ActionDelete from 'material-ui/svg-icons/action/delete';
+import { Button } from '@material-ui/core';
+import { Close, Check, Add, Delete } from '@material-ui/icons';
 import { Image, Header, Modal, Label } from 'semantic-ui-react'
 import { ItemTypes } from '../common.js';
 
@@ -34,12 +31,15 @@ export default class ViewDialogBox extends React.Component {
           {this.props.children}
         </Modal.Content>
         <Modal.Actions>
-          <RaisedButton
-            label={this.props.i18nStrings.btn_close}
-            primary={true}
-            icon={<NavigationClose />}
-            onTouchTap={this.props.handleClose}
-          />
+          <Button
+            color='primary'
+            variant='contained'
+            size='medium'
+            onClick={this.props.handleClose}
+          >
+            <Close />
+            {this.props.i18nStrings.btn_close}
+          </Button>
         </Modal.Actions>
       </Modal>
     )
@@ -74,18 +74,23 @@ export class EditDialogBox extends React.Component {
           }
         </Modal.Content>
         <Modal.Actions>
-          <RaisedButton
-            label={this.props.i18nStrings.btn_cancel}
-            primary={false}
-            icon={<NavigationClose />}
-            onTouchTap={this.props.handleClose}
-          />
-          <RaisedButton
-            label={this.props.selected_item ? this.props.i18nStrings.btn_save : this.props.i18nStrings.btn_add}
-            primary={true}
-            icon={this.props.selected_item ? <NavigationCheck /> : <ContentAdd />}
-            onTouchTap={this.props.handleSubmit}
-          />
+          <Button
+            variant='contained'
+            size='medium'
+            onClick={this.props.handleClose}
+          >
+            <Close />
+            {this.props.i18nStrings.btn_cancel}
+          </Button>
+          <Button
+            color='primary'
+            variant='contained'
+            size='medium'
+            onClick={this.props.handleSubmit}
+          >
+            {this.props.selected_item ? <Check /> : <Add />}
+            {this.props.selected_item ? this.props.i18nStrings.btn_save : this.props.i18nStrings.btn_add}
+          </Button>
         </Modal.Actions>
       </Modal>
     )
@@ -103,18 +108,23 @@ export class DeleteDialogBox extends React.Component {
           {this.props.children}
         </Modal.Content>
         <Modal.Actions>
-          <RaisedButton
-            label={this.props.i18nStrings.btn_cancel}
-            primary={false}
-            icon={<NavigationClose />}
-            onTouchTap={this.props.handleClose}
-          />
-          <RaisedButton
-            label={this.props.i18nStrings.btn_delete}
-            primary={true}
-            icon={<ActionDelete />}
-            onTouchTap={this.props.handleSubmit}
-          />
+          <Button
+            variant='contained'
+            size='medium'
+            onClick={this.props.handleClose}
+          >
+            <Close />
+            {this.props.i18nStrings.btn_cancel}
+          </Button>
+          <Button
+            color='primary'
+            variant='contained'
+            size='medium'
+            onClick={this.props.handleSubmit}
+          >
+            <Delete />
+            {this.props.i18nStrings.btn_delete}
+          </Button>
         </Modal.Actions>
       </Modal>
     )
@@ -136,18 +146,23 @@ export class ConfirmTransferDialogBox extends React.Component {
           {this.props.children}
         </Modal.Content>
         <Modal.Actions>
-          <RaisedButton
-            label={this.props.i18nStrings.btn_cancel}
-            primary={false}
-            icon={<NavigationClose />}
-            onTouchTap={this.props.handleClose}
-          />
-          <RaisedButton
-            label={this.props.i18nStrings.btn_confirm}
-            primary={true}
-            icon={<NavigationCheck />}
-            onTouchTap={this.props.handleSubmit}
-          />
+          <Button
+            variant='contained'
+            size='medium'
+            onClick={this.props.handleClose}
+          >
+            {this.props.i18nStrings.btn_cancel}
+            <Close />
+          </Button>
+          <Button
+            color='primary'
+            variant='contained'
+            size='medium'
+            onClick={this.props.handleSubmit}
+          >
+            <Check />
+            {this.props.i18nStrings.btn_confirm}
+          </Button>
         </Modal.Actions>
       </Modal>
     )

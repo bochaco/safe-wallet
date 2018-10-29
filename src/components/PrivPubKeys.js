@@ -1,5 +1,5 @@
 import React from 'react';
-import TextField from 'material-ui/TextField';
+import TextField from '@material-ui/core/TextField';
 import { Grid, Image, Header, Container } from 'semantic-ui-react'
 import { Constants } from '../common.js';
 import { EditDialogBox } from './DialogBox.js';
@@ -50,6 +50,12 @@ export class PrivPubKeysEdit extends React.Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      pk: this.props.selected_item.data.pk,
+      sk: this.props.selected_item.data.sk,
+      notes: this.props.selected_item.data.notes,
+    }
+    this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -57,23 +63,21 @@ export class PrivPubKeysEdit extends React.Component {
     let updatedItem = {
       type: Constants.TYPE_PRIV_PUB_KEY,
       metadata: {
-        label: this.refs.colorAndLabelInput.refs.labelInput.input.value,
+        label: this.refs.colorAndLabelInput.refs.labelInput.props.value,
         color: this.refs.colorAndLabelInput.refs.colorInput.getSelectedItem().value,
       },
       data: {
-        pk: this.refs.pkInput.input.value,
-        sk: this.refs.skInput.input.value,
-        notes: this.refs.notesInput.input.value,
+        pk: this.state.pk,
+        sk: this.state.sk,
+        notes: this.state.notes,
       }
     }
     this.props.handleSubmit(updatedItem);
   };
 
-  componentDidMount() {
-    if (this.refs.colorAndLabelInput) {
-      this.refs.colorAndLabelInput.refs.labelInput.input.focus();
-    }
-  }
+  handleChange = name => event => {
+    this.setState( { [name]: event.target.value } );
+  };
 
   render() {
     return (
@@ -94,9 +98,9 @@ export class PrivPubKeysEdit extends React.Component {
             <Grid.Column width={8}>
               <TextField
                 fullWidth={true}
-                floatingLabelText={this.props.i18nStrings.item_pk}
-                defaultValue={this.props.selected_item.data.pk}
-                ref='pkInput'
+                label={this.props.i18nStrings.item_pk}
+                value={this.state.pk}
+                onChange={this.handleChange('pk')}
               />
             </Grid.Column>
           </Grid.Row>
@@ -104,9 +108,9 @@ export class PrivPubKeysEdit extends React.Component {
             <Grid.Column width={15}>
               <TextField
                 fullWidth={true}
-                floatingLabelText={this.props.i18nStrings.item_sk}
-                defaultValue={this.props.selected_item.data.sk}
-                ref='skInput'
+                label={this.props.i18nStrings.item_sk}
+                value={this.state.sk}
+                onChange={this.handleChange('sk')}
               />
             </Grid.Column>
             <Grid.Column width={1}>
@@ -116,10 +120,10 @@ export class PrivPubKeysEdit extends React.Component {
             <Grid.Column width={15}>
               <TextField
                 fullWidth={true}
-                multiLine={false/*TODO: true*/}
-                floatingLabelText={this.props.i18nStrings.item_tx_notes}
-                defaultValue={this.props.selected_item.data.notes}
-                ref='notesInput'
+                // TODO: multiLine
+                label={this.props.i18nStrings.item_tx_notes}
+                value={this.state.notes}
+                onChange={this.handleChange('notes')}
               />
             </Grid.Column>
             <Grid.Column width={1}>

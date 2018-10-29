@@ -1,5 +1,5 @@
 import React from 'react';
-import TextField from 'material-ui/TextField';
+import TextField from '@material-ui/core/TextField';
 import { Grid, Image, Header, Icon, List } from 'semantic-ui-react'
 import { Constants, getQRCode } from '../common.js';
 import { EditDialogBox } from './DialogBox.js';
@@ -84,20 +84,20 @@ export class JCardEdit extends React.Component {
     let updatedItem = {
       type: Constants.TYPE_JCARD,
       metadata: {
-        label: this.refs.colorAndLabelInput.refs.labelInput.input.value,
+        label: this.refs.colorAndLabelInput.refs.labelInput.props.value,
         color: this.refs.colorAndLabelInput.refs.colorInput.getSelectedItem().value,
       },
       data: [
-        this.refs.idInput.input.value,
+        this.refs.idInput.value,
         [
           "vcard",
           [
             ["version", {}, "text", "4.0"],
-            ["fn", {}, "text", this.refs.nameInput.input.value],
+            ["fn", {}, "text", this.refs.nameInput.value],
             ["email", {}, "text", "forrestgump@example.com"],
             ["x-wallet-addr", {
-                "type": [ this.refs.coinInput.input.value ]
-              }, "text", this.refs.addrInput.input.value
+                "type": [ this.refs.coinInput.value ]
+              }, "text", this.refs.addrInput.value
             ],
             ["rev", {}, "timestamp", "2008-04-24T19:52:43Z"]
           ]
@@ -106,12 +106,6 @@ export class JCardEdit extends React.Component {
     }
     this.props.handleSubmit(updatedItem);
   };
-
-  componentDidMount() {
-    if (this.refs.colorAndLabelInput) {
-      this.refs.colorAndLabelInput.refs.labelInput.input.focus();
-    }
-  }
 
   render() {
     return (
@@ -133,16 +127,16 @@ export class JCardEdit extends React.Component {
             <Grid.Column width={5}>
               <TextField
                 fullWidth={true}
-                floatingLabelText="Public Profile ID"
-                defaultValue={this.props.selected_item.data[0]}
+                label="Public Profile ID"
+                value={this.props.selected_item.data[0]}
                 ref='idInput'
               />
             </Grid.Column>
             <Grid.Column width={8}>
               <TextField
                 fullWidth={true}
-                floatingLabelText="Public Full Name"
-                defaultValue={this.props.selected_item.data[1][1][1][3]}
+                label="Public Full Name"
+                value={this.props.selected_item.data[1][1][1][3]}
                 ref='nameInput'
               />
             </Grid.Column>
@@ -151,16 +145,16 @@ export class JCardEdit extends React.Component {
             <Grid.Column width={5}>
               <TextField
                 fullWidth={true}
-                floatingLabelText="Coin"
-                defaultValue={this.props.selected_item.data[1][1][3][1].type[0]}
+                label="Coin"
+                value={this.props.selected_item.data[1][1][3][1].type[0]}
                 ref='coinInput'
               />
             </Grid.Column>
             <Grid.Column width={10}>
               <TextField
                 fullWidth={true}
-                floatingLabelText="Wallet Address / Public Key"
-                defaultValue={this.props.selected_item.data[1][1][3][3]}
+                label="Wallet Address / Public Key"
+                value={this.props.selected_item.data[1][1][3][3]}
                 ref='addrInput'
               />
             </Grid.Column>

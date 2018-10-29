@@ -1,8 +1,8 @@
 import React from 'react'
 import { Container } from 'semantic-ui-react';
 import ItemCards from './ItemCard.js';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import Snackbar from 'material-ui/Snackbar';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import Snackbar from '@material-ui/core/Snackbar';
 import CardView from './CardView.js';
 import CardEdit from './CardEdit.js';
 import CardAdd from './CardAdd.js';
@@ -264,8 +264,12 @@ export default class MainGrid extends React.Component {
       selectedItemContent = this.state.data[this.state.selected_item].content;
     }
 
+    const muiThemeOpts = {
+      typography: { useNextVariants: true },
+    };
+
     return (
-      <MuiThemeProvider>
+      <MuiThemeProvider theme={ createMuiTheme(muiThemeOpts) }>
         <Container fluid id='mainContainer'>
           {/* Top menu bar */}
           {(this.state.appState === Constants.APP_STATE_INIT
@@ -360,8 +364,7 @@ export default class MainGrid extends React.Component {
             open={this.state.snackbar}
             message={this.state.snackbar_message}
             autoHideDuration={4000}
-            onRequestClose={this.handleCloseSnack}
-            bodyStyle={{backgroundColor: '#666666'}}
+            onClose={this.handleCloseSnack}
           />
 
         </Container>

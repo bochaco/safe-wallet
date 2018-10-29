@@ -1,6 +1,5 @@
 import React from 'react';
 import crypto from 'crypto';
-var qrcode = require('qrcode-js');
 import CreditCardView, { CreditCardEdit } from './components/CreditCard.js';
 //import JCardView, { JCardEdit } from './components/JCard.js';
 import PasswordView, { PasswordEdit } from './components/Password.js';
@@ -16,6 +15,8 @@ import icon_2fa from './img/2fa.png';
 import icon_safecoin from './img/icon-safecoins.png';
 import icon_altcoin from './img/icon-altcoins.png';
 //import icon_jcard from './img/jcard.png';
+
+var qrcode = require('qrcode-js');
 
 export const Constants = {
   TYPE_CREDIT_CARD: 0,

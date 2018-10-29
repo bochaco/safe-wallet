@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import MainGrid from './MainGrid.js';
-import injectTapEventPlugin from 'react-tap-event-plugin';
+// import injectTapEventPlugin from 'react-tap-event-plugin';
 
-// Needed for onTouchTap
+// Needed for onClick
 // http://stackoverflow.com/a/34015469/988941
-injectTapEventPlugin();
+// injectTapEventPlugin();
 
 class App extends Component {
   componentWillMount() {

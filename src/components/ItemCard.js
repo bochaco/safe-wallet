@@ -74,7 +74,7 @@ class ItemCard extends React.Component {
               <List.Content verticalAlign='middle' floated='right'>
                 <Button id='btnCard' circular icon='edit'
                   onClick={this.handleEditAction} />
-                <Button id='btnCard' circular icon='trash outline'
+                <Button id='btnCard' circular icon='trash alternate outline'
                   onClick={this.handleDeleteAction} />
               </List.Content>
             </List.Item>

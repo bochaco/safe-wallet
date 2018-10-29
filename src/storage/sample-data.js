@@ -76,7 +76,7 @@ export const sample_wallet_data = {
         keepTxs: true,
       },
       data: {
-        wallet_id: "dailywallet",
+        webid_linked: "dailywallet",
         wallet: sample_wallets[ME_PK_XOR_NAME],
         tx_inbox_pk: SampleKeyPairs.Me.pk,
         tx_inbox_sk: SampleKeyPairs.Me.sk,
@@ -132,7 +132,7 @@ export const sample_wallet_data = {
         keepTxs: true,
       },
       data: {
-        wallet_id: "shopcashier",
+        webid_linked: "shopcashier",
         wallet: [],
         tx_inbox_pk: SampleKeyPairs.Bob.pk,
         tx_inbox_sk: SampleKeyPairs.Bob.sk,

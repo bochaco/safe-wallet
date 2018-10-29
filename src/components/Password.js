@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid, Header, Icon, Button, List } from 'semantic-ui-react'
-import TextField from 'material-ui/TextField';
+import TextField from '@material-ui/core/TextField';
 import { Constants } from '../common.js';
 import { EditDialogBox } from './DialogBox.js';
 import { ColorAndLabel } from './Common.js';
@@ -62,72 +62,55 @@ export class PasswordEdit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      qas: []
+      username: this.props.selected_item.data.username,
+      password: this.props.selected_item.data.password,
+      qas: this.props.selected_item.data.questions.slice(),
+      newQ: '',
+      newA: '',
     }
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleQChange = this.handleQChange.bind(this);
-    this.handleAChange = this.handleAChange.bind(this);
+    this.handleQAChange = this.handleQAChange.bind(this);
     this.handleAddQA = this.handleAddQA.bind(this);
     this.handleRemoveQA = this.handleRemoveQA.bind(this);
-  }
-
-  componentWillMount() {
-    if (this.props.selected_item) {
-      this.setState({qas: this.props.selected_item.data.questions.slice()})
-    }
-  }
-
-  componentDidMount() {
-    if (this.refs.colorAndLabelInput) {
-      this.refs.colorAndLabelInput.refs.labelInput.input.focus();
-    }
-  }
-
-  componentWillUpdate(newProps) {
-    if (this.refs.newQInput) {
-      this.refs.newQInput.input.value = "";
-      this.refs.newAInput.input.value = "";
-    }
   }
 
   handleSubmit() {
     let updatedItem = {
       type: Constants.TYPE_PASSWORD,
       metadata: {
-        label: this.refs.colorAndLabelInput.refs.labelInput.input.value,
+        label: this.refs.colorAndLabelInput.refs.labelInput.props.value,
         color: this.refs.colorAndLabelInput.refs.colorInput.getSelectedItem().value,
       },
       data: {
-        username: this.refs.usernameInput.input.value,
-        password: this.refs.passwordInput.input.value,
+        username: this.state.username,
+        password: this.state.password,
         questions: this.state.qas,
       }
     }
     this.props.handleSubmit(updatedItem);
   };
 
-  handleQChange(index, e) {
-    let updatedQAs = this.state.qas.slice();
-    updatedQAs[index].q = e.target.value;
-    this.setState({qas: updatedQAs});
-  }
+  handleChange = name => event => {
+    this.setState( { [name]: event.target.value } );
+  };
 
-  handleAChange(index, e) {
+  handleQAChange = (index, attr) => event => {
+    // FIXME: the textfield looses focus after this
     let updatedQAs = this.state.qas.slice();
-    updatedQAs[index].a = e.target.value;
+    updatedQAs[index][attr] = event.target.value;
     this.setState({qas: updatedQAs});
   }
 
   handleAddQA() {
     let updatedQAs = this.state.qas.slice();
     updatedQAs.push({
-      q: this.refs.newQInput.input.value,
-      a: this.refs.newAInput.input.value,
+      q: this.state.newQ,
+      a: this.state.newA,
     });
-    this.setState({qas: updatedQAs});
+    this.setState({qas: updatedQAs, newQ: '', newA: ''});
   }
 
-  handleRemoveQA(index) {
+  handleRemoveQA = index => _ => {
     let updatedQAs = this.state.qas.slice();
     updatedQAs.splice(index, 1);
     this.setState({qas: updatedQAs});
@@ -141,21 +124,21 @@ export class PasswordEdit extends React.Component {
             <List horizontal>
               <List.Item>
                 <TextField
-                  floatingLabelText={this.props.i18nStrings.item_question + " #" + (index+1)}
-                  defaultValue={qa.q}
-                  onChange={(e) => {this.handleQChange(index, e)}}
+                  label={this.props.i18nStrings.item_question + " #" + (index+1)}
+                  value={this.state.qas[index].q}
+                  onChange={this.handleQAChange(index, 'q')}
                 />
               </List.Item>
               <List.Item>
                 <TextField
-                  floatingLabelText={this.props.i18nStrings.item_answer}
-                  defaultValue={qa.a}
-                  onChange={(e) => {this.handleAChange(index, e)}}
+                  label={this.props.i18nStrings.item_answer}
+                  value={this.state.qas[index].a}
+                  onChange={this.handleQAChange(index, 'a')}
                 />
               </List.Item>
               <List.Item>
                 <Button inverted circular size='mini' color='red' icon='remove'
-                  onClick={ () => {this.handleRemoveQA(index)} } />
+                  onClick={this.handleRemoveQA(index)} />
               </List.Item>
             </List>
           </Grid.Column>
@@ -167,16 +150,16 @@ export class PasswordEdit extends React.Component {
           <List horizontal>
             <List.Item>
               <TextField
-                defaultValue=""
-                floatingLabelText={this.props.i18nStrings.item_question}
-                ref='newQInput'
+                label={this.props.i18nStrings.item_question}
+                value={this.state.newQ}
+                onChange={this.handleChange('newQ')}
               />
             </List.Item>
             <List.Item>
               <TextField
-                defaultValue=""
-                floatingLabelText={this.props.i18nStrings.item_answer}
-                ref='newAInput'
+                label={this.props.i18nStrings.item_answer}
+                value={this.state.newA}
+                onChange={this.handleChange('newA')}
               />
             </List.Item>
             <List.Item>
@@ -211,17 +194,17 @@ export class PasswordEdit extends React.Component {
             <Grid.Column width={7}>
               <TextField
                 fullWidth={true}
-                floatingLabelText={this.props.i18nStrings.item_username}
-                defaultValue={this.props.selected_item.data.username}
-                ref='usernameInput'
+                label={this.props.i18nStrings.item_username}
+                value={this.state.username}
+                onChange={this.handleChange('username')}
               />
             </Grid.Column>
             <Grid.Column width={7}>
               <TextField
                 fullWidth={true}
-                floatingLabelText={this.props.i18nStrings.item_password}
-                defaultValue={this.props.selected_item.data.password}
-                ref='passwordInput'
+                label={this.props.i18nStrings.item_password}
+                value={this.state.password}
+                onChange={this.handleChange('password')}
               />
             </Grid.Column>
             <Grid.Column width={2}>

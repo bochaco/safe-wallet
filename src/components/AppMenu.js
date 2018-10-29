@@ -1,15 +1,13 @@
 import React from 'react';
-import IconButton from 'material-ui/IconButton';
-import CircularProgress from 'material-ui/CircularProgress';
-import AddCircleOutline from 'material-ui/svg-icons/content/add-circle-outline';
-import NavigationClose from 'material-ui/svg-icons/navigation/close';
-import PowerSettingsNew from 'material-ui/svg-icons/action/power-settings-new';
-import InfoOutline from 'material-ui/svg-icons/action/info-outline';
-import Autorenew from 'material-ui/svg-icons/action/autorenew';
+import { IconButton, CircularProgress } from '@material-ui/core';
+import { AddCircleOutline, Close, PowerSettingsNew,
+          InfoOutlined, Autorenew } from '@material-ui/icons';
 import { Image, Menu, Flag, Dropdown } from 'semantic-ui-react'
 import logo_header from '../img/logo-header-415x98.png';
 import { ContentApi } from '../i18n/read-content.js';
 import { Constants } from '../common.js';
+
+const MENU_BUTTON_BG_COLOR = '#00bcd4';
 
 export default class AppMenu extends React.Component {
   constructor(props) {
@@ -38,12 +36,12 @@ export default class AppMenu extends React.Component {
         <Menu.Item>
           {this.props.appState === Constants.APP_STATE_AUTHORISING
             ? <IconButton>
-                <CircularProgress color='#00bcd4' size={25} thickness={2} />
+                <CircularProgress style={{ color: MENU_BUTTON_BG_COLOR }} size={25} thickness={2} />
               </IconButton>
             : <IconButton onClick={this.props.handlePower}>
                 {this.props.appState === Constants.APP_STATE_CONNECTED
-                    ? <NavigationClose color="#00bcd4" />
-                    : <PowerSettingsNew color="#00bcd4" />
+                    ? <Close style={{ color: MENU_BUTTON_BG_COLOR }} />
+                    : <PowerSettingsNew style={{ color: MENU_BUTTON_BG_COLOR }} />
                 }
               </IconButton>
           }
@@ -55,17 +53,17 @@ export default class AppMenu extends React.Component {
           <Menu.Item>
             {this.props.appState === Constants.APP_STATE_CONNECTED &&
             <div>
-              <IconButton onClick={this.props.handleOpenAddModal}><AddCircleOutline color='#00bcd4' /></IconButton>
-              <IconButton onClick={this.props.handleRefresh}><Autorenew color='#00bcd4' /></IconButton>
+              <IconButton onClick={this.props.handleOpenAddModal}><AddCircleOutline style={{ color: MENU_BUTTON_BG_COLOR }} /></IconButton>
+              <IconButton onClick={this.props.handleRefresh}><Autorenew style={{ color: MENU_BUTTON_BG_COLOR }} /></IconButton>
             </div>
             }
-            <IconButton onClick={this.props.handleOpenAboutModal}><InfoOutline color='#00bcd4' /></IconButton>
+            <IconButton onClick={this.props.handleOpenAboutModal}><InfoOutlined style={{ color: MENU_BUTTON_BG_COLOR }} /></IconButton>
           </Menu.Item>
           <Menu.Item>
             <Dropdown
               options={this.langOptions}
               onChange={this.handleChangeLang}
-              defaultValue={this.props.lang}
+              value={this.props.lang}
               trigger={trigger}
             />
           </Menu.Item>

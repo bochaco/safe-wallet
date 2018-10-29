@@ -1,5 +1,5 @@
 import React from 'react';
-import TextField from 'material-ui/TextField';
+import TextField from '@material-ui/core/TextField';
 import { Grid, Image, Header, Icon, List } from 'semantic-ui-react'
 import { Constants } from '../common.js';
 import { EditDialogBox } from './DialogBox.js';
@@ -49,34 +49,44 @@ export class CreditCardEdit extends React.Component {
   constructor(props) {
     super(props);
 
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  componentDidMount() {
-    if (this.refs.colorAndLabelInput) {
-      this.refs.colorAndLabelInput.refs.labelInput.input.focus();
+    this.state = {
+      network: this.props.selected_item.data.network,
+      issuer: this.props.selected_item.data.issuer,
+      number: this.props.selected_item.data.number,
+      month: this.props.selected_item.data.expiry_month,
+      year: this.props.selected_item.data.expiry_year,
+      name: this.props.selected_item.data.name,
+      cvv: this.props.selected_item.data.cvv,
+      pin: this.props.selected_item.data.pin,
     }
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   handleSubmit() {
     let updatedItem = {
       type: Constants.TYPE_CREDIT_CARD,
       metadata: {
-        label: this.refs.colorAndLabelInput.refs.labelInput.input.value,
+        label: this.refs.colorAndLabelInput.refs.labelInput.props.value,
         color: this.refs.colorAndLabelInput.refs.colorInput.getSelectedItem().value,
       },
       data: {
-        cvv: this.refs.cvvInput.input.value,
-        pin: this.refs.pinInput.input.value,
-        number: this.refs.numberInput.input.value,
-        name: this.refs.nameInput.input.value,
-        expiry_month: this.refs.monthInput.input.value,
-        expiry_year: this.refs.yearInput.input.value,
-        issuer: this.refs.issuerInput.input.value,
-        network: this.refs.networkInput.input.value,
+        cvv: this.state.cvv,
+        pin: this.state.pin,
+        number: this.state.number,
+        name: this.state.name,
+        expiry_month: this.state.month,
+        expiry_year: this.state.year,
+        issuer: this.state.issuer,
+        network: this.state.network,
       }
     }
     this.props.handleSubmit(updatedItem);
+  };
+
+  handleChange = name => event => {
+    this.setState( { [name]: event.target.value } );
   };
 
   render() {
@@ -98,9 +108,9 @@ export class CreditCardEdit extends React.Component {
             <Grid.Column width={2}>
               <TextField
                 style={styles.customWidth}
-                floatingLabelText={this.props.i18nStrings.item_credit_card_type}
-                defaultValue={this.props.selected_item.data.network}
-                ref='networkInput'
+                label={this.props.i18nStrings.item_credit_card_type}
+                value={this.state.network}
+                onChange={this.handleChange('network')}
               />
             </Grid.Column>
             <Grid.Column width={1}>
@@ -108,9 +118,9 @@ export class CreditCardEdit extends React.Component {
             <Grid.Column width={5}>
               <TextField
                 fullWidth={true}
-                floatingLabelText={this.props.i18nStrings.item_credit_card_issuer}
-                defaultValue={this.props.selected_item.data.issuer}
-                ref='issuerInput'
+                label={this.props.i18nStrings.item_credit_card_issuer}
+                value={this.state.issuer}
+                onChange={this.handleChange('issuer')}
               />
             </Grid.Column>
           </Grid.Row>
@@ -119,9 +129,9 @@ export class CreditCardEdit extends React.Component {
             <Grid.Column width={6}>
               <TextField
                 fullWidth={true}
-                floatingLabelText={this.props.i18nStrings.item_credit_card_number}
-                defaultValue={this.props.selected_item.data.number}
-                ref='numberInput'
+                label={this.props.i18nStrings.item_credit_card_number}
+                value={this.state.number}
+                onChange={this.handleChange('number')}
               />
             </Grid.Column>
             <Grid.Column width={1}>
@@ -132,9 +142,9 @@ export class CreditCardEdit extends React.Component {
                   <List.Content>
                     <TextField
                       style={styles.tinyWidth}
-                      floatingLabelText={this.props.i18nStrings.item_credit_card_expiry_month}
-                      defaultValue={this.props.selected_item.data.expiry_month}
-                      ref='monthInput'
+                      label={this.props.i18nStrings.item_credit_card_expiry_month}
+                      value={this.state.month}
+                      onChange={this.handleChange('month')}
                     />
                   </List.Content>
                 </List.Item>
@@ -147,9 +157,9 @@ export class CreditCardEdit extends React.Component {
                   <List.Content>
                     <TextField
                       style={styles.customWidth}
-                      floatingLabelText={this.props.i18nStrings.item_credit_card_expiry_year}
-                      defaultValue={this.props.selected_item.data.expiry_year}
-                      ref='yearInput'
+                      label={this.props.i18nStrings.item_credit_card_expiry_year}
+                      value={this.state.year}
+                      onChange={this.handleChange('year')}
                     />
                   </List.Content>
                 </List.Item>
@@ -160,9 +170,9 @@ export class CreditCardEdit extends React.Component {
           <Grid.Row columns={4}>
             <Grid.Column width={6}>
               <TextField
-                floatingLabelText={this.props.i18nStrings.item_credit_card_cardholder}
-                defaultValue={this.props.selected_item.data.name}
-                ref='nameInput'
+                label={this.props.i18nStrings.item_credit_card_cardholder}
+                value={this.state.name}
+                onChange={this.handleChange('name')}
               />
             </Grid.Column>
             <Grid.Column width={2}>
@@ -170,17 +180,17 @@ export class CreditCardEdit extends React.Component {
             <Grid.Column width={3}>
               <TextField
                 style={styles.tinyWidth}
-                floatingLabelText={this.props.i18nStrings.item_credit_card_cvv}
-                defaultValue={this.props.selected_item.data.cvv}
-                ref='cvvInput'
+                label={this.props.i18nStrings.item_credit_card_cvv}
+                value={this.state.cvv}
+                onChange={this.handleChange('cvv')}
               />
             </Grid.Column>
             <Grid.Column width={3}>
               <TextField
                 style={styles.tinyWidth}
-                floatingLabelText={this.props.i18nStrings.item_pin}
-                defaultValue={this.props.selected_item.data.pin}
-                ref='pinInput'
+                label={this.props.i18nStrings.item_pin}
+                value={this.state.pin}
+                onChange={this.handleChange('pin')}
               />
             </Grid.Column>
           </Grid.Row>

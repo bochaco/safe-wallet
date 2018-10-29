@@ -3,19 +3,21 @@
   "version": "0.0.11",
   "private": true,
   "devDependencies": {
-    "react-scripts": "0.7.0",
-    "semantic-ui": "^2.2.13"
+    "react-scripts": "^1.1.5",
+    "semantic-ui": "^2.3.3"
   },
   "dependencies": {
-    "material-ui": "^0.16.1",
+    "@material-ui/core": "^3.0.1",
+    "@material-ui/icons": "^3.0.1",
     "qrcode-js": "0.0.2",
-    "react": "^15.3.2",
-    "react-dom": "^15.3.2",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
     "react-redux": "^5.0.2",
-    "react-tap-event-plugin": "^2.0.1",
-    "redux": "^3.6.0",
+    "react-tap-event-plugin": "^3.0.3",
+    "redux": "^4.0.0",
     "safe-coins-wallet": "^0.0.7",
-    "semantic-ui-react": "^0.59.0",
+    "semantic-ui-css": "^2.3.3",
+    "semantic-ui-react": "^0.82.3",
     "urlsafe-base64": "^1.0.0"
   },
   "scripts": {

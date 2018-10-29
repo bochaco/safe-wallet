@@ -1,5 +1,5 @@
 import React from 'react';
-import TextField from 'material-ui/TextField';
+import TextField from '@material-ui/core/TextField';
 import { Grid, Segment } from 'semantic-ui-react'
 import { Constants } from '../common.js';
 import { EditDialogBox } from './DialogBox.js';
@@ -52,29 +52,35 @@ export class TwoFACodesEdit extends React.Component {
   constructor(props) {
     super(props);
 
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
+    let s = {};
+    this.props.selected_item.data.forEach((code, i) => {
+      s[`code${i}`] = code;
+    })
 
-  componentDidMount() {
-    if (this.refs.colorAndLabelInput) {
-      this.refs.colorAndLabelInput.refs.labelInput.input.focus();
-    }
+    this.state = s;
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   handleSubmit() {
     let codes = [];
     for (let i=0; i<Constants.MAX_NUMBER_2FA_CODES; i++) {
-      codes.push(this.refs['codeInput' + i].input.value);
+      codes.push(this.state[`code${i}`]);
     }
     let updatedItem = {
       type: Constants.TYPE_2FA_CODES,
       metadata: {
-        label: this.refs.colorAndLabelInput.refs.labelInput.input.value,
+        label: this.refs.colorAndLabelInput.refs.labelInput.props.value,
         color: this.refs.colorAndLabelInput.refs.colorInput.getSelectedItem().value,
       },
       data: codes,
     }
     this.props.handleSubmit(updatedItem);
+  };
+
+  handleChange = name => event => {
+    this.setState( { [name]: event.target.value } );
   };
 
   render() {
@@ -84,9 +90,9 @@ export class TwoFACodesEdit extends React.Component {
       row_codes.push(
         <Grid.Column key={2*i+1}>
           <TextField style={styles.twoFACodeField}
-            floatingLabelText={this.props.i18nStrings.item_2fa_code + " #" + (i+1)}
-            defaultValue={this.props.selected_item.data[i]}
-            ref={'codeInput' + i}
+            label={this.props.i18nStrings.item_2fa_code + " #" + (i+1)}
+            value={this.state[`code${i}`]}
+            onChange={this.handleChange(`code${i}`)}
           />
         </Grid.Column>
       );
