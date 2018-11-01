@@ -4,6 +4,12 @@ import { Close } from '@material-ui/icons';
 import { List, Image } from 'semantic-ui-react'
 import { ItemTypes } from '../common.js';
 
+const styles = {
+  primButtonStyle: {
+    backgroundColor: '#00bcd4',
+  }
+};
+
 export default class CardAdd extends React.Component {
   render() {
     return (
@@ -31,6 +37,7 @@ export default class CardAdd extends React.Component {
             <Button
               color='primary'
               variant='contained'
+              style={styles.primButtonStyle}
               onClick={this.props.handleClose}
             >
               <Close />

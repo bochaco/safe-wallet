@@ -8,6 +8,12 @@ const styles = {
   dialogBox: {
     textAlign: 'center',
   },
+  primButtonStyle: {
+    backgroundColor: '#00bcd4',
+  },
+  secButtonStyle: {
+    backgroundColor: '#ffffff',
+  }
 };
 
 export default class ViewDialogBox extends React.Component {
@@ -19,7 +25,7 @@ export default class ViewDialogBox extends React.Component {
         closeOnEscape={this.props.closeOnEscape}
         onClose={this.props.handleClose}
       >
-        <Modal.Header style={this.props.style}>
+        <Modal.Header style={styles.dialogBox}>
           {this.props.title ? this.props.title :
               (<Header as='h2'>
                 <Image src={ItemTypes[this.props.selected_item.type].icon} />
@@ -27,7 +33,7 @@ export default class ViewDialogBox extends React.Component {
               </Header>)
           }
         </Modal.Header>
-        <Modal.Content style={this.props.style}>
+        <Modal.Content style={styles.dialogBox}>
           {this.props.children}
         </Modal.Content>
         <Modal.Actions>
@@ -35,6 +41,7 @@ export default class ViewDialogBox extends React.Component {
             color='primary'
             variant='contained'
             size='medium'
+            style={styles.primButtonStyle}
             onClick={this.props.handleClose}
           >
             <Close />
@@ -44,10 +51,6 @@ export default class ViewDialogBox extends React.Component {
       </Modal>
     )
   }
-}
-
-ViewDialogBox.defaultProps = {
-  style: styles.dialogBox,
 }
 
 export class EditDialogBox extends React.Component {
@@ -77,6 +80,7 @@ export class EditDialogBox extends React.Component {
           <Button
             variant='contained'
             size='medium'
+            style={styles.secButtonStyle}
             onClick={this.props.handleClose}
           >
             <Close />
@@ -86,6 +90,7 @@ export class EditDialogBox extends React.Component {
             color='primary'
             variant='contained'
             size='medium'
+            style={styles.primButtonStyle}
             onClick={this.props.handleSubmit}
           >
             {this.props.selected_item ? <Check /> : <Add />}
@@ -111,6 +116,7 @@ export class DeleteDialogBox extends React.Component {
           <Button
             variant='contained'
             size='medium'
+            style={styles.secButtonStyle}
             onClick={this.props.handleClose}
           >
             <Close />
@@ -120,6 +126,7 @@ export class DeleteDialogBox extends React.Component {
             color='primary'
             variant='contained'
             size='medium'
+            style={styles.primButtonStyle}
             onClick={this.props.handleSubmit}
           >
             <Delete />
@@ -149,6 +156,7 @@ export class ConfirmTransferDialogBox extends React.Component {
           <Button
             variant='contained'
             size='medium'
+            style={styles.secButtonStyle}
             onClick={this.props.handleClose}
           >
             {this.props.i18nStrings.btn_cancel}
@@ -158,6 +166,7 @@ export class ConfirmTransferDialogBox extends React.Component {
             color='primary'
             variant='contained'
             size='medium'
+            style={styles.primButtonStyle}
             onClick={this.props.handleSubmit}
           >
             <Check />
