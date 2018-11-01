@@ -92,7 +92,7 @@ export default class AltCoinView extends React.Component {
   }
 
   readWalletData() {
-    this.props.altcoinWallet.loadWalletData(this.props.safeAppHandle, this.props.selected_item.data.wallet)
+    this.props.altcoinWallet.loadWalletData(this.props.safeApp, this.props.selected_item.data.wallet)
       .then((wallet) => {
         console.log("Reading wallet", this.props.selected_item.data.pk, wallet);
         this.setState({wallet: wallet, loadingWallet: false});
@@ -108,7 +108,7 @@ export default class AltCoinView extends React.Component {
       let prevOwner;
       return Promise.all(coins.map((currentCoin) => {
         console.log("Checking coind ID:", currentCoin.toString(16));
-        return this.props.altcoinWallet.checkOwnership(this.props.safeAppHandle, currentCoin, pk)
+        return this.props.altcoinWallet.checkOwnership(this.props.safeApp, currentCoin, pk)
           .then((coinData) => {
             // the coin is mine, let's add it unless it's already in my wallet
             prevOwner = coinData.prev_owner;
@@ -134,7 +134,7 @@ export default class AltCoinView extends React.Component {
     let historyTxs = [];
 
     // Let's read new TX's, if there is any ...
-    return this.props.altcoinWallet.readTxInboxData(this.props.safeAppHandle, pk, encPk, encSk)
+    return this.props.altcoinWallet.readTxInboxData(this.props.safeApp, pk, encPk, encSk)
       .then((txs) => Promise.all(txs.map((txInfo) => {
         console.log("TX notification received. TX id: ", txInfo.id);
         return this.checkOwnershipOfCoins(txInfo.coinIds, pk)
@@ -143,7 +143,7 @@ export default class AltCoinView extends React.Component {
             newWallet.push(...coinsAccepted);
             console.log("Updated wallet", newWallet);
             // save updated wallet in state and in SAFEnet
-            return this.props.altcoinWallet.storeCoinsToWallet(this.props.safeAppHandle, this.props.selected_item.data.wallet, newWallet)
+            return this.props.altcoinWallet.storeCoinsToWallet(this.props.safeApp, this.props.selected_item.data.wallet, newWallet)
               .then(() => {
                 this.setState({wallet: newWallet});
                 if (this.props.selected_item.metadata.keepTxs) {
@@ -162,7 +162,7 @@ export default class AltCoinView extends React.Component {
         }))
         .then(() => {
           if (txs.length > 0) {
-            return this.props.altcoinWallet.removeTxInboxData(this.props.safeAppHandle, pk, txs)
+            return this.props.altcoinWallet.removeTxInboxData(this.props.safeApp, pk, txs)
               .then(() => {
                 if (historyTxs.length > 0) {
                   let updatedTxs = this.props.selected_item.data.history;
@@ -233,7 +233,7 @@ export default class AltCoinView extends React.Component {
     return this.makeTransfer(amount-1, percentStep)
       .then((_coinIds) => coinIds = _coinIds)
       .then(() => this.props.altcoinWallet.transferCoin(
-          this.props.safeAppHandle,
+          this.props.safeApp,
           coinId,
           this.props.selected_item.data.pk,
           this.props.selected_item.data.sk,
@@ -257,10 +257,10 @@ export default class AltCoinView extends React.Component {
     return this.makeTransfer(amount, percentStep)
       .then((_coinIds) => coinIds = _coinIds)
       .then(() => this.setState({percent: this.state.percent + percentStep}))
-      .then(() => this.props.altcoinWallet.sendTxNotif(this.props.safeAppHandle, recipient, coinIds, msg))
+      .then(() => this.props.altcoinWallet.sendTxNotif(this.props.safeApp, recipient, coinIds, msg))
       .then(() => updatedWallet.splice(0, amount)) // TODO: remove the coins with id in coinIds var instead
       .then(() => this.setState({percent: this.state.percent + percentStep}))
-      .then(() => this.props.altcoinWallet.storeCoinsToWallet(this.props.safeAppHandle, this.props.selected_item.data.wallet, updatedWallet))
+      .then(() => this.props.altcoinWallet.storeCoinsToWallet(this.props.safeApp, this.props.selected_item.data.wallet, updatedWallet))
       .then(() => {
         this.setState({wallet: updatedWallet});
         if (this.props.selected_item.metadata.keepTxs) {
@@ -525,8 +525,8 @@ export class AltCoinEdit extends React.Component {
       return this.props.handleSubmit(updatedItem);
     } else {
       // Create the wallet and inbox based on the Public Key
-      const wallet = await this.props.altcoinWallet.createWallet(this.props.safeAppHandle, updatedItem.data.pk);
-      const encKeys = await this.props.altcoinWallet.createTxInbox(this.props.safeAppHandle, updatedItem.data.pk);
+      const wallet = await this.props.altcoinWallet.createWallet(this.props.safeApp, updatedItem.data.pk);
+      const encKeys = await this.props.altcoinWallet.createTxInbox(this.props.safeApp, updatedItem.data.pk);
       updatedItem.data.wallet = wallet;
       updatedItem.data.tx_inbox_pk = encKeys.pk;
       updatedItem.data.tx_inbox_sk = encKeys.sk;

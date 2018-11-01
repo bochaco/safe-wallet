@@ -12,7 +12,7 @@ export const authoriseApp = (app, permissions) => {
   console.log("Authorising app...");
   return new Promise(resolve => {
     setTimeout(() => {
-      resolve({appHandle: '', authUri: ''})
+      resolve({safeApp: '', authUri: ''})
     }, 1500)
   })
 }

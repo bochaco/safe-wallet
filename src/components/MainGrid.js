@@ -20,7 +20,7 @@ const NET_STATE_CONNECTED = 'Connected';
 const LOCALE_LANG = ContentApi.validateLang(window.navigator.language.substring(0,2));
 
 const initialState = {
-  safeAppHandle: null,
+  safeApp: null,
   appState: Constants.APP_STATE_INIT,
   data: {},
   view_modal: false,
@@ -103,16 +103,16 @@ export default class MainGrid extends React.Component {
       this.connectApplication();
     } else if (this.state.appState === Constants.APP_STATE_CONNECTED) {
       storage.disconnectApp();
-      this.setState({safeAppHandle: null, appState: Constants.APP_STATE_INIT});
+      this.setState({safeApp: null, appState: Constants.APP_STATE_INIT});
     }
   }
 
   connectApplication() {
     this.setState({appState: Constants.APP_STATE_AUTHORISING});
-    let safeAppHandle;//, preferredLang;
+    let safeApp;//, preferredLang;
     storage.authoriseApp(appInfo, appPermissions, this.networkStateUpdate)
       .then((authInfo) => {
-        safeAppHandle = authInfo.appHandle;
+        safeApp = authInfo.safeApp;
         this.setState({appState: Constants.APP_STATE_CONNECTING});
         return storage.connectApp(authInfo.authUri);
       })
@@ -121,7 +121,7 @@ export default class MainGrid extends React.Component {
       .then(() => storage.loadAppData())
       .then((parsedData) => {
         this.setState({
-          safeAppHandle,
+          safeApp,
           appState: Constants.APP_STATE_CONNECTED,
           data: parsedData,
           //lang: preferredLang,
@@ -318,7 +318,7 @@ export default class MainGrid extends React.Component {
             handleClose={this.handleCloseViewModal}
             i18nStrings={this.state.content.items}
             updateTxHistory={this.updateTxHistory}
-            safeAppHandle={this.state.safeAppHandle}
+            safeApp={this.state.safeApp}
             altcoinWallet={altcoinWallet}
           />
 
@@ -339,7 +339,7 @@ export default class MainGrid extends React.Component {
             handleClose={this.handleCloseEditModal}
             handleSubmit={this.handleSubmitEditModal}
             i18nStrings={this.state.content.items}
-            safeAppHandle={this.state.safeAppHandle}
+            safeApp={this.state.safeApp}
             altcoinWallet={altcoinWallet}
           />
 

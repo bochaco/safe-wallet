@@ -90,11 +90,11 @@ export const readConfigData = async () => {
 export const authoriseApp = async (appInfo, perms, networkStateCb) => {
   console.log("Authorising app...");
   walletSafeApp = await window.safe.initialiseApp(appInfo, networkStateCb);
-  console.log("safeApp intance initialised...");
+  console.log("safeApp instance initialised...");
   const authReqUri = await walletSafeApp.auth.genAuthUri(perms.containers, perms.options);
   console.log("Authorisation request URI generated: ", authReqUri);
   const authUri = await window.safe.authorise(authReqUri);
-  return { appHandle: walletSafeApp, authUri };
+  return { safeApp: walletSafeApp, authUri };
 }
 
 export const connectApp = async (authUri) => {
