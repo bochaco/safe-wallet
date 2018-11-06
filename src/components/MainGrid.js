@@ -23,6 +23,7 @@ const initialState = {
   safeApp: null,
   appState: Constants.APP_STATE_INIT,
   data: {},
+  webIds: [],
   view_modal: false,
   edit_modal: false,
   add_modal: false,
@@ -127,6 +128,10 @@ export default class MainGrid extends React.Component {
           //lang: preferredLang,
           //content: ContentApi.getContent(preferredLang).page
         });
+      })
+      .then(() => storage.getWebIds())
+      .then((webIds) => {
+        this.setState({ webIds });
       })
       .catch((err) => {
         this.setState({appState: Constants.APP_STATE_INIT, data: {}});
@@ -341,6 +346,7 @@ export default class MainGrid extends React.Component {
             i18nStrings={this.state.content.items}
             safeApp={this.state.safeApp}
             altcoinWallet={altcoinWallet}
+            webIds={this.state.webIds}
           />
 
           {/* Dialog box for deleting the selected item */}

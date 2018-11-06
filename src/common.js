@@ -6,7 +6,8 @@ import PasswordView, { PasswordEdit } from './components/Password.js';
 import PrivPubKeysView, { PrivPubKeysEdit } from './components/PrivPubKeys.js';
 import TwoFACodesView, { TwoFACodesEdit } from './components/TwoFACodes.js';
 import SafecoinView, { SafecoinEdit } from './components/Safecoin.js';
-import AltCoinView, { AltCoinEdit } from './components/AltCoin.js';
+import AltCoinView from './components/AltCoinView.js';
+import AltCoinEdit from './components/AltCoinEdit.js';
 
 import icon_cc from './img/icon-creditcards.png';
 import icon_pwd from './img/icon-passwords.png';

@@ -1,6 +1,6 @@
 {
   "name": "safe-wallet",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "private": true,
   "devDependencies": {
     "react-scripts": "^1.1.5",
@@ -15,7 +15,7 @@
     "react-redux": "^5.0.2",
     "react-tap-event-plugin": "^3.0.3",
     "redux": "^4.0.0",
-    "safe-coins-wallet": "^0.0.9",
+    "safe-coins-wallet": "^0.0.10",
     "semantic-ui-css": "^2.3.3",
     "semantic-ui-react": "^0.82.3",
     "urlsafe-base64": "^1.0.0"

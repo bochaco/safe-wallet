@@ -2,11 +2,21 @@
   Helper functions to store data in memory needed for demos and dev tasks
 */
 import { genAppItemId } from '../common.js';
-import { sample_wallet_data } from './sample-data.js';
-
-var wallet_data = sample_wallet_data;
+import { sample_wallet_data, sample_webids } from './sample-data.js';
 
 export const readConfigData = () => Promise.resolve('en');
+
+export const getWebIds = () => {
+  // format the WebIDs in the same was as how it's returned by the DOM API
+  const formatted = Object.entries(sample_webids).map((entry) => ({
+    "#me": {
+      "@id": entry[0],
+      "nick": entry[1].nick,
+      "image": entry[1].image
+    }
+  }));
+  return Promise.resolve(formatted);
+};
 
 export const authoriseApp = (app, permissions) => {
   console.log("Authorising app...");
@@ -30,7 +40,7 @@ export const disconnectApp = () => console.log("Disconnecting...");
 
 export const loadAppData = () => {
   console.log("Reading the app data from memory...");
-  return Promise.resolve(wallet_data);
+  return Promise.resolve(sample_wallet_data);
 }
 
 export const saveAppItem = (item) => {
@@ -39,12 +49,12 @@ export const saveAppItem = (item) => {
     item.id = genAppItemId();
   }
 
-  wallet_data[item.id] = item;
+  sample_wallet_data[item.id] = item;
   return Promise.resolve(item);
 }
 
 export const deleteAppItem = (item) => {
   console.log("Removing item from memory...");
-  delete wallet_data[item.id];
+  delete sample_wallet_data[item.id];
   return Promise.resolve();
 }

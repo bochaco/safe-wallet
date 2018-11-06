@@ -6,4 +6,7 @@ export const appInfo = {
   scope: null
 };
 
-export const appPermissions = {containers: {}, options: {own_container: true}};
+export const appPermissions = {
+  containers: { _public: ['Read'] },
+  options: { own_container: true }
+};

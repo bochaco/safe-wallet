@@ -1,4 +1,4 @@
-/* Conditionally load modules for SAFEnet or mock */
+/* Conditionally load modules for SAFE Network or mock */
 module.exports = (process.env.REACT_APP_SAFENET_OFF === "1")
   ? {
     storage: require('../storage/storage-mock.js'),

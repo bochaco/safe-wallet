@@ -25,7 +25,7 @@ export default class ViewDialogBox extends React.Component {
         closeOnEscape={this.props.closeOnEscape}
         onClose={this.props.handleClose}
       >
-        <Modal.Header style={styles.dialogBox}>
+        <Modal.Header style={this.props.style}>
           {this.props.title ? this.props.title :
               (<Header as='h2'>
                 <Image src={ItemTypes[this.props.selected_item.type].icon} />
@@ -33,7 +33,7 @@ export default class ViewDialogBox extends React.Component {
               </Header>)
           }
         </Modal.Header>
-        <Modal.Content style={styles.dialogBox}>
+        <Modal.Content style={this.props.style}>
           {this.props.children}
         </Modal.Content>
         <Modal.Actions>
@@ -51,6 +51,10 @@ export default class ViewDialogBox extends React.Component {
       </Modal>
     )
   }
+}
+
+ViewDialogBox.defaultProps = {
+  style: styles.dialogBox
 }
 
 export class EditDialogBox extends React.Component {

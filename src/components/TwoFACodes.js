@@ -133,6 +133,6 @@ export class TwoFACodesEdit extends React.Component {
 TwoFACodesEdit.defaultProps = {
   selected_item: {
     metadata: {},
-    data: {},
+    data: [],
   }
 }

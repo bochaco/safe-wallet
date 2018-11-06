@@ -1,5 +1,5 @@
 /*
-  Layer which takes care of storing data on the SAFEnet
+  Layer which takes care of storing data on the SAFE Network
 */
 import { genAppItemId } from '../common.js';
 
@@ -85,6 +85,8 @@ export const readConfigData = async () => {
   console.log('Finished reading config');
   return lang;
 }
+
+export const getWebIds = async () => walletSafeApp.web.getWebIds();
 
 // Auth & connection functions
 export const authoriseApp = async (appInfo, perms, networkStateCb) => {

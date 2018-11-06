@@ -19,7 +19,7 @@ export default class CardDelete extends React.Component {
               <Image floated='left' size='tiny' src={item.icon} />
               <Header.Content>
                 <Header.Subheader>
-                  {item.title}
+                  {this.props.i18nStrings[item.title]}
                 </Header.Subheader>
                 {this.props.selected_item.metadata.label}
               </Header.Content>

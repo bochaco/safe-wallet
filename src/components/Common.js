@@ -13,12 +13,12 @@ export class ColorAndLabel extends React.Component {
     }
 
     this.colorOptions = [
-      { value: 'brown', text: this.props.i18nStrings.color_brown, label: { color: 'brown', empty: true, circular: true } },
-      { value: 'red', text: this.props.i18nStrings.color_red, label: { color: 'red', empty: true, circular: true } },
-      { value: 'yellow', text: this.props.i18nStrings.color_yellow, label: { color: 'yellow', empty: true, circular: true } },
-      { value: 'orange', text: this.props.i18nStrings.color_orange, label: { color: 'orange', empty: true, circular: true } },
-      { value: 'violet', text: this.props.i18nStrings.color_violet, label: { color: 'violet', empty: true, circular: true } },
-      { value: 'blue', text: this.props.i18nStrings.color_blue, label: { color: 'blue', empty: true, circular: true } },
+      { key: 0, value: 'brown', text: this.props.i18nStrings.color_brown, label: { color: 'brown', empty: true, circular: true } },
+      { key: 1, value: 'red', text: this.props.i18nStrings.color_red, label: { color: 'red', empty: true, circular: true } },
+      { key: 2, value: 'yellow', text: this.props.i18nStrings.color_yellow, label: { color: 'yellow', empty: true, circular: true } },
+      { key: 3, value: 'orange', text: this.props.i18nStrings.color_orange, label: { color: 'orange', empty: true, circular: true } },
+      { key: 4, value: 'violet', text: this.props.i18nStrings.color_violet, label: { color: 'violet', empty: true, circular: true } },
+      { key: 5, value: 'blue', text: this.props.i18nStrings.color_blue, label: { color: 'blue', empty: true, circular: true } },
     ]
 
     this.handleChangeName = this.handleChangeName.bind(this);
