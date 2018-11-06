@@ -50,6 +50,7 @@ export default class AltCoinView extends React.Component {
       pinError: '',
       percent: 0,
       loadingWallet: false,
+      checkingTxInbox: false,
     }
 
     this.readWalletData = this.readWalletData.bind(this);
@@ -107,7 +108,8 @@ export default class AltCoinView extends React.Component {
 
     let coinsAccepted = [];
     let prevOwner = null;
-    await Promise.all(coins.map(async (currentCoin) => {
+    for (let i = 0; i < coins.length; i++) {
+        const currentCoin = coins[i];
         console.log("Checking coind ID:", currentCoin.toString(16));
         try {
           const coinData = await this.props.altcoinWallet.checkOwnership(this.props.safeApp, currentCoin, pk);
@@ -124,50 +126,63 @@ export default class AltCoinView extends React.Component {
           // somebody trying to cheat??
           console.error("The coin doesn't belong to me, so ignore TX");
         }
-    }));
+    };
 
     return { coinsAccepted, prevOwner };
   }
 
   async tick() {
+    // if there is a previous call which is still running then skip it this time
+    if (this.state.checkingTxInbox) return;
+
     const pk = this.props.selected_item.data.pk;
     const encPk = this.props.selected_item.data.tx_inbox_pk;
     const encSk = this.props.selected_item.data.tx_inbox_sk;
     let historyTxs = [];
 
-    // Let's read new TX's, if there is any ...
-    const txs = await this.props.altcoinWallet.readTxInboxData(this.props.safeApp, pk, encPk, encSk);
-    await Promise.all(txs.map(async (txInfo) => {
-        console.log("TX notification received. TX id: ", txInfo.id);
-        const { coinsAccepted, prevOwner } = await this.checkOwnershipOfCoins(txInfo.coinIds, pk);
-        let newWallet = this.state.wallet.slice();
-        newWallet.push(...coinsAccepted);
-        console.log("Updated wallet", newWallet);
-        // save updated wallet in state and in SAFE Network
-        await this.props.altcoinWallet.storeCoinsToWallet(this.props.safeApp, this.props.selected_item.data.wallet, newWallet);
-        this.setState( { wallet: newWallet } );
-        if (this.props.selected_item.metadata.keepTxs) {
-          // save the new TX in the history
-          let tx = {
-            amount: coinsAccepted.length,
-            direction: "in",
-            date: txInfo.date,
-            from: prevOwner,
-            msg: txInfo.msg,
+    this.setState( { checkingTxInbox: true } );
+    // let's wrap everything in a try/catch since we need to make sure we set
+    // the 'checkingTxInbox' to 'false' at the end, even if there are errors
+    try {
+      // Let's read new TX's, if there is any ...
+      const txs = await this.props.altcoinWallet.readTxInboxData(this.props.safeApp, pk, encPk, encSk);
+      for (let i = 0; i < txs.length; i++) {
+          const txInfo = txs[i];
+          console.log("TX notification received. TX id: ", txInfo.id);
+          const { coinsAccepted, prevOwner } = await this.checkOwnershipOfCoins(txInfo.coinIds, pk);
+          let newWallet = this.state.wallet.slice();
+          newWallet.push(...coinsAccepted);
+          console.log("Updated wallet", newWallet);
+          // save updated wallet in state and in SAFE Network
+          await this.props.altcoinWallet.storeCoinsToWallet(this.props.safeApp, this.props.selected_item.data.wallet, newWallet);
+          this.setState( { wallet: newWallet } );
+          if (this.props.selected_item.metadata.keepTxs) {
+            // save the new TX in the history
+            const tx = {
+              amount: coinsAccepted.length,
+              direction: "in",
+              date: txInfo.date,
+              from: prevOwner,
+              msg: txInfo.msg,
+            }
+            historyTxs.push(tx);
           }
-          historyTxs.push(tx);
-        }
-    }))
+      };
 
-    if (txs.length > 0) {
-      await this.props.altcoinWallet.removeTxInboxData(this.props.safeApp, pk, txs);
-      if (historyTxs.length > 0) {
-        let updatedTxs = this.props.selected_item.data.history;
-        Array.prototype.push.apply(updatedTxs, historyTxs);
-        console.log("Storing inbound TX's in history");
-        await this.props.updateTxHistory(updatedTxs);
+      if (txs.length > 0) {
+        await this.props.altcoinWallet.removeTxInboxData(this.props.safeApp, pk, txs);
+        if (historyTxs.length > 0) {
+          let updatedTxs = this.props.selected_item.data.history;
+          Array.prototype.push.apply(updatedTxs, historyTxs);
+          console.log("Storing inbound TX's in history");
+          await this.props.updateTxHistory(updatedTxs);
+        }
       }
+    } catch (error) {
+      console.log("Error when trying to check TX inbox:", error);
     }
+
+    this.setState( { checkingTxInbox: false } );
   }
 
   handleRecipientChange(event) {
