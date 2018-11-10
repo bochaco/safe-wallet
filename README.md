@@ -1,5 +1,7 @@
 # SAFE Wallet: Easily accessing your personal items privately, safely and globally
 
+![SAFE Wallet](src/img/logo-header-415x98.png)
+
 ## Motivation
 As a traveller you need to carry a few personal items you cannot loose if you want to be able to access your money, e.g. credit cards and home-banking passwords, or perhaps you crypto-wallets keys.
 
@@ -23,6 +25,32 @@ By providing such an application, the user would only need to make sure it has a
 
 All the encryption/decryption tasks are automatically handled by the SAFE network, and the web application displays the information, so it can be not only viewed, but also maintained in a very friendly and intuitive manner.
 
-![Mockup of mobile app](img/mockup.png)
+## Using the available prototype
 
-This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
+![SAFE Wallet](src/img/anita.png)
+
+A prototype of the SAFE Wallet is available on the SAFE Network at `safe://safewallet.wow`, a live mockup is also available [here](https://bochaco.github.io).
+
+For more information, or discussions, please see and participate in [this post in the SAFE Network forum](https://safenetforum.org/t/introducing-safe-wallet-app/11764?u=bochaco).
+
+## Related projects
+
+This application depends on the [safe-coins-wallet package](https://github.com/bochaco/safe-coins-wallet).
+
+## License
+
+General Public License (GPL), version 3 ([LICENSE](LICENSE))
+
+Copyright (c) 2016-2018 Gabriel Viganotti <@bochaco>.
+
+This file is part of the SAFE Wallet application.
+
+The SAFE Wallet is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+The SAFE Wallet is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
