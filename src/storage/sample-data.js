@@ -62,6 +62,7 @@ const SampleKeyPairs = {
 };
 
 const ME_PK_XOR_NAME = getXorName(SampleKeyPairs.Me.pk);
+const BOB_PK_XOR_NAME = getXorName(SampleKeyPairs.Bob.pk);
 const ALTCOIN_1_XOR_NAME = getXorName("altcoin1");
 const ALTCOIN_2_XOR_NAME = getXorName("altcoin2");
 const ALTCOIN_3_XOR_NAME = getXorName("altcoin3");
@@ -75,6 +76,8 @@ sample_wallets[ME_PK_XOR_NAME] = [
   ALTCOIN_2_XOR_NAME,
   ALTCOIN_3_XOR_NAME,
 ];
+// wallet for Bob.pk
+sample_wallets[BOB_PK_XOR_NAME] = [];
 
 export const sample_coins = {};
 // altcoin1
@@ -109,7 +112,7 @@ export const sample_wallet_data = {
       },
       data: {
         webid_linked: "safe://webid.anita#me",
-        wallet: sample_wallets[ME_PK_XOR_NAME],
+        wallet: ME_PK_XOR_NAME,
         tx_inbox_pk: SampleKeyPairs.Me.pk,
         tx_inbox_sk: SampleKeyPairs.Me.sk,
         pk: SampleKeyPairs.Me.pk,
@@ -165,7 +168,7 @@ export const sample_wallet_data = {
       },
       data: {
         webid_linked: null,
-        wallet: [],
+        wallet: BOB_PK_XOR_NAME,
         tx_inbox_pk: SampleKeyPairs.Bob.pk,
         tx_inbox_sk: SampleKeyPairs.Bob.sk,
         pk: SampleKeyPairs.Bob.pk,

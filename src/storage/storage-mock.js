@@ -21,9 +21,9 @@
 import { genAppItemId } from '../common.js';
 import { sample_wallet_data, sample_webids } from './sample-data.js';
 
-export const readConfigData = () => Promise.resolve('en');
+export const readConfigData = async () => 'en';
 
-export const getWebIds = () => {
+export const getWebIds = async () => {
   // format the WebIDs in the same was as how it's returned by the DOM API
   const formatted = Object.entries(sample_webids).map((entry) => ({
     "#me": {
@@ -32,7 +32,7 @@ export const getWebIds = () => {
       "image": entry[1].image
     }
   }));
-  return Promise.resolve(formatted);
+  return formatted;
 };
 
 export const authoriseApp = (app, permissions) => {
@@ -45,7 +45,7 @@ export const authoriseApp = (app, permissions) => {
 }
 
 export const connectApp = (authUri) => {
-  console.log("Connecing to the network...");
+  console.log("Connecting to the network...");
   return new Promise(resolve => {
     setTimeout(() => {
       resolve()
@@ -55,23 +55,22 @@ export const connectApp = (authUri) => {
 
 export const disconnectApp = () => console.log("Disconnecting...");
 
-export const loadAppData = () => {
+export const loadAppData = async () => {
   console.log("Reading the app data from memory...");
-  return Promise.resolve(sample_wallet_data);
+  return sample_wallet_data;
 }
 
-export const saveAppItem = (item) => {
+export const saveAppItem = async (item) => {
   console.log("Saving app data into memory...");
   if (!item.id) {
     item.id = genAppItemId();
   }
 
   sample_wallet_data[item.id] = item;
-  return Promise.resolve(item);
+  return item;
 }
 
-export const deleteAppItem = (item) => {
+export const deleteAppItem = async (item) => {
   console.log("Removing item from memory...");
   delete sample_wallet_data[item.id];
-  return Promise.resolve();
 }

@@ -115,7 +115,7 @@ export default class AltCoinView extends React.Component {
   async readWalletData() {
     const wallet = await this.props.altcoinWallet.loadWalletData(this.props.safeApp, this.props.selected_item.data.wallet);
     console.log("Reading wallet", this.props.selected_item.data.pk, wallet);
-    this.setState( { wallet: wallet, loadingWallet: false } );
+    this.setState( { wallet, loadingWallet: false } );
   }
 
   async checkOwnershipOfCoins(coins, pk) {
