@@ -38,13 +38,15 @@ export default class AltCoinEdit extends React.Component {
     };
     let currentWebId = unlinked.value;
     const webIdOptions = this.props.webIds.map((webId) => {
+      const hasXorUrl = webId['#me']['image'] && webId['#me']['image']['@id'];
+      const image = hasXorUrl ? hasXorUrl : webId['#me']['image'];
       let item = {
         value: {
           id: webId['#me']['@id'],
-          image: webId['#me']['image'],
+          image,
         },
         text: `${webId['#me']['@id']} (${webId['#me']['nick']})`,
-        image: { avatar: true, src: `${webId['#me']['image']}` },
+        image: { avatar: true, src: `${image}` },
       };
 
       if (item.value.id === this.props.selected_item.data.webid_linked) {
