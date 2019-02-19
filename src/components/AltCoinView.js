@@ -342,7 +342,7 @@ export default class AltCoinView extends React.Component {
                 <Grid.Column width={14}>
                   <TextField
                     fullWidth={true}
-                    label={`${this.props.i18nStrings.item_tx_rcpt} (${this.props.i18nStrings.item_pk} / WebID)`}
+                    label={`${this.props.i18nStrings.item_tx_rcpt} (${this.props.i18nStrings.item_pk}${this.props.experimentalEnabled ? ` / ${this.props.i18nStrings.web_id}` : ''})`}
                     autoFocus={true}
                     onChange={this.handleRecipientChange}
                     value={this.state.recipient}

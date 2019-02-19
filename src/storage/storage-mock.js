@@ -21,6 +21,12 @@
 import { genAppItemId } from '../common.js';
 import { sample_wallet_data, sample_webids } from './sample-data.js';
 
+/* The SAFE Browser sets this to true when the user
+ * enbables the experimental APIs, we set it to true
+ * so we have the functionality for WebIDs working
+ */
+window.safeExperimentsEnabled = true;
+
 export const readConfigData = async () => 'en';
 
 export const getWebIds = async () => {

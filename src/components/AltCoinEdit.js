@@ -27,12 +27,15 @@ export default class AltCoinEdit extends React.Component {
     super(props);
 
     const noWebIdIcon = { name: 'user x', color: 'teal' };
+    const noWebIdText = this.props.experimentalEnabled
+                          ? this.props.i18nStrings.item_wallet_no_webid
+                          : this.props.i18nStrings.item_wallet_no_experimental;
     const unlinked = {
       value: {
-        id: this.props.i18nStrings.item_wallet_no_webid,
+        id: noWebIdText,
         noWebIdIcon
       },
-      text: this.props.i18nStrings.item_wallet_no_webid,
+      text: noWebIdText,
       icon: noWebIdIcon,
       selected: false
     };
@@ -141,7 +144,8 @@ export default class AltCoinEdit extends React.Component {
     }
 
     // link to WebID
-    if (this.props.selected_item.data.webid_linked !== updatedItem.data.webid_linked) {
+    if (this.props.experimentalEnabled
+        && this.props.selected_item.data.webid_linked !== updatedItem.data.webid_linked) {
       this.setState( { showUpdatingWebIDs: true } );
       // if it was linked from a WebID
       if (this.props.selected_item.data.webid_linked) {
@@ -162,6 +166,7 @@ export default class AltCoinEdit extends React.Component {
   render() {
     const webIdDropdown = (
       <Dropdown
+        disabled={this.props.experimentalEnabled ? false : true}
         options={this.webIdOptions}
         onChange={this.handleChangeWebId}
         trigger={
@@ -202,7 +207,7 @@ export default class AltCoinEdit extends React.Component {
             <Grid.Column width={15}>
               <TextField
                 fullWidth={true}
-                label={`${this.props.i18nStrings.item_pk} / WebID`}
+                label={this.props.i18nStrings.item_pk}
                 value={this.state.pk}
                 onChange={this.handlePkChange}
                 disabled={this.props.selected_item.data.pk ? true : false}

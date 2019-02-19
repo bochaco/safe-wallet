@@ -40,6 +40,7 @@ const initialState = {
   safeApp: null,
   appState: Constants.APP_STATE_INIT,
   data: {},
+  experimentalEnabled: false,
   webIds: [],
   view_modal: false,
   edit_modal: false,
@@ -146,9 +147,13 @@ export default class MainGrid extends React.Component {
           //content: ContentApi.getContent(preferredLang).page
         });
       })
-      .then(() => storage.getWebIds())
-      .then((webIds) => {
-        this.setState({ webIds });
+      .then(() => {
+        if (window.safeExperimentsEnabled) {
+          // fetch WebIDs owned by the account
+          return storage.getWebIds().then((webIds) => {
+            this.setState({ experimentalEnabled: true, webIds });
+          });
+        }
       })
       .catch((err) => {
         this.setState({appState: Constants.APP_STATE_INIT, data: {}});
@@ -342,6 +347,7 @@ export default class MainGrid extends React.Component {
             updateTxHistory={this.updateTxHistory}
             safeApp={this.state.safeApp}
             altcoinWallet={altcoinWallet}
+            experimentalEnabled={this.state.experimentalEnabled}
           />
 
           {/* Dialog box for choosing the type of item to add */}
@@ -364,6 +370,7 @@ export default class MainGrid extends React.Component {
             safeApp={this.state.safeApp}
             altcoinWallet={altcoinWallet}
             webIds={this.state.webIds}
+            experimentalEnabled={this.state.experimentalEnabled}
           />
 
           {/* Dialog box for deleting the selected item */}
