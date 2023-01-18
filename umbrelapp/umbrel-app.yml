@@ -1,0 +1,22 @@
+manifestVersion: 1
+id: safe-wallet
+category: finance
+name: SAFE Wallet
+version: "0.0.16"
+tagline: Easily accessing your personal items privately, safely and globally
+description: >-
+  Easily accessing your personal items privately, safely and globally.
+releaseNotes: >-
+  First release for Umbrel OS.
+developer: bochaco
+website: https://bochaco.github.io
+dependencies:
+repo: https://github.com/bochaco/safe-wallet
+support: https://github.com/bochaco/safe-wallet/discussions
+port: 3002
+gallery:
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+submitter: Umbrel
+submission: https://github.com/getumbrel/umbrel/pull/

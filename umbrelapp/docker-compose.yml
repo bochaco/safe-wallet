@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: btc-rpc-explorer_web_1
+      APP_PORT: 8080
+
+  web:
+    image: getumbrel/btc-rpc-explorer:v2.0.2
+    restart: on-failure
+    stop_grace_period: 1m
+    environment:
+      BTCEXP_PORT: 8080
